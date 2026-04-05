@@ -21,7 +21,9 @@ const nextConfig = {
       },
     ],
     dangerouslyAllowSVG: true,
-    unoptimized: false,
+    // In dev: let browser fetch from localhost:5000 directly (no optimizer proxy)
+    // In prod: Vercel optimizer handles it using remotePatterns above
+    unoptimized: process.env.NODE_ENV === 'development',
   },
 };
 
