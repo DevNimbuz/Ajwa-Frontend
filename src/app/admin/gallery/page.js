@@ -194,7 +194,6 @@ export default function AdminGalleryPage() {
                 style={{ position: 'absolute', inset: 0, cursor: 'pointer', zIndex: 1 }} 
               />
               
-              {/* Checkbox */}
               <input 
                 type="checkbox"
                 checked={selectedIds.includes(img._id)}
@@ -203,7 +202,11 @@ export default function AdminGalleryPage() {
                 onClick={e => e.stopPropagation()}
               />
 
-              <img src={`${process.env.NEXT_PUBLIC_API_URL ? process.env.NEXT_PUBLIC_API_URL.replace('/api', '') : 'http://localhost:5000'}${img.url}`} alt={img.alt} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <img 
+                src={img.url?.startsWith('/') ? `${process.env.NEXT_PUBLIC_API_URL ? process.env.NEXT_PUBLIC_API_URL.replace('/api', '') : 'http://localhost:5000'}${img.url}` : img.url} 
+                alt={img.alt} 
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+              />
               
               {img.packageSlug && (
                 <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '4px 8px', background: 'rgba(99, 171, 69, 0.9)', color: '#fff', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', textAlign: 'center', zIndex: 5 }}>
