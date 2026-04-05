@@ -9,25 +9,30 @@
 // Backend API URL — set in .env.local or defaults to localhost
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
-/**
- * Store user info (Non-sensitive display data)
- */
+/** Store user info and JWT token after login */
 function setUser(user) {
   if (typeof window === 'undefined') return;
   sessionStorage.setItem('flyajwa_user', JSON.stringify(user));
 }
 
-/**
- * Remove session data (Logout)
- */
+function setToken(token) {
+  if (typeof window === 'undefined') return;
+  sessionStorage.setItem('flyajwa_token', token);
+}
+
+function getToken() {
+  if (typeof window === 'undefined') return null;
+  return sessionStorage.getItem('flyajwa_token');
+}
+
+/** Remove session data on logout */
 function removeSession() {
   if (typeof window === 'undefined') return;
   sessionStorage.removeItem('flyajwa_user');
+  sessionStorage.removeItem('flyajwa_token');
 }
 
-/**
- * Get stored user info
- */
+/** Get stored user info */
 function getUser() {
   if (typeof window === 'undefined') return null;
   const data = sessionStorage.getItem('flyajwa_user');
@@ -44,11 +49,14 @@ async function apiFetch(endpoint, options = {}) {
   const url = `${API_BASE}${endpoint}`;
 
   const isFormData = options.body instanceof FormData;
+  const token = getToken();
 
   const config = {
-    credentials: 'include', // Critically important for HttpOnly cookies
+    credentials: 'include',
     headers: {
       ...(!isFormData && { 'Content-Type': 'application/json' }),
+      // Send token as Bearer header — works cross-domain (Vercel → Render)
+      ...(token && { 'Authorization': `Bearer ${token}` }),
       ...options.headers,
     },
     ...options,
@@ -104,6 +112,7 @@ export const authAPI = {
     });
     if (data.success) {
       setUser(data.user);
+      if (data.token) setToken(data.token); // Store for Authorization header
     }
     return data;
   },
@@ -138,14 +147,14 @@ export const authAPI = {
     }
   },
 
-  /** Check if user is authenticated (Check for profile data) */
+  /** Check if user is authenticated */
   isAuthenticated() {
-    return !!getUser();
+    return !!getUser() && !!getToken();
   },
 
   /** Get current user */
   getUser,
-  getToken: () => null, // No longer used post-migration
+  getToken,
 };
 
 // ══════════════════════════════════════════════
