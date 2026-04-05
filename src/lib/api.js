@@ -1,0 +1,312 @@
+/**
+ * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ * FlyAjwa — Frontend API Client
+ * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ * Centralized API client for communicating with the Express backend
+ * Handles JWT token management, error handling, and auto-logout
+ */
+
+// Backend API URL — set in .env.local or defaults to localhost
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
+/**
+ * Store user info (Non-sensitive display data)
+ */
+function setUser(user) {
+  if (typeof window === 'undefined') return;
+  sessionStorage.setItem('flyajwa_user', JSON.stringify(user));
+}
+
+/**
+ * Remove session data (Logout)
+ */
+function removeSession() {
+  if (typeof window === 'undefined') return;
+  sessionStorage.removeItem('flyajwa_user');
+}
+
+/**
+ * Get stored user info
+ */
+function getUser() {
+  if (typeof window === 'undefined') return null;
+  const data = sessionStorage.getItem('flyajwa_user');
+  return data ? JSON.parse(data) : null;
+}
+
+/**
+ * Core fetch wrapper with JWT and error handling
+ * @param {string} endpoint - API endpoint (e.g., "/packages")
+ * @param {Object} options - Fetch options
+ * @returns {Promise<Object>} API response data
+ */
+async function apiFetch(endpoint, options = {}) {
+  const url = `${API_BASE}${endpoint}`;
+
+  const isFormData = options.body instanceof FormData;
+
+  const config = {
+    credentials: 'include', // Critically important for HttpOnly cookies
+    headers: {
+      ...(!isFormData && { 'Content-Type': 'application/json' }),
+      ...options.headers,
+    },
+    ...options,
+  };
+
+  // If body is an object and not FormData, stringify it
+  if (config.body && typeof config.body === 'object' && !isFormData) {
+    config.body = JSON.stringify(config.body);
+  }
+
+  try {
+    const response = await fetch(url, config);
+
+    // Handle CSV export (blob response)
+    if (response.headers.get('content-type')?.includes('text/csv')) {
+      return response;
+    }
+
+    const data = await response.json();
+
+    // Handle auth errors — auto logout
+    if (response.status === 401) {
+      removeSession();
+      if (typeof window !== 'undefined' && !window.location.pathname.includes('/admin/login')) {
+        window.location.href = '/admin/login';
+      }
+      throw new Error(data.message || 'Session expired — please login again');
+    }
+
+    if (!response.ok) {
+      throw new Error(data.message || `API Error: ${response.status}`);
+    }
+
+    return data;
+  } catch (error) {
+    if (error.name === 'TypeError' && error.message.includes('fetch')) {
+      throw new Error('Cannot connect to server. Please check if the backend is running.');
+    }
+    throw error;
+  }
+}
+
+// ══════════════════════════════════════════════
+// AUTH API
+// ══════════════════════════════════════════════
+
+export const authAPI = {
+  /** Login with email and password */
+  async login(email, password) {
+    const data = await apiFetch('/auth/login', {
+      method: 'POST',
+      body: { email, password },
+    });
+    if (data.success) {
+      setUser(data.user);
+    }
+    return data;
+  },
+
+  /** Get current user profile */
+  async getMe() {
+    return apiFetch('/auth/me');
+  },
+
+  /** Get security audit logs (Admin only) */
+  async getLogs() {
+    return apiFetch('/auth/logs');
+  },
+
+  /** Change password */
+  async changePassword(currentPassword, newPassword) {
+    const data = await apiFetch('/auth/password', {
+      method: 'PUT',
+      body: { currentPassword, newPassword },
+    });
+    return data;
+  },
+
+  /** Logout */
+  async logout() {
+    try {
+      await apiFetch('/auth/logout', { method: 'POST' });
+    } catch (e) {}
+    removeSession();
+    if (typeof window !== 'undefined') {
+      window.location.href = '/admin/login';
+    }
+  },
+
+  /** Check if user is authenticated (Check for profile data) */
+  isAuthenticated() {
+    return !!getUser();
+  },
+
+  /** Get current user */
+  getUser,
+  getToken: () => null, // No longer used post-migration
+};
+
+// ══════════════════════════════════════════════
+// PACKAGES API
+// ══════════════════════════════════════════════
+
+export const packagesAPI = {
+  /** List all active packages (public) */
+  async list() { return apiFetch('/packages'); },
+
+  /** List ALL packages including inactive (admin) */
+  async listAll() { return apiFetch('/packages/all'); },
+
+  /** Get single package by slug (public) */
+  async get(slug) { return apiFetch(`/packages/${slug}`); },
+
+  /** Get dynamic pricing */
+  async getPricing(slug, { days, flight, star, groupSize } = {}) {
+    const params = new URLSearchParams();
+    if (days) params.set('days', days);
+    if (flight !== undefined) params.set('flight', flight);
+    if (star) params.set('star', star);
+    if (groupSize) params.set('groupSize', groupSize);
+    return apiFetch(`/packages/${slug}/pricing?${params}`);
+  },
+
+  /** Create package (super admin) */
+  async create(data) { return apiFetch('/packages', { method: 'POST', body: data }); },
+
+  /** Update package (super admin) */
+  async update(id, data) { return apiFetch(`/packages/${id}`, { method: 'PUT', body: data }); },
+
+  /** Delete package (super admin) */
+  async delete(id) { return apiFetch(`/packages/${id}`, { method: 'DELETE' }); },
+};
+
+// ══════════════════════════════════════════════
+// LEADS API
+// ══════════════════════════════════════════════
+
+export const leadsAPI = {
+  /** Submit new lead (public — from contact form) */
+  async submit(data) { return apiFetch('/leads', { method: 'POST', body: data }); },
+
+  /** List leads with filters (admin) */
+  async list(params = {}) {
+    const query = new URLSearchParams(params).toString();
+    return apiFetch(`/leads?${query}`);
+  },
+
+  /** Get lead analytics */
+  async analytics() { return apiFetch('/leads/analytics'); },
+
+  /** Export leads as CSV */
+  async export(params = {}) {
+    const query = new URLSearchParams(params).toString();
+    return apiFetch(`/leads/export?${query}`);
+  },
+
+  /** Update lead (admin) */
+  async update(id, data) { return apiFetch(`/leads/${id}`, { method: 'PUT', body: data }); },
+
+  /** Delete lead (super admin) */
+  async delete(id) { return apiFetch(`/leads/${id}`, { method: 'DELETE' }); },
+};
+
+// ══════════════════════════════════════════════
+// VISITORS API
+// ══════════════════════════════════════════════
+
+export const visitorsAPI = {
+  /** Track page view (public) */
+  async track(data) {
+    try {
+      return apiFetch('/visitors', { method: 'POST', body: data });
+    } catch (e) {
+      // Silently fail — tracking is non-critical
+      return { success: true };
+    }
+  },
+
+  /** Get visitor analytics (admin) */
+  async analytics(days = 30) { return apiFetch(`/visitors/analytics?days=${days}`); },
+};
+
+// ══════════════════════════════════════════════
+// USERS API
+// ══════════════════════════════════════════════
+
+export const usersAPI = {
+  /** List team members (super admin) */
+  async list() { return apiFetch('/users'); },
+
+  /** Create team member (super admin) */
+  async create(data) { return apiFetch('/users', { method: 'POST', body: data }); },
+
+  /** Update team member (super admin) */
+  async update(id, data) { return apiFetch(`/users/${id}`, { method: 'PUT', body: data }); },
+
+  /** Delete team member (super admin) */
+  async delete(id) { return apiFetch(`/users/${id}`, { method: 'DELETE' }); },
+};
+
+// ══════════════════════════════════════════════
+// SETTINGS API
+// ══════════════════════════════════════════════
+
+export const settingsAPI = {
+  /** Get public settings */
+  async getPublic() { return apiFetch('/settings/public'); },
+
+  /** Get all settings (admin) */
+  async getAll() { return apiFetch('/settings'); },
+
+  /** Update settings (super admin) */
+  async update(key, value) { return apiFetch('/settings', { method: 'PUT', body: { key, value } }); },
+
+  /** Batch update settings (super admin) */
+  async batchUpdate(settings) { return apiFetch('/settings', { method: 'PUT', body: { settings } }); },
+};
+
+// ══════════════════════════════════════════════
+// GALLERY API
+// ══════════════════════════════════════════════
+
+export const galleryAPI = {
+  /** Get all images (or filter by packageSlug) */
+  async list(packageSlug = '') { 
+    return apiFetch(`/gallery${packageSlug ? `?package=${packageSlug}` : ''}`); 
+  },
+
+  /** Upload images (Admin) */
+  async upload(formData) { 
+    return apiFetch('/gallery', { method: 'POST', body: formData }); 
+  },
+
+  /** Delete a single image (Admin) */
+  async delete(id) { 
+    return apiFetch(`/gallery/${id}`, { method: 'DELETE' }); 
+  },
+
+  /** Bulk delete multiple images (Admin) */
+  async bulkDelete(ids) { 
+    return apiFetch('/gallery/bulk-delete', { method: 'POST', body: { ids } }); 
+  },
+};
+
+// ══════════════════════════════════════════════
+// TESTIMONIALS API
+// ══════════════════════════════════════════════
+
+export const testimonialsAPI = {
+  /** List all testimonials (admin) */
+  async list() { return apiFetch('/testimonials'); },
+
+  /** Update testimonial status/content (admin) */
+  async update(id, data) { return apiFetch(`/testimonials/${id}`, { method: 'PUT', body: data }); },
+
+  /** Delete testimonial (super admin) */
+  async delete(id) { return apiFetch(`/testimonials/${id}`, { method: 'DELETE' }); },
+
+  /** Sync Google Reviews (admin) */
+  async syncGoogle(placeId) { return apiFetch('/testimonials/sync-google', { method: 'POST', body: { placeId } }); },
+};

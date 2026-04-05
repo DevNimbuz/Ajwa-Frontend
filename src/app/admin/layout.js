@@ -1,0 +1,247 @@
+// Fixing the file with the complete, correct content
+'use client';
+import { useState, useEffect, useRef } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { authAPI } from '@/lib/api';
+import {
+  LayoutDashboard, Package, Users, MessageSquare, Settings,
+  LogOut, Menu, X, ChevronRight, Shield, Activity
+} from 'lucide-react';
+
+// ── Activity Watchdog: Logs out after 5 mins of inactivity ──
+function ActivityWatchdog() {
+  const router = useRouter();
+  const timeoutRef = useRef(null);
+
+  useEffect(() => {
+    const handleActivity = () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      
+      // Set timeout for 5 minutes (300,000ms)
+      timeoutRef.current = setTimeout(() => {
+        console.log('[Security] Inactivity timeout reached. Logging out.');
+        authAPI.logout();
+      }, 300000); 
+    };
+
+    // Events to track
+    const events = ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart'];
+    events.forEach(ev => window.addEventListener(ev, handleActivity));
+
+    // Initial trigger
+    handleActivity();
+
+    return () => {
+      events.forEach(ev => window.removeEventListener(ev, handleActivity));
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, [router]);
+
+  return null;
+}
+
+// ── Sidebar Navigation Items ──
+const navItems = [
+  { label: 'Dashboard', href: '/admin', icon: LayoutDashboard, roles: ['SUPER_ADMIN', 'TEAM'] },
+  { label: 'Packages', href: '/admin/packages', icon: Package, roles: ['SUPER_ADMIN', 'TEAM'] },
+  { label: 'Leads', href: '/admin/leads', icon: MessageSquare, roles: ['SUPER_ADMIN', 'TEAM'] },
+  { label: 'Testimonials', href: '/admin/testimonials', icon: Activity, roles: ['SUPER_ADMIN', 'TEAM'] },
+  { label: 'Gallery', href: '/admin/gallery', icon: LayoutDashboard, roles: ['SUPER_ADMIN', 'TEAM'] },
+  { label: 'Team', href: '/admin/team', icon: Users, roles: ['SUPER_ADMIN'] },
+  { label: 'Security', href: '/admin/security', icon: Shield, roles: ['SUPER_ADMIN'] },
+  { label: 'Settings', href: '/admin/settings', icon: Settings, roles: ['SUPER_ADMIN'] },
+];
+
+export default function AdminLayout({ children }) {
+  const [user, setUser] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const pathname = usePathname();
+  const router = useRouter();
+
+  // Check auth on mount
+  useEffect(() => {
+    if (pathname === '/admin/login') {
+      setLoading(false);
+      return;
+    }
+
+    const checkAuth = () => {
+      if (!authAPI.isAuthenticated()) {
+        router.push('/admin/login');
+        return;
+      }
+      const stored = authAPI.getUser();
+      if (stored) {
+        setUser(stored);
+        setLoading(false);
+      } else {
+        authAPI.getMe()
+          .then(data => { setUser(data.user); setLoading(false); })
+          .catch(() => { authAPI.logout(); });
+      }
+    };
+    checkAuth();
+  }, [router, pathname]);
+
+  // Skip layout for login page
+  if (pathname === '/admin/login') {
+    return <>{children}</>;
+  }
+
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: '#0f172a' }}>
+        <div style={{ textAlign: 'center', color: '#94a3b8' }}>
+          <div style={{ width: 40, height: 40, border: '3px solid #1e293b', borderTopColor: '#63ab45', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 16px' }} />
+          <p>Loading admin panel...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const filteredNav = navItems.filter(item => item.roles.includes(user?.role));
+
+  return (
+    <div style={{ display: 'flex', minHeight: '100vh', background: '#0f172a', fontFamily: "'Inter', 'Segoe UI', sans-serif" }}>
+      <ActivityWatchdog />
+      
+      {/* ── Sidebar ── */}
+      <aside style={{
+        width: sidebarOpen ? 260 : 260,
+        background: '#1e293b',
+        borderRight: '1px solid #334155',
+        display: 'flex',
+        flexDirection: 'column',
+        position: 'fixed',
+        top: 0, left: 0, bottom: 0,
+        zIndex: 50,
+        transform: sidebarOpen ? 'translateX(0)' : (typeof window !== 'undefined' && window.innerWidth < 768 ? 'translateX(-100%)' : 'translateX(0)'),
+        transition: 'transform 0.3s ease',
+      }}>
+        {/* Logo */}
+        <div style={{ padding: '20px 16px', borderBottom: '1px solid #334155', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ width: 36, height: 36, background: 'linear-gradient(135deg, #63ab45, #4d8a35)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Shield size={20} color="#fff" />
+          </div>
+          <div>
+            <div style={{ color: '#f1f5f9', fontWeight: 700, fontSize: 16 }}>FlyAjwa</div>
+            <div style={{ color: '#64748b', fontSize: 11, letterSpacing: '0.05em' }}>ADMIN PANEL</div>
+          </div>
+        </div>
+
+        {/* Navigation */}
+        <nav style={{ flex: 1, padding: '12px 8px', display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {filteredNav.map(item => {
+            const isActive = pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href));
+            const Icon = item.icon;
+            return (
+              <a
+                key={item.href}
+                href={item.href}
+                onClick={(e) => { e.preventDefault(); router.push(item.href); setSidebarOpen(false); }}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 12,
+                  padding: '10px 12px', borderRadius: 8,
+                  color: isActive ? '#fff' : '#94a3b8',
+                  background: isActive ? 'linear-gradient(135deg, #63ab45, #4d8a35)' : 'transparent',
+                  textDecoration: 'none', fontSize: 14, fontWeight: isActive ? 600 : 400,
+                  transition: 'all 0.2s',
+                }}
+              >
+                <Icon size={18} />
+                <span>{item.label}</span>
+                {isActive && <ChevronRight size={14} style={{ marginLeft: 'auto' }} />}
+              </a>
+            );
+          })}
+        </nav>
+
+        {/* User Info + Logout */}
+        <div style={{ padding: '16px', borderTop: '1px solid #334155' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+            <div style={{
+              width: 36, height: 36, borderRadius: '50%',
+              background: user?.role === 'SUPER_ADMIN' ? 'linear-gradient(135deg, #f59e0b, #d97706)' : 'linear-gradient(135deg, #3b82f6, #2563eb)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              color: '#fff', fontWeight: 700, fontSize: 14,
+            }}>
+              {user?.name?.[0]?.toUpperCase() || 'A'}
+            </div>
+            <div>
+              <div style={{ color: '#e2e8f0', fontSize: 13, fontWeight: 600 }}>{user?.name}</div>
+              <div style={{
+                fontSize: 10, padding: '1px 6px', borderRadius: 4,
+                background: user?.role === 'SUPER_ADMIN' ? '#f59e0b20' : '#3b82f620',
+                color: user?.role === 'SUPER_ADMIN' ? '#f59e0b' : '#3b82f6',
+                fontWeight: 600, letterSpacing: '0.05em',
+              }}>
+                {user?.role === 'SUPER_ADMIN' ? 'SUPER ADMIN' : 'TEAM'}
+              </div>
+            </div>
+          </div>
+          <button
+            onClick={() => authAPI.logout()}
+            style={{
+              width: '100%', display: 'flex', alignItems: 'center', gap: 8,
+              padding: '8px 12px', borderRadius: 6,
+              background: '#dc262620', color: '#f87171', border: 'none',
+              cursor: 'pointer', fontSize: 13, fontWeight: 500,
+            }}
+          >
+            <LogOut size={16} /> Logout
+          </button>
+        </div>
+      </aside>
+
+      {/* ── Main Content Area ── */}
+      <div style={{ flex: 1, marginLeft: 260 }}>
+        {/* Top Header (Mobile) */}
+        <header style={{
+          padding: '12px 24px', background: '#1e293b', borderBottom: '1px solid #334155',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        }}>
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            aria-label={sidebarOpen ? "Close Sidebar Menu" : "Open Sidebar Menu"}
+            style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', display: 'none' }}
+          >
+            {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#64748b', fontSize: 13 }}>
+            <Activity size={14} />
+            <span>{new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' })}</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <a href="/" target="_blank" style={{ color: '#63ab45', fontSize: 13, textDecoration: 'none' }}>
+              View Website →
+            </a>
+          </div>
+        </header>
+
+        {/* Page Content */}
+        <main style={{ padding: 24, minHeight: 'calc(100vh - 56px)' }}>
+          {children}
+        </main>
+      </div>
+
+      {/* Overlay for mobile sidebar */}
+      {sidebarOpen && (
+        <div
+          onClick={() => setSidebarOpen(false)}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 40 }}
+        />
+      )}
+
+      <style jsx global>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @media (max-width: 768px) {
+          aside { transform: translateX(-100%) !important; }
+          aside[style*="translateX(0)"] { transform: translateX(0) !important; }
+          div[style*="marginLeft: 260"] { margin-left: 0 !important; }
+          button[style*="display: none"] { display: block !important; }
+        }
+      `}</style>
+    </div>
+  );
+}

@@ -1,0 +1,38 @@
+[
+  {
+    "id": "1",
+    "label": "Home",
+    "link": "/",
+    "icon": false
+  },
+  {
+    "id": "2",
+    "label": "About Us",
+    "link": "/about",
+    "icon": false
+  },
+  {
+    "id": "3",
+    "label": "Packages",
+    "link": "/package",
+    "icon": false
+  },
+  {
+    "id": "4",
+    "label": "Our Services",
+    "link": "/services",
+    "icon": false
+  },
+  {
+    "id": "5",
+    "label": "Gallery",
+    "link": "/gallery",
+    "icon": false
+  },
+  {
+    "id": "6",
+    "label": "Contact",
+    "link": "/contact",
+    "icon": false
+  }
+]

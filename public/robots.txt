@@ -1,0 +1,12 @@
+# *
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /_next/
+Disallow: /static/
+
+# Host
+Host: https://flyajwa.com
+
+# Sitemaps
+Sitemap: https://flyajwa.com/sitemap.xml
