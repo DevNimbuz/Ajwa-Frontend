@@ -281,9 +281,14 @@ export const settingsAPI = {
 // ══════════════════════════════════════════════
 
 export const galleryAPI = {
-  /** Get all images (or filter by packageSlug) */
-  async list(packageSlug = '') { 
-    return apiFetch(`/gallery${packageSlug ? `?package=${packageSlug}` : ''}`); 
+  /** Get all images with optional pagination */
+  async list(packageSlug = '', page = 1, limit = 20) {
+    let url = '/gallery?';
+    const params = [];
+    if (packageSlug) params.push(`package=${packageSlug}`);
+    params.push(`page=${page}`);
+    params.push(`limit=${limit}`);
+    return apiFetch(`${url}${params.join('&')}`);
   },
 
   /** Upload images (Admin) */
@@ -307,8 +312,12 @@ export const galleryAPI = {
 // ══════════════════════════════════════════════
 
 export const testimonialsAPI = {
-  /** List all testimonials (admin) */
-  async list() { return apiFetch('/testimonials'); },
+  /** List testimonials with pagination and optional status filter */
+  async list(page = 1, limit = 20, status = '') {
+    let url = `/testimonials?page=${page}&limit=${limit}`;
+    if (status) url += `&status=${status}`;
+    return apiFetch(url);
+  },
 
   /** Update testimonial status/content (admin) */
   async update(id, data) { return apiFetch(`/testimonials/${id}`, { method: 'PUT', body: data }); },

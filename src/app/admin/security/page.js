@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { Shield, Search, Filter, Clock, Globe, Laptop, AlertTriangle, CheckCircle2, XCircle, Info, ShieldAlert, Settings } from 'lucide-react';
-import api, { authAPI } from '@/lib/api';
+import { authAPI } from '@/lib/api';
 
 export default function SecurityLogs() {
   const [logs, setLogs] = useState([]);

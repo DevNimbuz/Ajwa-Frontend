@@ -25,6 +25,7 @@ export default function AdminDashboard() {
   const [leadStats, setLeadStats] = useState(null);
   const [visitorStats, setVisitorStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,7 +36,11 @@ export default function AdminDashboard() {
         ]);
         if (leads.success) setLeadStats(leads.data);
         if (visitors.success) setVisitorStats(visitors.data);
+        if (!leads.success && !visitors.success) {
+          setError('Failed to load dashboard data. Please try again.');
+        }
       } catch (err) {
+        setError('Failed to connect to server. Please check your connection.');
         console.error('Dashboard error:', err.message);
       } finally {
         setLoading(false);
@@ -50,6 +55,32 @@ export default function AdminDashboard() {
         <div style={{ textAlign: 'center' }}>
           <div style={{ width: 32, height: 32, border: '3px solid #1e293b', borderTopColor: '#63ab45', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 12px' }} />
           Loading dashboard...
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 400 }}>
+        <div style={{ textAlign: 'center', maxWidth: 400 }}>
+          <div style={{ color: '#ef4444', fontSize: '2rem', marginBottom: '1rem' }}>⚠️</div>
+          <p style={{ color: '#f1f5f9', fontSize: '1rem', marginBottom: '1rem' }}>{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            style={{
+              padding: '0.75rem 1.5rem',
+              background: '#63ab45',
+              color: '#fff',
+              border: 'none',
+              borderRadius: 8,
+              fontSize: '0.875rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+            }}
+          >
+            Reload Page
+          </button>
         </div>
       </div>
     );
