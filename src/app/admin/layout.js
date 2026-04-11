@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { authAPI } from '@/lib/api';
+import { NotificationProvider } from '@/context/NotificationContext';
+import NotificationToast, { NotificationBell } from '@/components/admin/NotificationToast';
 import {
   LayoutDashboard, Package, Users, MessageSquare, Settings,
   LogOut, Menu, X, ChevronRight, Shield, Activity
@@ -103,8 +105,10 @@ export default function AdminLayout({ children }) {
   const filteredNav = navItems.filter(item => item.roles.includes(user?.role));
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#0f172a', fontFamily: "'Inter', 'Segoe UI', sans-serif" }}>
-      <ActivityWatchdog />
+    <NotificationProvider>
+      <NotificationToast />
+      <div style={{ display: 'flex', minHeight: '100vh', background: '#0f172a', fontFamily: "'Inter', 'Segoe UI', sans-serif" }}>
+        <ActivityWatchdog />
       
       {/* ── Sidebar ── */}
       <aside style={{
@@ -213,6 +217,7 @@ export default function AdminLayout({ children }) {
             <span>{new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' })}</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <NotificationBell />
             <a href="/" target="_blank" style={{ color: '#63ab45', fontSize: 13, textDecoration: 'none' }}>
               View Website →
             </a>
@@ -242,6 +247,7 @@ export default function AdminLayout({ children }) {
           button[style*="display: none"] { display: block !important; }
         }
       `}</style>
-    </div>
+      </div>
+    </NotificationProvider>
   );
 }
