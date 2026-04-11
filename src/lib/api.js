@@ -199,6 +199,16 @@ export const leadsAPI = {
   /** Submit new lead (public — from contact form) */
   async submit(data) { return apiFetch('/leads', { method: 'POST', body: data }); },
 
+  /** Track WhatsApp button click */
+  async trackWhatsAppClick(data) {
+    try {
+      return await apiFetch('/leads/whatsapp-click', { method: 'POST', body: data });
+    } catch (e) {
+      console.error('WhatsApp click tracking failed:', e);
+      return { success: false };
+    }
+  },
+
   /** List leads with filters (admin) */
   async list(params = {}) {
     const query = new URLSearchParams(params).toString();

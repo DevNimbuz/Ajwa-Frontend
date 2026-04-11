@@ -180,7 +180,7 @@ export default function AdminLeads() {
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ background: '#0f172a' }}>
-              {['Name', 'Contact', 'Destination', 'Source', 'Status', 'Date'].map(h => (
+              {['Name', 'Contact', 'Destination', 'Source', 'WhatsApp', 'Date'].map(h => (
                 <th key={h} style={{ textAlign: 'left', padding: '12px 16px', color: '#64748b', fontSize: 12, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>{h}</th>
               ))}
             </tr>
@@ -206,11 +206,26 @@ export default function AdminLeads() {
                 <td style={{ padding: '12px 16px', color: '#94a3b8', fontSize: 13 }}>{lead.destination || '—'}</td>
                 <td style={{ padding: '12px 16px', color: '#94a3b8', fontSize: 13, textTransform: 'capitalize' }}>{lead.source}</td>
                 <td style={{ padding: '12px 16px' }}>
-                  <span style={{
-                    background: (statusColors[lead.status] || '#64748b') + '20',
-                    color: statusColors[lead.status] || '#64748b',
-                    padding: '3px 10px', borderRadius: 6, fontSize: 11, fontWeight: 600,
-                  }}>{lead.status}</span>
+                  {lead.whatsappClicks && lead.whatsappClicks.length > 0 ? (
+                    <span style={{
+                      background: '#22c55e20',
+                      color: '#22c55e',
+                      padding: '3px 10px',
+                      borderRadius: 6,
+                      fontSize: 11,
+                      fontWeight: 600,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 4,
+                    }}>
+                      ✈️ {lead.whatsappClicks.length}x
+                      <span style={{ color: '#64748b', fontWeight: 400 }}>
+                        {new Date(lead.whatsappClicks[lead.whatsappClicks.length - 1].clickedAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </span>
+                  ) : (
+                    <span style={{ color: '#475569', fontSize: 12 }}>—</span>
+                  )}
                 </td>
                 <td style={{ padding: '12px 16px', color: '#64748b', fontSize: 12 }}>
                   {new Date(lead.createdAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}
@@ -280,6 +295,27 @@ export default function AdminLeads() {
             <div style={{ background: '#0f172a', borderRadius: 8, padding: 14, marginBottom: 20 }}>
               <div style={{ color: '#64748b', fontSize: 11, fontWeight: 600, marginBottom: 6 }}>MESSAGE</div>
               <p style={{ color: '#e2e8f0', fontSize: 13, margin: 0, lineHeight: 1.6 }}>{selectedLead.message}</p>
+            </div>
+          )}
+
+          {/* WhatsApp Clicks */}
+          {selectedLead.whatsappClicks && selectedLead.whatsappClicks.length > 0 && (
+            <div style={{ background: '#22c55e10', borderRadius: 8, padding: 14, marginBottom: 20, border: '1px solid #22c55e30' }}>
+              <div style={{ color: '#22c55e', fontSize: 11, fontWeight: 600, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+                ✈️ WhatsApp Clicked {selectedLead.whatsappClicks.length} Time{selectedLead.whatsappClicks.length > 1 ? 's' : ''}
+              </div>
+              {selectedLead.whatsappClicks.slice().reverse().map((click, i) => (
+                <div key={i} style={{ marginBottom: i < selectedLead.whatsappClicks.length - 1 ? 8 : 0 }}>
+                  <div style={{ color: '#64748b', fontSize: 11 }}>
+                    {new Date(click.clickedAt).toLocaleString('en-IN')}
+                  </div>
+                  {click.selectedOptions && (
+                    <div style={{ color: '#94a3b8', fontSize: 12, marginTop: 4 }}>
+                      {click.selectedOptions.days}D • {click.selectedOptions.flight ? 'With Flight' : 'No Flight'} • {click.selectedOptions.hotelStar}★ • {click.selectedOptions.groupSize} pax
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           )}
 

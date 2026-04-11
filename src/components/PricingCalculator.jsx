@@ -42,6 +42,21 @@ Please share the details.`;
 
   const whatsappUrl = `https://wa.me/919846617000?text=${encodeURIComponent(whatsappMessage)}`;
 
+  // Track WhatsApp click
+  const handleWhatsAppClick = () => {
+    leadsAPI.trackWhatsAppClick({
+      destination: packageName,
+      packageSlug,
+      page: 'package-detail',
+      selectedOptions: {
+        days: actualDays,
+        flight: withFlight,
+        hotelStar,
+        groupSize,
+      },
+    });
+  };
+
   // Submit enquiry
   const handleEnquiry = async (e) => {
     e.preventDefault();
@@ -161,6 +176,7 @@ Please share the details.`;
           target="_blank"
           rel="noopener"
           className="calc-btn-premium whatsapp"
+          onClick={handleWhatsAppClick}
         >
           <MessageCircle size={20} /> <span>WhatsApp</span>
         </a>
