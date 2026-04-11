@@ -124,6 +124,9 @@ export default function ReviewsClient() {
         .form-control:focus { border-color: var(--color-gold); outline: none; box-shadow: 0 0 0 3px rgba(99,171,69,0.1); background: #ffffff; }
         .star-input { display: flex; gap: 8px; cursor: pointer; color: #cbd5e1; }
         .star-input .active { color: #f59e0b; }
+        @media (max-width: 640px) {
+          .review-card { padding: 1.25rem; }
+        }
       `}</style>
 
       <Header />
@@ -145,7 +148,7 @@ export default function ReviewsClient() {
       <section className="section" style={{ background: '#f8fafc' }}>
         <div className="container">
           <AnimatedSection>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3rem', flexWrap: 'wrap', gap: '1.5rem' }}>
+            <div className="section-header-row">
               <div className="section-header" style={{ margin: 0, textAlign: 'left' }}>
                 <span className="subtitle">Client Testimonials</span>
                 <h2 className="heading-2">What Our Travelers Say</h2>
@@ -163,10 +166,10 @@ export default function ReviewsClient() {
               testimonials.slice(0, visibleTestimonials).map((t, i) => (
                 <AnimatedSection key={t._id} delay={(i % 6) * 0.1}>
                   <div className="review-card">
-                    <div style={{ display: 'flex', gap: 4, color: '#f59e0b', marginBottom: '1rem' }}>
+                    <div className="review-stars-row">
                       {[...Array(t.rating)].map((_, idx) => <Star key={idx} size={18} fill="currentColor" />)}
                     </div>
-                    <Quote size={40} color="rgba(99,171,69,0.1)" style={{ position: 'absolute', top: '2rem', right: '2rem' }} />
+                    <Quote size={40} color="rgba(99,171,69,0.1)" className="review-quote-icon" />
                     <p style={{ color: 'var(--color-text-secondary)', fontStyle: 'italic', marginBottom: '1.5rem', flex: 1, lineHeight: 1.6 }}>"{t.text}"</p>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       <div style={{ width: 48, height: 48, borderRadius: '50%', overflow: 'hidden', position: 'relative', background: 'linear-gradient(135deg, var(--color-gold), #4d8a35)' }}>
@@ -190,14 +193,14 @@ export default function ReviewsClient() {
               ))
             )}
             {(!dataLoading && testimonials.length === 0) && (
-              <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '3rem', color: '#64748b' }}>
+              <div className="review-empty-state">
                 No reviews available yet. Be the first to write one!
               </div>
             )}
           </div>
 
           {visibleTestimonials < testimonials.length && (
-            <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+            <div className="see-more-wrapper">
               <button
                 onClick={() => setVisibleTestimonials(prev => prev + 6)}
                 className="btn btn-outline"
@@ -218,13 +221,13 @@ export default function ReviewsClient() {
             </div>
           </AnimatedSection>
 
-          <div className="gallery-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
+          <div className="gallery-grid">
             {dataLoading ? (
               [1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => <div key={i} className="skeleton-shimmer" style={{ aspectRatio: '1/1', borderRadius: '12px' }} />)
             ) : (
               galleryImages.slice(0, visibleGallery).map((img, i) => (
                 <AnimatedSection key={img._id} delay={(i % 6) * 0.05}>
-                  <div className="gallery-item" onClick={() => openLightbox(i)} style={{ cursor: 'pointer', position: 'relative', borderRadius: '12px', overflow: 'hidden', aspectRatio: '1/1' }}>
+                  <div className="gallery-item" onClick={() => openLightbox(i)} style={{ cursor: 'pointer' }}>
                     <Image
                       src={getImageUrl(img.url)}
                       alt={img.alt || 'FlyAjwa Gallery Image'}
@@ -249,7 +252,7 @@ export default function ReviewsClient() {
           </div>
 
           {visibleGallery < galleryImages.length && (
-            <div style={{ textAlign: 'center', marginTop: '3rem' }}>
+            <div className="see-more-wrapper">
               <button
                 onClick={() => setVisibleGallery(prev => prev + 9)}
                 className="btn btn-outline"
@@ -263,29 +266,29 @@ export default function ReviewsClient() {
 
       {/* Review Submission Modal */}
       {modalOpen && (
-        <div className="modal-overlay" onClick={() => setModalOpen(false)} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)' }}>
-          <div className="modal-content" onClick={e => e.stopPropagation()} style={{ background: '#fff', padding: '2rem', borderRadius: '16px', width: '90%', maxWidth: '500px', position: 'relative', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)' }}>
+        <div className="review-modal-overlay" onClick={() => setModalOpen(false)}>
+          <div className="review-modal-content" onClick={e => e.stopPropagation()}>
             <button onClick={() => setModalOpen(false)} style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'none', border: 'none', cursor: 'pointer', color: '#64748b' }}><X size={24} /></button>
             <h3 style={{ fontSize: '1.5rem', marginBottom: '0.5rem', fontFamily: 'var(--font-heading)' }}>Write a Review</h3>
             <p style={{ color: 'var(--color-text-secondary)', marginBottom: '1.5rem', fontSize: '0.875rem' }}>Share your FlyAjwa experience with the world!</p>
 
             {success ? (
-              <div style={{ padding: '2rem', textAlign: 'center', background: '#ecfdf5', borderRadius: '8px', color: '#059669', border: '1px solid #a7f3d0' }}>
+              <div className="review-modal-success">
                 <CheckCircle size={48} style={{ margin: '0 auto 1rem' }} />
                 <h4 style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>Review Submitted!</h4>
                 <p>Thank you!</p>
               </div>
             ) : (
               <form onSubmit={handleReviewSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <img src={avatarPreview} style={{ width: 64, height: 64, borderRadius: '50%', objectFit: 'cover', border: avatarUploading ? '2px dashed var(--color-gold)' : '2px solid #e2e8f0' }} alt="Avatar Preview" />
+                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
+                  <img src={avatarPreview} className="review-modal-avatar" style={{ border: avatarUploading ? '2px dashed var(--color-gold)' : '2px solid #e2e8f0' }} alt="Avatar Preview" />
                   <div>
                     <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.875rem', fontWeight: 500 }}>Profile Photo (Optional)</label>
                     <button
                       type="button"
                       onClick={() => avatarInputRef.current?.click()}
                       disabled={avatarUploading}
-                      style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 16px', background: '#f8fafc', border: '1px dashed #cbd5e1', borderRadius: 6, cursor: avatarUploading ? 'not-allowed' : 'pointer', color: '#64748b', fontSize: '0.875rem', transition: 'all 0.2s' }}
+                      className="avatar-upload-btn"
                     >
                       <Upload size={16} />
                       {avatarUploading ? 'Uploading...' : 'Choose Photo'}
@@ -330,12 +333,12 @@ export default function ReviewsClient() {
 
       {/* Lightbox */}
       {lightbox.open && galleryImages.length > 0 && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.95)', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={closeLightbox}>
-          <button onClick={e => { e.stopPropagation(); closeLightbox(); }} style={{ position: 'absolute', top: 20, right: 20, color: '#fff', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '50%', width: 44, height: 44, cursor: 'pointer', zIndex: 10 }}><X size={24} /></button>
-          <button onClick={e => { e.stopPropagation(); goPrev(); }} style={{ position: 'absolute', left: 20, color: '#fff', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '50%', width: 52, height: 52, fontSize: '2rem', cursor: 'pointer' }}>‹</button>
+        <div className="lightbox-overlay" onClick={closeLightbox}>
+          <button className="lightbox-close" onClick={e => { e.stopPropagation(); closeLightbox(); }}><X size={24} /></button>
+          <button className="lightbox-nav prev" onClick={e => { e.stopPropagation(); goPrev(); }}>‹</button>
           <img src={getImageUrl(galleryImages[lightbox.index].url)} alt="" onClick={e => e.stopPropagation()} style={{ maxWidth: '90vw', maxHeight: '85vh', objectFit: 'contain', borderRadius: '8px' }} />
-          <button onClick={e => { e.stopPropagation(); goNext(); }} style={{ position: 'absolute', right: 20, color: '#fff', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '50%', width: 52, height: 52, fontSize: '2rem', cursor: 'pointer' }}>›</button>
-          <div style={{ position: 'absolute', bottom: 20, color: '#94a3b8' }}>{lightbox.index + 1} / {galleryImages.length}</div>
+          <button className="lightbox-nav next" onClick={e => { e.stopPropagation(); goNext(); }}>›</button>
+          <div className="lightbox-counter">{lightbox.index + 1} / {galleryImages.length}</div>
         </div>
       )}
 

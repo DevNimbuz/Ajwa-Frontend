@@ -269,7 +269,7 @@ export default function HomePage() {
             <AnimatedSection>
               <div>
                 <span className="subtitle">About Us</span>
-                <h2 className="heading-2" style={{ margin: '1rem 0 1.5rem' }}>
+                <h2 className="heading-2 home-section-heading">
                   Crafting remarkable journeys, One destination at a time.
                 </h2>
 
@@ -281,7 +281,7 @@ export default function HomePage() {
                     aria-selected={aboutTab === 'mission'}
                     aria-controls="mission-panel"
                   >
-                    <Compass size={16} style={{ marginRight: 6, verticalAlign: -2 }} />
+                    <Compass size={16} className="tab-icon" />
                     Mission
                   </button>
                   <button
@@ -291,7 +291,7 @@ export default function HomePage() {
                     aria-selected={aboutTab === 'vision'}
                     aria-controls="vision-panel"
                   >
-                    <Globe size={16} style={{ marginRight: 6, verticalAlign: -2 }} />
+                    <Globe size={16} className="tab-icon" />
                     Vision
                   </button>
                 </div>
@@ -299,25 +299,23 @@ export default function HomePage() {
                 <p 
                   id={aboutTab === 'mission' ? "mission-panel" : "vision-panel"}
                   role="tabpanel"
-                  style={{ color: 'var(--color-text-secondary)', lineHeight: 1.8, marginBottom: '2rem' }}
+                  className="home-description"
                 >
                   {aboutTab === 'mission'
                     ? 'At Fly Ajwa Travels & Holidays, our mission is to provide exceptional travel experiences that blend comfort, affordability, and personalized service. We aim to make every journey seamless, enriching, and memorable by offering well-curated travel packages, seamless booking services, and expert guidance. Our commitment is to deliver high-quality travel solutions while ensuring customer satisfaction, safety, and hassle-free adventures.'
                     : 'Our vision is to become a trusted and leading travel company known for its excellence in customer service, innovative travel experiences, and commitment to sustainable tourism. We aspire to connect travelers with the world\'s most breathtaking destinations while promoting responsible and ethical tourism. Through continuous innovation and dedication, we envision Fly Ajwa as a global name in the travel industry, inspiring wanderlust and creating unforgettable journeys for all.'}
                 </p>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', flexWrap: 'wrap' }}>
+                <div className="about-stats-row">
                   <Link href="/about" className="btn btn-primary">
                     More About Us
                     <ArrowRight size={16} />
                   </Link>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    <span className="stat-number" style={{ fontSize: '2rem' }}>
+                  <div className="about-stat">
+                    <span className="stat-number stat-number-lg">
                       {isMounted ? <CountUp end={100} duration={2.5} enableScrollSpy scrollSpyOnce /> : "100"}+
                     </span>
-                    <span style={{ color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>
-                      Happy<br />Customers
-                    </span>
+                    <span className="about-stat-label">Happy<br />Customers</span>
                   </div>
                 </div>
               </div>
@@ -515,7 +513,7 @@ export default function HomePage() {
               </div>
             )}
             
-            <div style={{ textAlign: 'center', marginTop: '3rem' }}>
+            <div className="home-see-all-reviews">
               <Link href="/reviews" className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
                 See All Public Reviews <ArrowRight size={16} />
               </Link>

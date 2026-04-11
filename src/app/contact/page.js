@@ -101,11 +101,11 @@ export default function ContactPage() {
 
       <section className="section">
         <div className="container">
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.4fr', gap: 'var(--space-3xl)', alignItems: 'flex-start' }}>
+          <div className="contact-main-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1.4fr', gap: 'var(--space-3xl)', alignItems: 'flex-start' }}>
             {/* Contact Info */}
             <AnimatedSection>
               <div>
-                <span className="subtitle" style={{ marginBottom: '1.5rem', display: 'block' }}>Get In Touch</span>
+                <span className="subtitle contact-subtitle">Get In Touch</span>
                 <h2 className="heading-3" style={{ marginBottom: 'var(--space-2xl)' }}>
                   We'd love to hear from you
                 </h2>
@@ -185,43 +185,39 @@ export default function ContactPage() {
 
             {/* Contact Form Section */}
             <AnimatedSection delay={0.2}>
-              <div className="contact-form-container" style={{ display: 'grid', gridTemplateColumns: 'minmax(200px, 0.4fr) 1fr', background: '#fff', borderRadius: '24px', overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.05)', border: '1px solid var(--color-border)' }}>
+              <div className="contact-form-container contact-box-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(200px, 0.4fr) 1fr', background: '#fff', borderRadius: '24px', overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.05)', border: '1px solid var(--color-border)' }}>
                 {/* Sidebar Progress */}
-                <div style={{ background: 'var(--color-bg-deep)', padding: '3rem 2rem', color: '#fff' }}>
-                  <h4 style={{ color: '#fff', fontSize: '1.25rem', marginBottom: '2.5rem', fontWeight: 600 }}>Plan Journey</h4>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                <div className="contact-form-sidebar">
+                  <h4>Plan Journey</h4>
+                  <div className="contact-form-steps">
                     {steps.map((step, i) => (
-                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '1rem', opacity: currentStep >= i + 1 ? 1 : 0.4, transition: '0.3s' }}>
-                        <div style={{ 
-                          width: 32, height: 32, borderRadius: '50%', background: currentStep > i + 1 ? 'var(--color-gold)' : (currentStep === i + 1 ? '#fff' : 'rgba(255,255,255,0.1)'),
-                          display: 'flex', alignItems: 'center', justifyContent: 'center', color: currentStep === i + 1 ? 'var(--color-bg-deep)' : '#fff', fontWeight: 700, fontSize: '0.875rem',
-                          boxShadow: currentStep === i + 1 ? '0 0 15px rgba(255,255,255,0.3)' : 'none'
-                        }}>
+                      <div key={i} className="contact-form-step" style={{ opacity: currentStep >= i + 1 ? 1 : 0.4 }}>
+                        <div className={`contact-form-step-num ${currentStep > i + 1 ? 'completed' : (currentStep === i + 1 ? 'current' : 'inactive')}`}>
                           {currentStep > i + 1 ? '✓' : i + 1}
                         </div>
-                        <div style={{ fontSize: '0.875rem', fontWeight: 500 }}>{step.title}</div>
+                        <div className="contact-form-step-label">{step.title}</div>
                       </div>
                     ))}
                   </div>
                 </div>
 
                 {/* Form Body */}
-                <div style={{ padding: '3rem' }}>
+                <div className="contact-form-body">
                   {submitted ? (
                     <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} style={{ textAlign: 'center', padding: '2rem' }}>
-                      <div style={{ width: 80, height: 80, background: '#63ab4515', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 2rem', color: 'var(--color-gold)' }}>
+                      <div className="contact-success-icon">
                         <Phone size={40} />
                       </div>
                       <h3 style={{ marginBottom: '1rem' }}>Request Received!</h3>
-                      <p style={{ color: 'var(--color-text-secondary)', marginBottom: '2rem' }}>Our travel experts will contact you within 24 hours to finalize your itinerary.</p>
+                      <p className="contact-success-text">Our travel experts will contact you within 24 hours to finalize your itinerary.</p>
                       <button onClick={() => window.location.reload()} className="btn btn-primary">Plan Another Trip</button>
                     </motion.div>
                   ) : (
-                    <form onSubmit={handleSubmit} style={{ minHeight: 350, display: 'flex', flexDirection: 'column' }}>
+                    <form onSubmit={handleSubmit} className="contact-form-min">
                       <AnimatePresence mode="wait">
                         {currentStep === 1 && (
                           <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-                            <h3 className="heading-4" style={{ marginBottom: '2rem' }}>Start with the basics</h3>
+                            <h3 className="heading-4 contact-form-heading">Start with the basics</h3>
                             <div className="form-group">
                               <label>Full Name *</label>
                               <input type="text" placeholder="John Doe" value={name} onChange={e => setName(e.target.value)} className="form-control" />
@@ -239,7 +235,7 @@ export default function ContactPage() {
 
                         {currentStep === 2 && (
                           <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-                            <h3 className="heading-4" style={{ marginBottom: '2rem' }}>Where are we going?</h3>
+                            <h3 className="heading-4 contact-form-heading">Where are we going?</h3>
                             <div className="form-group">
                               <label>Dream Destination *</label>
                               <input type="text" placeholder="e.g., Manali, Maldives, Europe" value={destination} onChange={e => setDestination(e.target.value)} className="form-control" />
@@ -253,22 +249,21 @@ export default function ContactPage() {
 
                         {currentStep === 3 && (
                           <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-                            <h3 className="heading-4" style={{ marginBottom: '2rem' }}>Tell us more</h3>
+                            <h3 className="heading-4 contact-form-heading">Tell us more</h3>
                             <div className="form-group">
                               <label>Any special requirements? *</label>
                               <textarea 
                                 placeholder="e.g., Honeymoon trip, Group of 10, Luxury stay..." 
                                 value={message} 
                                 onChange={e => setMessage(e.target.value)} 
-                                className="form-control" 
-                                style={{ minHeight: 140 }}
+                                className="form-control contact-textarea"
                               />
                             </div>
                           </motion.div>
                         )}
                       </AnimatePresence>
 
-                      <div style={{ marginTop: 'auto', paddingTop: '2rem', display: 'flex', justifyContent: 'space-between', gap: '1rem' }}>
+                      <div style={{ marginTop: 'auto', paddingTop: '2rem', display: 'flex', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
                         {currentStep > 1 && (
                           <button type="button" onClick={prevStep} className="btn btn-outline" style={{ flex: 1 }}>Back</button>
                         )}

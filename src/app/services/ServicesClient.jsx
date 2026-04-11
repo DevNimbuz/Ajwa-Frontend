@@ -162,13 +162,13 @@ export default function ServicesClient() {
       case 'Ticketing Services':
         return (
           <>
-            <div className="form-row" style={{ display: 'flex', gap: '1rem' }}>
-              <div className="form-group" style={{ flex: 1 }}><label>From City</label><input type="text" name="Flight: From City" onChange={handleChange} className="form-control" required /></div>
-              <div className="form-group" style={{ flex: 1 }}><label>To City</label><input type="text" name="Flight: To City" onChange={handleChange} className="form-control" required /></div>
+            <div className="form-row-flex">
+              <div className="form-group"><label>From City</label><input type="text" name="Flight: From City" onChange={handleChange} className="form-control" required /></div>
+              <div className="form-group"><label>To City</label><input type="text" name="Flight: To City" onChange={handleChange} className="form-control" required /></div>
             </div>
-            <div className="form-row" style={{ display: 'flex', gap: '1rem' }}>
-              <div className="form-group" style={{ flex: 1 }}><label>Departure Date</label><input type="date" name="Departure Date" onChange={handleChange} className="form-control" required /></div>
-              <div className="form-group" style={{ flex: 1 }}><label>Return Date (Optional)</label><input type="date" name="Return Date" onChange={handleChange} className="form-control" /></div>
+            <div className="form-row-flex">
+              <div className="form-group"><label>Departure Date</label><input type="date" name="Departure Date" onChange={handleChange} className="form-control" required /></div>
+              <div className="form-group"><label>Return Date (Optional)</label><input type="date" name="Return Date" onChange={handleChange} className="form-control" /></div>
             </div>
             <div className="form-group"><label>Number of Passengers</label><input type="number" min="1" name="Number of Passengers" onChange={handleChange} className="form-control" required /></div>
           </>
@@ -292,8 +292,8 @@ export default function ServicesClient() {
 
       {/* Dynamic Modal Overlay */}
       {activeService && (
-        <div className="modal-overlay" onClick={() => setActiveService(null)} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)' }}>
-          <div className="modal-content" onClick={e => e.stopPropagation()} style={{ background: '#fff', padding: '2rem', borderRadius: '16px', width: '90%', maxWidth: '500px', maxHeight: '90vh', overflowY: 'auto', position: 'relative', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)' }}>
+        <div className="service-modal-overlay" onClick={() => setActiveService(null)}>
+          <div className="service-modal-content" onClick={e => e.stopPropagation()}>
             <button onClick={() => setActiveService(null)} style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'none', border: 'none', cursor: 'pointer', color: '#64748b' }}>
               <X size={24} />
             </button>

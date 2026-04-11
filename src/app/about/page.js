@@ -73,7 +73,7 @@ export default function AboutPage() {
         <div className="container">
           <div className="about-content">
             <AnimatedSection>
-              <div className="about-img-wrap" style={{ position: 'relative', minHeight: '400px' }}>
+              <div className="about-img-wrap about-image-wrapper">
                 <Image
                   src="/assets/img/Ajwa/about-img-ajwa.png"
                   alt="FlyAjwa Professional Travel Team"
@@ -87,7 +87,7 @@ export default function AboutPage() {
             <AnimatedSection delay={0.2}>
               <div>
                 <span className="subtitle">Who We Are</span>
-                <h2 className="heading-2" style={{ margin: '1rem 0 1.5rem' }}>
+                <h2 className="heading-2 about-heading">
                   Crafting remarkable journeys, One destination at a time.
                 </h2>
 
@@ -99,7 +99,7 @@ export default function AboutPage() {
                     aria-selected={aboutTab === 'mission'}
                     aria-controls="mission-panel"
                   >
-                    <Compass size={16} style={{ marginRight: 6, verticalAlign: -2 }} />
+                    <Compass size={16} className="tab-icon" />
                     Mission
                   </button>
                   <button
@@ -109,7 +109,7 @@ export default function AboutPage() {
                     aria-selected={aboutTab === 'vision'}
                     aria-controls="vision-panel"
                   >
-                    <Globe size={16} style={{ marginRight: 6, verticalAlign: -2 }} />
+                    <Globe size={16} className="tab-icon" />
                     Vision
                   </button>
                 </div>
@@ -117,35 +117,35 @@ export default function AboutPage() {
                 <p 
                   id={aboutTab === 'mission' ? "mission-panel" : "vision-panel"}
                   role="tabpanel"
-                  style={{ color: 'var(--color-text-secondary)', lineHeight: 1.8, marginBottom: '1.5rem' }}
+                  className="about-description"
                 >
                   {aboutTab === 'mission'
                     ? 'At Fly Ajwa Travels & Holidays, our mission is to provide exceptional travel experiences that blend comfort, affordability, and personalized service. We aim to make every journey seamless, enriching, and memorable by offering well-curated travel packages, seamless booking services, and expert guidance. Our commitment is to deliver high-quality travel solutions while ensuring customer satisfaction, safety, and hassle-free adventures.'
                     : 'Our vision is to become a trusted and leading travel company known for its excellence in customer service, innovative travel experiences, and commitment to sustainable tourism. We aspire to connect travelers with the world\'s most breathtaking destinations while promoting responsible and ethical tourism. Through continuous innovation and dedication, we envision Fly Ajwa as a global name in the travel industry, inspiring wanderlust and creating unforgettable journeys for all.'}
                 </p>
 
-                <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <div className="stat-number" style={{ fontSize: '2rem' }}>
+                <div className="about-stats-row">
+                  <div className="about-stat">
+                    <div className="stat-number stat-number-lg">
                       <CountUp end={100} duration={2.5} enableScrollSpy scrollSpyOnce />+
                     </div>
-                    <span style={{ color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>Happy<br/>Customers</span>
+                    <span className="about-stat-label">Happy<br/>Customers</span>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <div className="stat-number" style={{ fontSize: '2rem' }}>
+                  <div className="about-stat">
+                    <div className="stat-number stat-number-lg">
                       <CountUp end={9} duration={2} enableScrollSpy scrollSpyOnce />
                     </div>
-                    <span style={{ color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>Office<br/>Locations</span>
+                    <span className="about-stat-label">Office<br/>Locations</span>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <div className="stat-number" style={{ fontSize: '2rem' }}>
+                  <div className="about-stat">
+                    <div className="stat-number stat-number-lg">
                       <CountUp end={20} duration={2} enableScrollSpy scrollSpyOnce />+
                     </div>
-                    <span style={{ color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>Destinations<br/>Worldwide</span>
+                    <span className="about-stat-label">Destinations<br/>Worldwide</span>
                   </div>
                 </div>
 
-                <p style={{ color: 'var(--color-text-secondary)', lineHeight: 1.8 }}>
+                <p className="about-description">
                   Now serving across: {siteConfig.locations.join(', ')}
                 </p>
               </div>
@@ -165,46 +165,17 @@ export default function AboutPage() {
             </div>
           </AnimatedSection>
 
-          <div style={{ maxWidth: 800, margin: '0 auto' }}>
+          <div className="milestone-timeline">
             {milestones.map((m, i) => (
               <AnimatedSection key={m.year} delay={i * 0.15}>
-                <div style={{
-                  display: 'flex',
-                  gap: 'var(--space-xl)',
-                  marginBottom: 'var(--space-2xl)',
-                  alignItems: 'flex-start',
-                }}>
-                  <div style={{
-                    minWidth: 80,
-                    textAlign: 'center',
-                    padding: '10px 0',
-                  }}>
-                    <div style={{
-                      fontFamily: 'var(--font-heading)',
-                      fontSize: 'var(--text-2xl)',
-                      fontWeight: 700,
-                      color: 'var(--color-gold)',
-                    }}>{m.year}</div>
+                <div className="milestone-item">
+                  <div className="milestone-year">
+                    <div className="milestone-year-text">{m.year}</div>
                   </div>
-                  <div style={{
-                    width: 3,
-                    background: 'linear-gradient(to bottom, var(--color-gold), var(--color-gold-light), transparent)',
-                    borderRadius: 3,
-                    flexShrink: 0,
-                    minHeight: 80,
-                  }} />
-                  <div style={{ paddingTop: 4 }}>
-                    <h3 style={{
-                      fontFamily: 'var(--font-body)',
-                      fontWeight: 600,
-                      fontSize: 'var(--text-lg)',
-                      marginBottom: 'var(--space-xs)',
-                    }}>{m.title}</h3>
-                    <p style={{
-                      color: 'var(--color-text-secondary)',
-                      fontSize: 'var(--text-sm)',
-                      lineHeight: 1.7,
-                    }}>{m.desc}</p>
+                  <div className="milestone-line" />
+                  <div className="milestone-content">
+                    <h3 className="milestone-title">{m.title}</h3>
+                    <p className="milestone-desc">{m.desc}</p>
                   </div>
                 </div>
               </AnimatedSection>
@@ -227,39 +198,11 @@ export default function AboutPage() {
           <div className="grid grid-2" style={{ maxWidth: 900, margin: '0 auto' }}>
             {coreValues.map((val, i) => (
               <AnimatedSection key={val.title} delay={i * 0.1}>
-                <div style={{
-                  display: 'flex',
-                  gap: 'var(--space-lg)',
-                  padding: 'var(--space-xl)',
-                  background: 'var(--color-bg-surface)',
-                  border: '1px solid var(--color-border)',
-                  borderRadius: 'var(--radius-lg)',
-                  transition: 'all 0.3s ease',
-                }}>
-                  <div style={{
-                    width: 56,
-                    height: 56,
-                    minWidth: 56,
-                    borderRadius: 'var(--radius-md)',
-                    background: 'rgba(99, 171, 69, 0.1)',
-                    border: '1px solid rgba(99, 171, 69, 0.2)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: 'var(--color-gold)',
-                  }}>{val.icon}</div>
+                <div className="core-value-card">
+                  <div className="core-value-icon">{val.icon}</div>
                   <div>
-                    <h3 style={{
-                      fontFamily: 'var(--font-body)',
-                      fontWeight: 600,
-                      fontSize: 'var(--text-lg)',
-                      marginBottom: 'var(--space-xs)',
-                    }}>{val.title}</h3>
-                    <p style={{
-                      color: 'var(--color-text-secondary)',
-                      fontSize: 'var(--text-sm)',
-                      lineHeight: 1.7,
-                    }}>{val.desc}</p>
+                    <h3 className="core-value-title">{val.title}</h3>
+                    <p className="core-value-desc">{val.desc}</p>
                   </div>
                 </div>
               </AnimatedSection>
@@ -300,13 +243,13 @@ export default function AboutPage() {
             <AnimatedSection delay={0.1}>
               <div>
                 <span className="subtitle">Our Team</span>
-                <h2 className="heading-2" style={{ margin: '1rem 0 1.5rem' }}>
+                <h2 className="heading-2 about-heading">
                   Passionate People Behind Your Perfect Trips
                 </h2>
-                <p style={{ color: 'var(--color-text-secondary)', lineHeight: 1.8, marginBottom: '1.5rem' }}>
+                <p className="about-description">
                   Behind every seamless trip is a team of dedicated travel experts who live and breathe travel. From our seasoned consultants who handpick the best hotels to our operations team ensuring smooth transfers — every member of the Fly Ajwa family is committed to making your journey unforgettable.
                 </p>
-                <p style={{ color: 'var(--color-text-secondary)', lineHeight: 1.8, marginBottom: '1.5rem' }}>
+                <p className="about-description">
                   Our team includes experienced professionals in tourism management, visa processing specialists, and destination experts who have personally visited the places they recommend. We pride ourselves on being approachable, responsive, and always willing to go the extra mile.
                 </p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
@@ -321,7 +264,7 @@ export default function AboutPage() {
             </AnimatedSection>
 
             <AnimatedSection delay={0.2}>
-              <div className="about-img-wrap" style={{ position: 'relative', minHeight: '400px' }}>
+              <div className="about-img-wrap about-image-wrapper">
                 <Image
                   src="/assets/img/Ajwa/Home-image-collage.png"
                   alt="FlyAjwa Worldwide Team Collaboration"
@@ -349,7 +292,7 @@ export default function AboutPage() {
           <div className="grid grid-3">
             {activities.map((a, i) => (
               <AnimatedSection key={a.title} delay={i * 0.1}>
-                <div className="activity-card" style={{ position: 'relative', height: '300px' }}>
+                <div className="activity-card activity-card-height">
                   <Image 
                     src={a.img} 
                     alt={a.title} 

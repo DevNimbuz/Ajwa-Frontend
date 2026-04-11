@@ -2,7 +2,7 @@
 import dynamic from 'next/dynamic';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Clock, Users, ChevronDown, Check, X, ArrowRight, Camera, UsersRound, Phone } from 'lucide-react';
+import { Clock, Users, ChevronDown, Check, X, ArrowRight, Camera, UsersRound, Phone, Maximize2 } from 'lucide-react';
 import Image from 'next/image';
 
 // Dynamically load heavy client components
@@ -18,6 +18,7 @@ import { galleryAPI } from '@/lib/api';
 export default function PackageClient({ pkg, clientSnapshots, siteConfig }) {
   const [activeTab, setActiveTab] = useState('itinerary');
   const [showAllGallery, setShowAllGallery] = useState(false);
+  const [lightbox, setLightbox] = useState({ open: false, index: 0 });
 
   // Default Itinerary Fallback (if pkg.itinerary is empty)
   const defaultItinerary = [
@@ -77,6 +78,7 @@ export default function PackageClient({ pkg, clientSnapshots, siteConfig }) {
       />
       <Header />
 
+      {/* Page Header */}
       <div className="page-header" style={{ backgroundImage: `url(${pkg.gallery?.[0] || '/assets/img/Ajwa/trek.webp'})` }}>
         <div className="container page-header-content">
           <div className="hero-tag" style={{ background: 'rgba(99, 171, 69, 0.2)', color: 'var(--color-gold-light)', border: '1px solid var(--color-gold-light)' }}>
@@ -94,37 +96,41 @@ export default function PackageClient({ pkg, clientSnapshots, siteConfig }) {
         </div>
       </div>
 
+      {/* Top Row: Gallery + Pricing Card */}
       <section className="section">
         <div className="container">
-          {/* ── Top Row: Gallery + Trust Highlights ── */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.8fr) 1fr', gap: '3rem', marginBottom: '4rem', alignItems: 'stretch' }}>
+          <div className="package-hero-layout">
             {/* Left: Gallery */}
-            <div style={{ 
-              display: 'grid', 
-              gridTemplateColumns: 'minmax(0, 1.8fr) 1fr', 
-              gap: '0.75rem', 
-              borderRadius: '24px',
-              overflow: 'hidden',
-              background: 'var(--color-bg-alt)',
-              border: '1px solid var(--color-border)'
-            }}>
+            <div className="package-gallery-grid">
               {/* Main Hero Image */}
-              <div style={{ position: 'relative', minHeight: '450px' }}>
+              <div 
+                onClick={() => setLightbox({ open: true, index: 0 })}
+                className="package-gallery-main-img img-wrapper"
+                style={{ position: 'relative', minHeight: '450px', borderRadius: '24px', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.08)', cursor: 'pointer' }}
+              >
                 <Image 
-                  src={pkg.gallery[0] || '/assets/img/Ajwa/trek.webp'} 
-                  alt={`${pkg.name} Main View`} 
+                  src={pkg.gallery?.[0] || '/assets/img/Ajwa/trek.webp'} 
+                  alt={`${pkg.name} Hero View`} 
                   fill 
-                  priority
                   sizes="(max-width: 768px) 100vw, 60vw"
-                  style={{ objectFit: 'cover' }} 
+                  style={{ objectFit: 'cover', transition: 'transform 0.5s ease' }} 
+                  className="hover-zoom"
                 />
-                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.4))' }} />
+                <div className="img-overlay" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(5, 10, 20, 0.4)' }}>
+                  <div className="zoom-icon-container zoom-icon-lg">
+                    <Maximize2 size={28} />
+                  </div>
+                </div>
               </div>
 
-              {/* Grid of 4 Smaller Images */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr 1fr', gap: '0.75rem' }}>
+              {/* Small Gallery Grid */}
+              <div className="package-gallery-small-grid">
                 {pkg.gallery.slice(1, 5).map((img, i) => (
-                  <div key={i} style={{ position: 'relative', overflow: 'hidden' }}>
+                  <div 
+                    key={i} 
+                    onClick={() => setLightbox({ open: true, index: i + 1 })}
+                    className="img-wrapper gallery-small-item"
+                  >
                     <Image 
                       src={img} 
                       alt={`${pkg.name} Detail View ${i + 2}`} 
@@ -133,10 +139,15 @@ export default function PackageClient({ pkg, clientSnapshots, siteConfig }) {
                       style={{ objectFit: 'cover', transition: 'transform 0.5s ease' }} 
                       className="hover-zoom"
                     />
+                    <div className="img-overlay" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(5, 10, 20, 0.4)' }}>
+                      <div className="zoom-icon-container zoom-icon-sm">
+                        <Maximize2 size={22} />
+                      </div>
+                    </div>
                   </div>
                 ))}
                 {pkg.gallery.length < 5 && Array(5 - pkg.gallery.length).fill(0).map((_, i) => (
-                  <div key={`fill-${i}`} style={{ background: 'var(--color-bg-surface)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div key={`fill-${i}`} className="gallery-placeholder">
                     <Camera size={24} style={{ opacity: 0.1 }} />
                   </div>
                 ))}
@@ -146,58 +157,31 @@ export default function PackageClient({ pkg, clientSnapshots, siteConfig }) {
             {/* Right: High-Impact Pricing Card (Aligned Gallery Height) */}
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               <AnimatedSection style={{ height: '100%' }}>
-                <div style={{ 
-                  background: 'var(--color-bg-deep)', 
-                  height: '100%',
-                  borderRadius: '24px', 
-                  padding: '2.5rem', 
-                  border: '1px solid var(--color-border)', 
-                  boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  color: '#fff',
-                  position: 'relative',
-                  overflow: 'hidden'
-                }}>
-                  {/* Subtle Accent */}
-                  <div style={{ position: 'absolute', top: -30, right: -30, width: 150, height: 150, borderRadius: '50%', background: 'rgba(99, 171, 69, 0.1)' }} />
-                  
-                  <div style={{ position: 'relative', zIndex: 1 }}>
-                    <span style={{ 
-                      display: 'inline-block',
-                      padding: '6px 14px', 
-                      background: 'rgba(99, 171, 69, 0.2)', 
-                      borderRadius: '8px', 
-                      color: 'var(--color-primary)',
-                      fontSize: '0.75rem', 
-                      fontWeight: 800, 
-                      letterSpacing: '0.1em',
-                      textTransform: 'uppercase',
-                      marginBottom: '2rem'
-                    }}>Best Price Guaranteed</span>
-                    
-                    <h5 style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.9rem', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Starting From</h5>
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: '2.5rem' }}>
-                      <span style={{ fontSize: '3.5rem', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em' }}>
+                <div className="package-pricing-card">
+                  <div className="package-pricing-accent" />
+                  <div className="package-pricing-content">
+                    <span className="package-pricing-badge">Best Price Guaranteed</span>
+                    <h5 className="package-pricing-label">Starting From</h5>
+                    <div className="package-pricing-amount">
+                      <span className="price">
                         ₹{(pkg.startingPrice || 0).toLocaleString('en-IN')}
                       </span>
-                      <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '1.1rem' }}>/person</span>
+                      <span className="per">/person</span>
                     </div>
 
-                    <ul style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginBottom: '3rem' }}>
-                      <li style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: '0.95rem', fontWeight: 500, color: 'rgba(255,255,255,0.8)' }}>
-                        <Check size={18} color="var(--color-primary)" /> Personally vetted premium stays
+                    <ul className="package-pricing-features">
+                      <li className="package-pricing-feature">
+                        <Check size={18} color="var(--color-gold)" /> Personally vetted premium stays
                       </li>
-                      <li style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: '0.95rem', fontWeight: 500, color: 'rgba(255,255,255,0.8)' }}>
-                        <Check size={18} color="var(--color-primary)" /> Dedicated local guide support
+                      <li className="package-pricing-feature">
+                        <Check size={18} color="var(--color-gold)" /> Dedicated local guide support
                       </li>
-                      <li style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: '0.95rem', fontWeight: 500, color: 'rgba(255,255,255,0.8)' }}>
-                        <Check size={18} color="var(--color-primary)" /> 100% Secure & Easy bookings
+                      <li className="package-pricing-feature">
+                        <Check size={18} color="var(--color-gold)" /> 100% Secure &amp; Easy bookings
                       </li>
                     </ul>
                     
-                    <a href={`tel:${siteConfig.contact.phone[0]}`} className="btn" style={{ background: 'var(--color-primary)', color: '#fff', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, borderRadius: '16px', padding: '18px', fontSize: '1rem', fontWeight: 700 }}>
+                    <a href={`tel:${siteConfig.contact.phone[0]}`} className="package-pricing-cta">
                       <Phone size={18} /> Consult Travel Expert
                     </a>
                   </div>
@@ -205,9 +189,13 @@ export default function PackageClient({ pkg, clientSnapshots, siteConfig }) {
               </AnimatedSection>
             </div>
           </div>
+        </div>
+      </section>
 
-          {/* ── Mid Row: Full-Width Transversal Calculator ── */}
-          <div style={{ marginBottom: '6rem' }}>
+      {/* Mid Row: Full-Width Transversal Calculator */}
+      <section className="section" style={{ paddingTop: 0 }}>
+        <div className="container">
+          <div className="calc-wrapper">
             {(() => {
               const activeVariants = pkg.variants?.filter(v => v.isActive) || [];
               const cheapestVariant = activeVariants.length > 0
@@ -228,102 +216,76 @@ export default function PackageClient({ pkg, clientSnapshots, siteConfig }) {
               );
             })()}
           </div>
+        </div>
+      </section>
 
-          {/* ── Bottom Row: Details & Additional Sidebar ── */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: '4rem', alignItems: 'flex-start' }}>
+      {/* Bottom Row: Details & Additional Sidebar */}
+      <section className="section">
+        <div className="container">
+          <div className="package-details-grid">
             {/* Details Content */}
             <div>
-              <div className="package-tabs" role="tablist" style={{ display: 'flex', gap: '2rem', marginBottom: '1.5rem', borderBottom: '1px solid var(--color-border)', paddingBottom: '0.5rem' }}>
+              <div className="package-tabs" role="tablist">
                 <button 
                   className={`package-tab ${activeTab === 'itinerary' ? 'active' : ''}`}
                   onClick={() => setActiveTab('itinerary')}
-                  style={{ border: 'none', background: 'none', padding: '12px 24px', fontSize: '1rem', fontWeight: 700, cursor: 'pointer', borderBottom: activeTab === 'itinerary' ? '3px solid var(--color-primary)' : '3px solid transparent', color: activeTab === 'itinerary' ? 'var(--color-primary)' : 'var(--color-text-secondary)', transition: 'all 0.3s' }}
                 >
                   Plan Details
                 </button>
                 <button 
                   className={`package-tab ${activeTab === 'inclusions' ? 'active' : ''}`}
                   onClick={() => setActiveTab('inclusions')}
-                  style={{ border: 'none', background: 'none', padding: '12px 24px', fontSize: '1rem', fontWeight: 700, cursor: 'pointer', borderBottom: activeTab === 'inclusions' ? '3px solid var(--color-primary)' : '3px solid transparent', color: activeTab === 'inclusions' ? 'var(--color-primary)' : 'var(--color-text-secondary)', transition: 'all 0.3s' }}
                 >
                   Inclusions
                 </button>
                 <button 
                   className={`package-tab ${activeTab === 'gallery' ? 'active' : ''}`}
                   onClick={() => setActiveTab('gallery')}
-                  style={{ border: 'none', background: 'none', padding: '12px 24px', fontSize: '1rem', fontWeight: 700, cursor: 'pointer', borderBottom: activeTab === 'gallery' ? '3px solid var(--color-primary)' : '3px solid transparent', color: activeTab === 'gallery' ? 'var(--color-primary)' : 'var(--color-text-secondary)', transition: 'all 0.3s' }}
                 >
                   Memories
                 </button>
               </div>
 
-              <div className="package-tab-content" style={{ marginTop: '2.5rem' }}>
+              <div className="package-tab-content">
                 {activeTab === 'itinerary' && (
                   <div role="tabpanel">
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '3rem' }}>
-                      <h2 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '2rem', fontWeight: 800, color: 'var(--color-bg-deep)', margin: 0 }}>Professional Timeline</h2>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: 'rgba(99, 171, 69, 0.1)', borderRadius: '12px', color: 'var(--color-primary)', fontSize: '0.875rem', fontWeight: 600 }}>
+                    <div className="itinerary-header">
+                      <h2 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 'clamp(1.5rem, 4vw, 2rem)', fontWeight: 800, color: 'var(--color-bg-deep)', margin: 0 }}>Professional Timeline</h2>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: 'rgba(99, 171, 69, 0.1)', borderRadius: '12px', color: 'var(--color-gold)', fontSize: '0.875rem', fontWeight: 600 }}>
                         <Clock size={16} /> {pkg.duration}
                       </div>
                     </div>
 
-                    <div style={{ position: 'relative', paddingLeft: '40px' }}>
-                      {/* Vertical line connector - Gradient styled */}
-                      <div style={{ 
-                        position: 'absolute', left: '19px', top: '24px', bottom: '24px', width: '3px', 
-                        background: 'linear-gradient(to bottom, var(--color-primary) 0%, rgba(99, 171, 69, 0.2) 50%, var(--color-primary) 100%)',
-                        borderRadius: '3px',
-                        opacity: 0.6
-                      }} />
+                    <div className="itinerary-timeline">
+                      <div className="itinerary-timeline-line" />
                       
                       {displayItinerary.map((item, i) => (
-                        <div key={i} style={{ position: 'relative', marginBottom: '4rem' }}>
-                          {/* Circle Marker - Premium Styled */}
-                          <div style={{ 
-                            position: 'absolute', left: '-42px', top: '0', 
-                            width: '45px', height: '45px', borderRadius: '50%',
-                            background: 'white', color: 'var(--color-primary)',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            fontSize: '14px', fontWeight: 800, zIndex: 1, 
-                            border: '3px solid var(--color-primary)',
-                            boxShadow: '0 4px 15px rgba(99, 171, 69, 0.15)'
-                          }}>
+                        <div key={i} className="itinerary-timeline-item">
+                          <div className="itinerary-timeline-marker">
                             {item.day.match(/\d+/)?.[0] || (i + 1)}
                           </div>
                           
-                          <div style={{ 
-                            background: 'white', 
-                            borderRadius: '24px', 
-                            padding: '2.5rem',
-                            border: '1px solid var(--color-border)',
-                            boxShadow: '0 4px 20px rgba(0,0,0,0.02)',
-                            transition: 'all 0.4s ease'
-                          }} className="hover-lift">
-                            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
-                              <h4 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '1.5rem', fontWeight: 700, color: 'var(--color-bg-deep)', margin: 0 }}>
+                          <div className="itinerary-timeline-card hover-lift">
+                            <div className="itinerary-timeline-header">
+                              <h4 className="itinerary-timeline-title">
                                 {item.title}
                               </h4>
-                              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                              <span className="itinerary-timeline-day-label">
                                 Day {item.day.match(/\d+/)?.[0] || (i + 1)}
                               </span>
                             </div>
 
-                            <p style={{ color: 'var(--color-text-secondary)', lineHeight: '1.8', fontSize: '1.05rem', marginBottom: '2rem', borderLeft: '3px solid rgba(99, 171, 69, 0.2)', paddingLeft: '1.5rem' }}>
+                            <p className="itinerary-timeline-desc">
                               {item.desc}
                             </p>
                             
                             {item.activities && item.activities.length > 0 && (
-                              <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: '1.5rem' }}>
-                                <span style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '1rem' }}>Highlights of the day:</span>
-                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
+                              <div className="itinerary-timeline-activities">
+                                <span className="itinerary-timeline-activities-label">Highlights of the day:</span>
+                                <div className="itinerary-timeline-activity-tags">
                                   {item.activities.map((act, j) => (
-                                    <div key={j} style={{ 
-                                      padding: '8px 18px', borderRadius: '12px', 
-                                      background: 'var(--color-bg-secondary)', border: '1px solid var(--color-border)',
-                                      fontSize: '0.9rem', fontWeight: 600, color: 'var(--color-text-primary)',
-                                      display: 'flex', alignItems: 'center', gap: 10
-                                    }}>
-                                      <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--color-primary)', boxShadow: '0 0 8px var(--color-primary)' }} />
+                                    <div key={j} className="itinerary-timeline-activity-tag">
+                                      <div className="itinerary-timeline-activity-tag-dot" />
                                       {act}
                                     </div>
                                   ))}
@@ -340,20 +302,19 @@ export default function PackageClient({ pkg, clientSnapshots, siteConfig }) {
 
                 {activeTab === 'inclusions' && (
                   <div role="tabpanel">
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2.5rem' }}>
-                      {/* Inclusions Card */}
-                      <div style={{ background: 'white', borderRadius: '24px', padding: '2.5rem', border: '1px solid var(--color-border)', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: '2rem' }}>
-                          <div style={{ width: 40, height: 40, background: 'rgba(99, 171, 69, 0.1)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-primary)' }}>
+                    <div className="package-inclusions-grid">
+                      <div className="package-inclusion-card">
+                        <div className="package-inclusion-card-header">
+                          <div className="package-inclusion-card-icon include">
                             <Check size={24} />
                           </div>
-                          <h4 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0 }}>What's Included</h4>
+                          <h4 className="package-inclusion-card-title">What&apos;s Included</h4>
                         </div>
                         
-                        <ul style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                        <ul className="package-inclusion-list">
                           {(pkg.included || []).length > 0 ? (pkg.included || []).map((text, i) => (
-                            <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12, fontSize: '0.95rem', color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>
-                              <Check size={16} color="var(--color-primary)" style={{ marginTop: 4, flexShrink: 0 }} /> 
+                            <li key={i} className="package-inclusion-item">
+                              <Check size={16} color="var(--color-gold)" /> 
                               {text}
                             </li>
                           )) : (
@@ -362,19 +323,18 @@ export default function PackageClient({ pkg, clientSnapshots, siteConfig }) {
                         </ul>
                       </div>
 
-                      {/* Exclusions Card */}
-                      <div style={{ background: 'white', borderRadius: '24px', padding: '2.5rem', border: '1px solid var(--color-border)', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: '2rem' }}>
-                          <div style={{ width: 40, height: 40, background: 'rgba(224, 122, 95, 0.1)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-coral)' }}>
+                      <div className="package-inclusion-card">
+                        <div className="package-inclusion-card-header">
+                          <div className="package-inclusion-card-icon exclude">
                             <X size={24} />
                           </div>
-                          <h4 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0 }}>Not Included</h4>
+                          <h4 className="package-inclusion-card-title">Not Included</h4>
                         </div>
                         
-                        <ul style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                        <ul className="package-inclusion-list">
                           {(pkg.excluded || []).length > 0 ? (pkg.excluded || []).map((text, i) => (
-                            <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12, fontSize: '0.95rem', color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>
-                              <X size={16} color="var(--color-coral)" style={{ marginTop: 4, flexShrink: 0 }} /> 
+                            <li key={i} className="package-inclusion-item">
+                              <X size={16} color="var(--color-coral)" /> 
                               {text}
                             </li>
                           )) : (
@@ -384,14 +344,13 @@ export default function PackageClient({ pkg, clientSnapshots, siteConfig }) {
                       </div>
                     </div>
 
-                    {/* Trust Note - Optional UI Enhancment */}
-                    <div style={{ marginTop: '3rem', padding: '2rem', background: 'var(--color-bg-secondary)', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-                      <div style={{ width: 50, height: 50, background: 'white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>
-                        <Users size={24} color="var(--color-primary)" />
+                    <div className="trust-note">
+                      <div className="trust-note-icon">
+                        <Users size={24} color="var(--color-gold)" />
                       </div>
                       <div>
-                        <h5 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: 4 }}>Worry-Free Travel</h5>
-                        <p style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)', margin: 0 }}>Our packages are comprehensive. Any additional costs are always discussed upfront with no hidden surprises.</p>
+                        <h5>Worry-Free Travel</h5>
+                        <p>Our packages are comprehensive. Any additional costs are always discussed upfront with no hidden surprises.</p>
                       </div>
                     </div>
                   </div>
@@ -399,17 +358,17 @@ export default function PackageClient({ pkg, clientSnapshots, siteConfig }) {
 
                 {activeTab === 'gallery' && (
                   <div role="tabpanel">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
+                    <div className="gallery-header-row">
                       <Camera className="text-gold" />
                       <h2 className="heading-4" style={{ margin: 0 }}>Client Captures</h2>
                     </div>
                     
                     {dynamicGallery.length > 0 ? (
                       <>
-                        <div className="gallery-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
+                        <div className="gallery-grid">
                           {displaySnapshots.map((img, i) => (
                             <AnimatedSection key={i} delay={i * 0.05}>
-                              <div className="gallery-item-premium" style={{ position: 'relative', height: '200px', borderRadius: '12px', overflow: 'hidden' }}>
+                              <div className="gallery-item-premium">
                                 <Image 
                                   src={getImageUrl(img.url)} 
                                   alt={`Travel memory ${i+1}`} 
@@ -423,7 +382,7 @@ export default function PackageClient({ pkg, clientSnapshots, siteConfig }) {
                         </div>
                         
                         {dynamicGallery.length > 9 && (
-                          <div style={{ textAlign: 'center', marginTop: '2.5rem' }}>
+                          <div className="see-more-wrapper">
                             <button 
                               className="btn btn-outline" 
                               onClick={() => setShowAllGallery(!showAllGallery)}
@@ -435,8 +394,8 @@ export default function PackageClient({ pkg, clientSnapshots, siteConfig }) {
                         )}
                       </>
                     ) : (
-                      <div style={{ padding: '3rem', textAlign: 'center', background: 'var(--color-bg-surface)', borderRadius: '12px', border: '1px dashed var(--color-border)' }}>
-                        <Camera size={40} style={{ opacity: 0.2, marginBottom: '1rem' }} />
+                      <div className="empty-state-placeholder">
+                        <Camera className="empty-state-icon" size={40} />
                         <p style={{ color: 'var(--color-text-muted)' }}>Working on capturing these memories. Check back soon!</p>
                       </div>
                     )}
@@ -444,7 +403,6 @@ export default function PackageClient({ pkg, clientSnapshots, siteConfig }) {
                 )}
               </div>
             </div>
-
           </div>
         </div>
       </section>
@@ -452,45 +410,41 @@ export default function PackageClient({ pkg, clientSnapshots, siteConfig }) {
       {/* Trust Banner */}
       <section className="section section-alt">
         <div className="container">
-          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '4rem', alignItems: 'center' }}>
+          <div className="trust-banner-grid">
             <AnimatedSection>
               <div>
                 <span className="subtitle">Trusted By 1000+ Travelers</span>
-                <h2 className="heading-3" style={{ margin: '1rem 0 2rem' }}>Experience the Joy of Worry-Free Exploration</h2>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+                <h2 className="heading-3 trust-heading">Experience the Joy of Worry-Free Exploration</h2>
+                <div className="trust-features-grid">
                   <div>
-                    <div style={{ width: 48, height: 48, background: '#63ab4515', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-gold)', marginBottom: '1.25rem' }}>
+                    <div className="trust-feature-icon">
                       <UsersRound size={24} />
                     </div>
-                    <h4 style={{ marginBottom: 8 }}>Group Discounts</h4>
-                    <p style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>Special pricing for families and corporate groups of 5+ members.</p>
+                    <h4 className="trust-feature-heading">Group Discounts</h4>
+                    <p className="trust-feature-text">Special pricing for families and corporate groups of 5+ members.</p>
                   </div>
                   <div>
-                    <div style={{ width: 48, height: 48, background: '#63ab4515', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-gold)', marginBottom: '1.25rem' }}>
+                    <div className="trust-feature-icon">
                       <Camera size={24} />
                     </div>
-                    <h4 style={{ marginBottom: 8 }}>Complimentary Shoots</h4>
-                    <p style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>Select packages include professional photography sessions.</p>
+                    <h4 className="trust-feature-heading">Complimentary Shoots</h4>
+                    <p className="trust-feature-text">Select packages include professional photography sessions.</p>
                   </div>
                 </div>
               </div>
             </AnimatedSection>
 
             <AnimatedSection delay={0.2}>
-              <div style={{ position: 'relative', overflow: 'hidden', padding: '2rem', height: '400px' }}>
+              <div className="trust-image-wrapper">
                 <Image
                   src="/assets/img/Ajwa/trek.webp"
                   alt="Group trekking with FlyAjwa"
                   fill
                   sizes="(max-width: 768px) 100vw, 40vw"
-                  style={{ objectFit: 'cover', borderRadius: '32px' }}
+                  style={{ objectFit: 'cover' }}
+                  className="trust-feature-img"
                 />
-                <div style={{
-                  position: 'absolute',
-                  inset: 0,
-                  background: 'linear-gradient(90deg, #1e2a4a 0%, transparent 40%)',
-                  borderRadius: '32px'
-                }} />
+                <div className="trust-image-overlay" />
               </div>
             </AnimatedSection>
           </div>
@@ -499,6 +453,47 @@ export default function PackageClient({ pkg, clientSnapshots, siteConfig }) {
 
       <Footer />
       <WhatsAppFloat />
+
+      {/* Fullscreen Image Lightbox */}
+      {lightbox.open && pkg.gallery?.length > 0 && (
+        <div 
+          className="lightbox-overlay"
+          onClick={() => setLightbox({ open: false, index: 0 })}
+        >
+          <button className="lightbox-close" onClick={() => setLightbox({ open: false, index: 0 })}>
+            <X size={24} />
+          </button>
+          
+          <button 
+            className="lightbox-nav prev"
+            onClick={(e) => { e.stopPropagation(); setLightbox(prev => ({ ...prev, index: prev.index === 0 ? pkg.gallery.length - 1 : prev.index - 1 })) }}
+          >
+            &#8592;
+          </button>
+          
+          <div className="lightbox-image-container">
+            <Image 
+              src={pkg.gallery[lightbox.index]} 
+              alt="Expanded view" 
+              fill 
+              sizes="85vw"
+              style={{ objectFit: 'contain', borderRadius: '12px' }} 
+              onClick={e => e.stopPropagation()} 
+            />
+          </div>
+          
+          <button 
+            className="lightbox-nav next"
+            onClick={(e) => { e.stopPropagation(); setLightbox(prev => ({ ...prev, index: (prev.index + 1) % pkg.gallery.length })) }}
+          >
+            &#8594;
+          </button>
+          
+          <div className="lightbox-counter">
+            {lightbox.index + 1} / {pkg.gallery.length}
+          </div>
+        </div>
+      )}
     </>
   );
 }
