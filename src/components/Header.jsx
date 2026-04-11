@@ -1,14 +1,58 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { usePathname } from 'next/navigation';
-import { Phone, Mail, MapPin } from 'lucide-react';
+import { 
+  Phone, Mail, MapPin, X, User, ArrowRight, 
+  LogIn, LogOut, Bell, Settings, LayoutDashboard 
+} from 'lucide-react';
 import siteConfig from '@/data/siteConfig';
+import { authAPI } from '@/lib/api';
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [user, setUser] = useState(null);
   const pathname = usePathname();
+  const router = useRouter();
+
+  useEffect(() => {
+    const storedUser = authAPI.getUser();
+    setUser(storedUser);
+    if (storedUser && storedUser.role === 'CUSTOMER') {
+      loadNotifications();
+    }
+  }, [pathname]);
+
+  const loadNotifications = async () => {
+    try {
+      const tripsData = await authAPI.getCustomerTrips().catch(() => ({ success: true, data: { all: [] } }));
+      const mockNotifications = (tripsData.data?.all || [])
+        .filter(l => l.status !== 'NEW')
+        .slice(0, 5)
+        .map(l => ({
+          id: l._id,
+          text: `Update: Trip to ${l.destination || 'Destination'} is now ${l.status}.`,
+          date: l.updatedAt || l.createdAt,
+          read: false
+        }));
+      setNotifications(mockNotifications);
+    } catch (err) {
+      console.error('Header notifications error:', err);
+    }
+  };
+
+  const handleLogout = async () => {
+    await authAPI.logout();
+    setUser(null);
+    setProfileDropdownOpen(false);
+    router.push('/');
+  };
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -19,14 +63,28 @@ export default function Header() {
 
   useEffect(() => {
     setMobileOpen(false);
+    setAuthModalOpen(false);
   }, [pathname]);
 
   useEffect(() => {
-    document.body.style.overflow = mobileOpen ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
+    if (typeof document !== 'undefined') {
+      document.body.style.overflow = mobileOpen ? 'hidden' : '';
+    }
+    return () => { 
+      if (typeof document !== 'undefined') {
+        document.body.style.overflow = '';
+      }
+    };
   }, [mobileOpen]);
 
   const isHome = pathname === '/';
+
+  const dropdownItemStyle = {
+    display: 'flex', alignItems: 'center', gap: 10,
+    padding: '12px 14px', color: '#1e293b', fontSize: 14,
+    fontWeight: 500, textDecoration: 'none', borderRadius: 10, 
+    width: '100%', transition: 'all 0.2s',
+  };
 
   return (
     <>
@@ -55,13 +113,131 @@ export default function Header() {
           </nav>
 
           <div className="header-cta">
+            {user && user.role === 'CUSTOMER' ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                {/* Notification Bell */}
+                <div style={{ position: 'relative' }}>
+                  <button 
+                    onClick={() => {
+                      setNotificationsOpen(!notificationsOpen);
+                      setProfileDropdownOpen(false);
+                    }}
+                    className="flex-center" 
+                    style={{ 
+                      width: 40, height: 40, borderRadius: '50%', 
+                      background: scrolled || !isHome ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.1)',
+                      color: scrolled || !isHome ? '#1e293b' : '#fff',
+                      position: 'relative',
+                      border: 'none',
+                      cursor: 'pointer'
+                    }}
+                    aria-label="Toggle Notifications"
+                  >
+                    <Bell size={18} />
+                    {notifications.length > 0 && (
+                      <span style={{ 
+                        position: 'absolute', top: 10, right: 10, width: 8, height: 8, 
+                        background: '#ef4444', borderRadius: '50%', border: '2px solid #fff' 
+                      }} />
+                    )}
+                  </button>
+
+                  {notificationsOpen && (
+                    <div className="glass-card animate-slide-up" style={{
+                      position: 'absolute', top: 'calc(100% + 12px)', right: -60,
+                      width: 320, padding: 16, zIndex: 9999, overflow: 'hidden'
+                    }}>
+                      <div className="flex-between" style={{ marginBottom: 12 }}>
+                        <h3 style={{ fontSize: 15, fontWeight: 700, color: '#1e293b' }}>Notifications</h3>
+                        <span style={{ fontSize: 11, color: '#94a3b8' }}>{notifications.length} New</span>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxHeight: 300, overflowY: 'auto' }}>
+                        {notifications.length === 0 ? (
+                          <p style={{ padding: '20px 0', textAlign: 'center', color: '#94a3b8', fontSize: 13 }}>No new notifications</p>
+                        ) : (
+                          notifications.map((note) => (
+                            <div key={note.id} style={{ display: 'flex', gap: 12, padding: 10, borderRadius: 10, background: '#f8fafc' }}>
+                              <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#3b82f6', marginTop: 6, flexShrink: 0 }} />
+                              <div>
+                                <p style={{ margin: 0, fontSize: 13, color: '#475569', lineHeight: 1.5 }}>{note.text}</p>
+                                <span style={{ fontSize: 11, color: '#cbd5e1' }}>{new Date(note.date).toLocaleDateString()}</span>
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                      <Link 
+                        href="/dashboard"
+                        onClick={() => setNotificationsOpen(false)}
+                        style={{ display: 'block', textAlign: 'center', marginTop: 12, fontSize: 12, color: '#63ab45', fontWeight: 600, textDecoration: 'none' }}
+                      >
+                        View All in Dashboard
+                      </Link>
+                    </div>
+                  )}
+                </div>
+
+                {/* User Dropdown */}
+                <div style={{ position: 'relative' }}>
+                  <button
+                    onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+                    style={{ 
+                      padding: '4px 16px 4px 6px',
+                      background: scrolled || !isHome ? '#f1f5f9' : 'rgba(255,255,255,0.15)',
+                      borderRadius: 100,
+                      display: 'flex', alignItems: 'center', gap: 10,
+                      border: '1px solid rgba(0,0,0,0.05)',
+                      color: scrolled || !isHome ? '#1e293b' : '#fff',
+                    }}
+                  >
+                    <div style={{ 
+                      width: 32, height: 32, borderRadius: '50%', 
+                      background: 'var(--gradient-gold)', color: '#fff',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 14, fontWeight: 700
+                    }}>
+                      {user.name?.charAt(0)}
+                    </div>
+                    <span style={{ fontSize: 13, fontWeight: 600 }}>{user.name?.split(' ')[0]}</span>
+                  </button>
+                  
+                  {profileDropdownOpen && (
+                    <div className="glass-card" style={{
+                      position: 'absolute', top: 'calc(100% + 12px)', right: 0,
+                      width: 220, padding: 8, zIndex: 9999, overflow: 'hidden',
+                      animation: 'slideUp 0.3s ease'
+                    }}>
+                      <Link href="/dashboard" style={dropdownItemStyle} className="dropdown-hover" onClick={() => setProfileDropdownOpen(false)}>
+                        <LayoutDashboard size={18} /> My Dashboard
+                      </Link>
+                      <Link href="/profile" style={dropdownItemStyle} className="dropdown-hover" onClick={() => setProfileDropdownOpen(false)}>
+                        <User size={18} /> My Profile
+                      </Link>
+                      <div style={{ height: 1, background: 'rgba(0,0,0,0.05)', margin: '4px 8px' }} />
+                      <button onClick={handleLogout} style={{ ...dropdownItemStyle, color: '#ef4444' }} className="dropdown-hover-red">
+                        <LogOut size={18} /> Sign Out
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <button
+                onClick={() => setAuthModalOpen(true)}
+                className="btn btn-primary btn-sm"
+              >
+                <User size={14} />
+                Login
+              </button>
+            )}
+            
             <a
               href={`tel:${siteConfig.contact.phone[0]}`}
-              className="btn btn-primary btn-sm"
-              style={{ fontSize: '0.75rem' }}
+              className="btn btn-outline btn-sm"
+              style={{ padding: '8px 20px' }}
             >
               <Phone size={14} />
-              Call Now
+              Call
             </a>
             <button
               className={`mobile-menu-btn ${mobileOpen ? 'active' : ''}`}
@@ -89,7 +265,7 @@ export default function Header() {
             onClick={() => setMobileOpen(false)}
             aria-label="Close menu"
           >
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            <X size={28} />
           </button>
         </div>
 
@@ -104,6 +280,11 @@ export default function Header() {
               {item.label}
             </Link>
           ))}
+          {user && (
+            <Link href="/dashboard" className={pathname === '/dashboard' ? 'active' : ''}>
+              Dashboard
+            </Link>
+          )}
         </nav>
 
         <div className="mobile-drawer-footer">
@@ -116,32 +297,107 @@ export default function Header() {
               <Mail size={18} />
               {siteConfig.contact.email}
             </a>
-            <div className="mobile-drawer-address">
-              <MapPin size={18} />
-              <span>{siteConfig.contact.address}</span>
-            </div>
           </div>
 
-          <div className="mobile-drawer-socials">
-            <a href={siteConfig.social.facebook} target="_blank" rel="noopener noreferrer">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-            </a>
-            <a href={siteConfig.social.instagram} target="_blank" rel="noopener noreferrer">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
-            </a>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 24 }}>
+            {!user ? (
+              <>
+                <button
+                  onClick={() => { router.push('/login'); setMobileOpen(false); }}
+                  className="btn btn-primary"
+                  style={{ width: '100%' }}
+                >
+                  Sign In
+                </button>
+                <button
+                  onClick={() => { router.push('/register'); setMobileOpen(false); }}
+                  className="btn btn-outline"
+                  style={{ width: '100%', color: '#fff', borderColor: 'rgba(255,255,255,0.3)' }}
+                >
+                  Create Account
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={handleLogout}
+                className="btn btn-outline"
+                style={{ width: '100%', color: '#ef4444', borderColor: 'rgba(239,68,68,0.3)' }}
+              >
+                <LogOut size={18} /> Sign Out
+              </button>
+            )}
           </div>
-
-          <a
-            href={`https://wa.me/${siteConfig.contact.whatsapp}`}
-            className="btn btn-primary"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ width: '100%', marginTop: '0.5rem' }}
-          >
-            WhatsApp Us
-          </a>
         </div>
       </div>
+
+      {/* Auth Modal */}
+      {authModalOpen && (
+        <div 
+          className="lightbox-overlay" 
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}
+          onClick={() => setAuthModalOpen(false)}
+        >
+          <div 
+            className="glass-dark" 
+            style={{ 
+              maxWidth: 420,  width: '90%', padding: 40,
+              borderRadius: 24, position: 'relative',
+              animation: 'slideUp 0.4s ease'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button 
+              onClick={() => setAuthModalOpen(false)}
+              style={{ position: 'absolute', top: 20, right: 20, color: '#94a3b8' }}
+            >
+              <X size={24} />
+            </button>
+
+            <div style={{ textAlign: 'center', marginBottom: 32 }}>
+              <div style={{
+                width: 64, height: 64, margin: '0 auto 16px',
+                background: 'var(--gradient-gold)',
+                borderRadius: 20, display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <User size={32} color="#fff" />
+              </div>
+              <h2 style={{ color: '#fff', fontSize: 24, fontWeight: 700, marginBottom: 8 }}>
+                Traveler Hub
+              </h2>
+              <p style={{ color: '#94a3b8', fontSize: 14 }}>
+                Log in to access your bookings and travel documents
+              </p>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <button
+                onClick={() => { router.push('/login'); setAuthModalOpen(false); }}
+                className="btn btn-primary"
+                style={{ width: '100%', padding: '16px' }}
+              >
+                Sign In <ArrowRight size={18} />
+              </button>
+
+              <button
+                onClick={() => { router.push('/register'); setAuthModalOpen(false); }}
+                className="btn btn-outline"
+                style={{ width: '100%', padding: '16px', color: '#fff', borderColor: 'rgba(255,255,255,0.2)' }}
+              >
+                New Account
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <style jsx>{`
+        .dropdown-hover:hover { background: rgba(99, 171, 69, 0.08); color: #63ab45; }
+        .dropdown-hover-red:hover { background: rgba(239, 68, 68, 0.08); }
+        @keyframes slideUp {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </>
   );
 }

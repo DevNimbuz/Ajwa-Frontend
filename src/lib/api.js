@@ -80,8 +80,13 @@ async function apiFetch(endpoint, options = {}) {
     // Handle auth errors — auto logout
     if (response.status === 401) {
       removeSession();
-      if (typeof window !== 'undefined' && !window.location.pathname.includes('/admin/login')) {
-        window.location.href = '/admin/login';
+      if (typeof window !== 'undefined') {
+        const path = window.location.pathname;
+        if (path.startsWith('/dashboard') || path === '/profile') {
+          window.location.href = '/login';
+        } else if (!path.includes('/admin')) {
+          window.location.href = '/admin/login';
+        }
       }
       throw new Error(data.message || 'Session expired — please login again');
     }
@@ -117,6 +122,19 @@ export const authAPI = {
     return data;
   },
 
+  /** Register new customer account */
+  async register(name, email, phone, password) {
+    const data = await apiFetch('/auth/register', {
+      method: 'POST',
+      body: { name, email, phone, password },
+    });
+    if (data.success) {
+      setUser(data.user);
+      if (data.token) setToken(data.token);
+    }
+    return data;
+  },
+
   /** Get current user profile */
   async getMe() {
     return apiFetch('/auth/me');
@@ -143,7 +161,7 @@ export const authAPI = {
     } catch (e) {}
     removeSession();
     if (typeof window !== 'undefined') {
-      window.location.href = '/admin/login';
+      window.location.href = '/login';
     }
   },
 
@@ -155,6 +173,21 @@ export const authAPI = {
   /** Get current user */
   getUser,
   getToken,
+
+  // Customer-specific APIs
+  async getWishlist() { return apiFetch('/auth/wishlist'); },
+  async addToWishlist(packageId) { 
+    return apiFetch(`/auth/wishlist/${packageId}`, { method: 'POST' }); 
+  },
+  async removeFromWishlist(packageId) { 
+    return apiFetch(`/auth/wishlist/${packageId}`, { method: 'DELETE' }); 
+  },
+  async updateProfile(data) { 
+    return apiFetch('/auth/profile', { method: 'PUT', body: data }); 
+  },
+  async getCustomerTrips() { 
+    return apiFetch('/auth/trips'); 
+  },
 };
 
 // ══════════════════════════════════════════════
@@ -257,6 +290,20 @@ export const visitorsAPI = {
 export const usersAPI = {
   /** List team members (super admin) */
   async list() { return apiFetch('/users'); },
+
+  /** List customers (admin) */
+  async listCustomers(params = {}) {
+    const query = new URLSearchParams(params).toString();
+    return apiFetch(`/users/customers?${query}`);
+  },
+
+  /** Get customer with leads (admin) */
+  async getCustomer(id) { return apiFetch(`/users/customers/${id}`); },
+
+  /** Upload document to customer vault (admin) */
+  async uploadDocument(id, data) { 
+    return apiFetch(`/users/customers/${id}`, { method: 'PUT', body: data }); 
+  },
 
   /** Create team member (super admin) */
   async create(data) { return apiFetch('/users', { method: 'POST', body: data }); },

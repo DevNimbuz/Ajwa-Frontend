@@ -34,5 +34,17 @@
     "label": "Contact",
     "link": "/contact",
     "icon": false
+  },
+  {
+    "id": "7",
+    "label": "Login",
+    "link": "/login",
+    "icon": false
+  },
+  {
+    "id": "8",
+    "label": "Register",
+    "link": "/register",
+    "icon": false
   }
 ]

@@ -15,7 +15,7 @@ export default function AdminGalleryPage() {
 
   const fetchImages = async () => {
     try {
-      const data = await galleryAPI.list();
+      const data = await galleryAPI.list('', 1, 100);
       if (data.success) setImages(data.data);
     } catch (err) {
       console.error('Failed to load gallery:', err);
