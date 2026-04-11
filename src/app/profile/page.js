@@ -247,16 +247,16 @@ export default function ProfilePage() {
             </div>
           </section>
 
-          {/* Section 3: Passport & Document Vault */}
+          {/* Section 3: Passport Details */}
           <section className="glass-card" style={{ padding: 32 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
               <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(245, 158, 11, 0.1)', color: '#f59e0b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <ShieldCheck size={20} />
               </div>
-              <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>Passport & Document Vault</h2>
+              <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>Passport Details</h2>
             </div>
             
-            <div className="grid grid-2" style={{ gap: 24, marginBottom: 32 }}>
+            <div className="grid grid-2" style={{ gap: 24 }}>
               <div>
                 <label style={labelStyle}>Passport Number</label>
                 <input
@@ -277,46 +277,11 @@ export default function ProfilePage() {
                 />
               </div>
             </div>
-
-            <div style={{ background: '#f8fafc', borderRadius: 16, padding: 24, border: '1px dashed #cbd5e1' }}>
-              <div className="flex-between" style={{ marginBottom: 16 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#475569', margin: 0 }}>Verified Travel Documents</h3>
-                <span style={{ fontSize: 11, color: '#94a3b8' }}>Admin Uploaded Only</span>
-              </div>
-              
-              {user.documents && user.documents.length > 0 ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  {user.documents.map((doc, idx) => (
-                    <div key={idx} style={{ 
-                      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                      padding: 16, background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0'
-                    }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                        <div style={{ color: '#63ab45' }}><FileSearch size={22} /></div>
-                        <div>
-                          <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: '#1e293b' }}>{doc.name}</p>
-                          <p style={{ margin: '2px 0 0', fontSize: 11, color: '#94a3b8' }}>
-                            {doc.type?.toUpperCase()} • {new Date(doc.uploadedAt).toLocaleDateString()}
-                          </p>
-                        </div>
-                      </div>
-                      <a 
-                        href={doc.url} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        style={{ padding: '8px 16px', borderRadius: 8, background: '#f0fdf4', color: '#16a34a', fontSize: 12, fontWeight: 700, textDecoration: 'none' }}
-                      >
-                         Download
-                      </a>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div style={{ textAlign: 'center', padding: '20px 0' }}>
-                  <FileText size={40} style={{ color: '#cbd5e1', marginBottom: 12 }} />
-                  <p style={{ margin: 0, fontSize: 13, color: '#94a3b8' }}>Your tickets, vouchers and visas will appear here once verified.</p>
-                </div>
-              )}
+            <div style={{ marginTop: 24, padding: '16px 20px', background: '#f8fafc', borderRadius: 12, border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: 12 }}>
+              <Info size={20} className="text-gold" />
+              <p style={{ margin: 0, fontSize: 13, color: '#64748b', lineHeight: 1.5 }}>
+                Your verified travel tickets, vouchers, and visas have been moved to the <Link href="/dashboard?tab=documents" style={{ color: '#63ab45', fontWeight: 700, textDecoration: 'none' }}>Documents</Link> tab in your Dashboard for easier access.
+              </p>
             </div>
           </section>
 

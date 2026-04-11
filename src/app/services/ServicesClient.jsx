@@ -1,7 +1,10 @@
 'use client';
-import { useState } from 'react';
+
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowRight, X } from 'lucide-react';
+import { ArrowRight, X, Lock } from 'lucide-react';
+import { authAPI } from '@/lib/api';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import WhatsAppFloat from '@/components/WhatsAppFloat';
@@ -40,7 +43,8 @@ const services = [
     title: 'Ticketing Services',
     img: '/assets/img/Ajwa/services/tickets.webp',
     desc: 'Domestic and international flight booking at the best prices with flexible options.',
-    action: 'modal',
+    authRequired: true,
+    href: '/booking/ticket',
     cta: 'Book Tickets',
   },
   {
@@ -63,6 +67,9 @@ export default function ServicesClient() {
   const [activeService, setActiveService] = useState(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const router = useRouter();
+  
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -86,7 +93,24 @@ export default function ServicesClient() {
     'Document Type': '',
   });
 
+  useEffect(() => {
+    setIsLoggedIn(authAPI.isAuthenticated());
+  }, []);
+
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+
+  const handleServiceClick = (service) => {
+    if (service.authRequired && !isLoggedIn) {
+      router.push(`/login?redirect=${service.href}`);
+      return;
+    }
+
+    if (service.action === 'modal') {
+      setActiveService(service);
+    } else if (service.href) {
+      router.push(service.href);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -159,20 +183,6 @@ export default function ServicesClient() {
             <div className="form-group"><label>Desired Course/Major</label><input type="text" name="Desired Course" onChange={handleChange} className="form-control" required /></div>
           </>
         );
-      case 'Ticketing Services':
-        return (
-          <>
-            <div className="form-row-flex">
-              <div className="form-group"><label>From City</label><input type="text" name="Flight: From City" onChange={handleChange} className="form-control" required /></div>
-              <div className="form-group"><label>To City</label><input type="text" name="Flight: To City" onChange={handleChange} className="form-control" required /></div>
-            </div>
-            <div className="form-row-flex">
-              <div className="form-group"><label>Departure Date</label><input type="date" name="Departure Date" onChange={handleChange} className="form-control" required /></div>
-              <div className="form-group"><label>Return Date (Optional)</label><input type="date" name="Return Date" onChange={handleChange} className="form-control" /></div>
-            </div>
-            <div className="form-group"><label>Number of Passengers</label><input type="number" min="1" name="Number of Passengers" onChange={handleChange} className="form-control" required /></div>
-          </>
-        );
       case 'Umrah & Hajj':
         return (
           <>
@@ -234,6 +244,17 @@ export default function ServicesClient() {
           font-weight: 500;
           color: var(--color-text-primary);
         }
+        .auth-badge {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          margin-bottom: 12px;
+          font-size: 11px;
+          font-weight: 700;
+          color: #f59e0b;
+          text-transform: uppercase;
+          justify-content: center;
+        }
       `}</style>
       <Header />
 
@@ -271,17 +292,22 @@ export default function ServicesClient() {
                   <div className="service-card-body">
                     <h3>{s.title}</h3>
                     <p>{s.desc}</p>
-                    {s.action === 'modal' ? (
-                      <button onClick={() => setActiveService(s)} className="btn btn-outline btn-sm">
-                        {s.cta}
-                        <ArrowRight size={14} />
-                      </button>
-                    ) : (
-                      <Link href={s.href} className="btn btn-outline btn-sm">
-                        {s.cta}
-                        <ArrowRight size={14} />
-                      </Link>
+                    
+                    {s.authRequired && !isLoggedIn && (
+                      <div className="auth-badge animate-fade-in">
+                        <Lock size={12} />
+                        Account Required
+                      </div>
                     )}
+
+                    <button 
+                      onClick={() => handleServiceClick(s)} 
+                      className={`btn btn-sm ${s.authRequired && !isLoggedIn ? 'btn-primary' : 'btn-outline'}`}
+                      style={{ width: 'fit-content' }}
+                    >
+                      {s.authRequired && !isLoggedIn ? 'Login to Book' : s.cta}
+                      <ArrowRight size={14} />
+                    </button>
                   </div>
                 </div>
               </AnimatedSection>

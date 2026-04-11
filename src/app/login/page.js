@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { authAPI } from '@/lib/api';
 import { Shield, Eye, EyeOff, AlertCircle, Loader2, MapPin, Plane } from 'lucide-react';
@@ -13,6 +13,8 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectPath = searchParams.get('redirect');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,6 +24,11 @@ export default function LoginPage() {
     try {
       const data = await authAPI.login(email, password);
       if (data.success) {
+        if (redirectPath) {
+          router.push(redirectPath);
+          return;
+        }
+
         if (data.user.role === 'CUSTOMER') {
           router.push('/dashboard');
         } else {
