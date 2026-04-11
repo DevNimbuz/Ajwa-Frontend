@@ -528,6 +528,44 @@ h1, h2, h3, h4, h5, h6 {
   to { transform: rotate(360deg); }
 }
 
+@keyframes skeleton-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(90deg, 
+    rgba(255, 255, 255, 0.05) 25%, 
+    rgba(99, 171, 69, 0.1) 50%, 
+    rgba(255, 255, 255, 0.05) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 2.5s infinite linear;
+}
+
+.glass-skeleton {
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, 
+    transparent 25%, 
+    rgba(255, 255, 255, 0.2) 50%, 
+    transparent 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 2.5s infinite linear;
+}
+
 /* ── Header Styles ── */
 .header {
   position: fixed;
@@ -2413,32 +2451,60 @@ h1, h2, h3, h4, h5, h6 {
   overflow: hidden;
 }
 
+/* ── About Tabs ── */
 .about-tabs {
   display: flex;
   gap: var(--space-sm);
   margin-bottom: var(--space-xl);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 6px;
+  border-radius: var(--radius-full);
+  width: fit-content;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
 }
 
 .about-tab {
   padding: 10px 24px;
-  border: 1px solid var(--color-border);
+  border: 1px solid transparent;
   border-radius: var(--radius-full);
   font-size: var(--text-sm);
   font-weight: 600;
   color: var(--color-text-secondary);
   cursor: pointer;
   transition: all var(--transition-base);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .about-tab.active {
   background: var(--color-gold);
-  color: var(--color-bg-primary);
+  color: #fff;
   border-color: var(--color-gold);
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
 }
 
 .about-tab:hover:not(.active) {
-  border-color: var(--color-gold);
   color: var(--color-gold);
+  background: rgba(212, 175, 55, 0.05);
+}
+
+@media (max-width: 768px) {
+  .about-tabs {
+    width: 100%;
+    gap: 4px;
+  }
+  .about-tab {
+    flex: 1;
+    justify-content: center;
+    padding: 12px 12px;
+    font-size: 13px;
+  }
+  .about-tab .tab-icon {
+    display: none; /* Hide icons on very small screens if crowded */
+  }
 }
 
 @media (max-width: 900px) {
@@ -2583,30 +2649,6 @@ h1, h2, h3, h4, h5, h6 {
   overflow: hidden;
 }
 
-.about-tabs {
-  display: flex;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-xl);
-}
-
-.about-tab {
-  padding: 10px 24px;
-  border: 1.5px solid var(--color-border-light);
-  border-radius: var(--radius-full);
-  font-size: var(--text-sm);
-  font-weight: 500;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  transition: all var(--transition-base);
-  background: transparent;
-}
-
-.about-tab.active,
-.about-tab:hover {
-  border-color: var(--color-gold);
-  color: #fff;
-  background: var(--color-gold);
-}
 
 .stat-number {
   font-family: var(--font-heading);

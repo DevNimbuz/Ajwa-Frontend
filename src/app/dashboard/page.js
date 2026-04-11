@@ -154,6 +154,8 @@ export default function DashboardPage() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   {[
                     { label: 'Request Flight Ticket', icon: Plane, href: '/booking/ticket', desc: 'Book family or group flights' },
+                    { label: 'Visa Assistance', icon: Globe, href: '/booking/visa', desc: 'New visa application/expert help' },
+                    { label: 'Document Legalization', icon: FileText, href: '/booking/document', desc: 'Attestation & MOFA services' },
                     { label: 'Complete My Profile', icon: User, href: '/profile', desc: 'Add traveler details' },
                     { label: 'Browse Tour Packages', icon: LayoutDashboard, href: '/package', desc: 'Find your next trip' },
                   ].map((action, i) => (

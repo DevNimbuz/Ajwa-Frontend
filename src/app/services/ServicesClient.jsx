@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import NextImage from 'next/image';
 import { ArrowRight, X, Lock } from 'lucide-react';
 import { authAPI } from '@/lib/api';
 import Header from '@/components/Header';
@@ -22,7 +23,8 @@ const services = [
     title: 'Visa Services',
     img: '/assets/img/Ajwa/services/visa.webp',
     desc: 'Fast and reliable visa processing for countries including UAE, Saudi Arabia, Malaysia, and more.',
-    action: 'modal',
+    authRequired: true,
+    href: '/booking/visa',
     cta: 'Book Visa',
   },
   {
@@ -58,7 +60,8 @@ const services = [
     title: 'Document Attestation',
     img: '/assets/img/Ajwa/services/docs.webp',
     desc: 'Professional document attestation services for immigration, education, and employment.',
-    action: 'modal',
+    authRequired: true,
+    href: '/booking/document',
     cta: 'Request Service',
   },
 ];
@@ -284,10 +287,16 @@ export default function ServicesClient() {
 
           <div className="grid grid-3">
             {services.map((s, i) => (
-              <AnimatedSection key={s.title} delay={i * 0.1}>
+              <AnimatedSection key={s.title} delay={(i % 3) * 0.05}>
                 <div className="service-card">
-                  <div className="service-card-img">
-                    <img src={s.img} alt={s.title} />
+                  <div className="service-card-img" style={{ position: 'relative' }}>
+                    <NextImage 
+                      src={s.img} 
+                      alt={s.title} 
+                      fill
+                      className="img-cover"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    />
                   </div>
                   <div className="service-card-body">
                     <h3>{s.title}</h3>
