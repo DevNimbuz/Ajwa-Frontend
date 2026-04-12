@@ -82,10 +82,17 @@ async function apiFetch(endpoint, options = {}) {
       removeSession();
       if (typeof window !== 'undefined') {
         const path = window.location.pathname;
-        if (path.startsWith('/dashboard') || path === '/profile') {
+        // If user was on a protected customer page, go to customer login
+        if (path.startsWith('/dashboard') || path === '/profile' || path.startsWith('/booking') || path.startsWith('/package')) {
           window.location.href = '/login';
-        } else if (!path.includes('/admin')) {
+        }
+        // If user was on admin page, go to admin login
+        else if (path.includes('/admin')) {
           window.location.href = '/admin/login';
+        }
+        // Default to customer login
+        else {
+          window.location.href = '/login';
         }
       }
       throw new Error(data.message || 'Session expired — please login again');

@@ -31,7 +31,20 @@ export default function RegisterPage() {
   }, [resendTimer]);
 
   const validatePassword = (pwd) => {
-    return pwd.length >= 8;
+    const hasUpper = /[A-Z]/.test(pwd);
+    const hasLower = /[a-z]/.test(pwd);
+    const hasNumber = /\d/.test(pwd);
+    const hasSpecial = /[@$!%*?&]/.test(pwd);
+    return pwd.length >= 8 && hasUpper && hasLower && hasNumber && hasSpecial;
+  };
+
+  const getPasswordError = (pwd) => {
+    if (pwd.length < 8) return 'Password must be at least 8 characters';
+    if (!/[A-Z]/.test(pwd)) return 'Password must include an uppercase letter';
+    if (!/[a-z]/.test(pwd)) return 'Password must include a lowercase letter';
+    if (!/\d/.test(pwd)) return 'Password must include a number';
+    if (!/[@$!%*?&]/.test(pwd)) return 'Password must include a special character (@$!%*?&)';
+    return '';
   };
 
   const handleInitialSubmit = async (e) => {
@@ -53,8 +66,9 @@ export default function RegisterPage() {
       return;
     }
 
-    if (!validatePassword(password)) {
-      setError('Password must be at least 8 characters');
+    const passwordError = getPasswordError(password);
+    if (passwordError) {
+      setError(passwordError);
       return;
     }
 
@@ -302,6 +316,26 @@ export default function RegisterPage() {
                 >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
+              </div>
+              <div style={{ marginTop: 8, fontSize: 11, color: '#64748b' }}>
+                <p style={{ margin: '0 0 4px' }}>Password must contain:</p>
+                <ul style={{ margin: 0, paddingLeft: 16, listStyle: 'none' }}>
+                  <li style={{ color: password.length >= 8 ? '#22c55e' : '#64748b' }}>
+                    {password.length >= 8 ? '✓' : '○'} At least 8 characters
+                  </li>
+                  <li style={{ color: /[A-Z]/.test(password) ? '#22c55e' : '#64748b' }}>
+                    {/[A-Z]/.test(password) ? '✓' : '○'} One uppercase letter
+                  </li>
+                  <li style={{ color: /[a-z]/.test(password) ? '#22c55e' : '#64748b' }}>
+                    {/[a-z]/.test(password) ? '✓' : '○'} One lowercase letter
+                  </li>
+                  <li style={{ color: /\d/.test(password) ? '#22c55e' : '#64748b' }}>
+                    {/\d/.test(password) ? '✓' : '○'} One number
+                  </li>
+                  <li style={{ color: /[@$!%*?&]/.test(password) ? '#22c55e' : '#64748b' }}>
+                    {/[@$!%*?&]/.test(password) ? '✓' : '○'} One special character (@$!%*?&)
+                  </li>
+                </ul>
               </div>
             </div>
 
