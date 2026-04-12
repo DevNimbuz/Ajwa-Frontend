@@ -2,8 +2,9 @@
 import dynamic from 'next/dynamic';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Clock, Users, ChevronDown, Check, X, ArrowRight, Camera, UsersRound, Phone, Maximize2 } from 'lucide-react';
+import { Clock, Users, ChevronDown, Check, X, ArrowRight, Camera, UsersRound, Phone, Maximize2, Heart } from 'lucide-react';
 import Image from 'next/image';
+import { authAPI } from '@/lib/api';
 
 // Dynamically load heavy client components
 const Header = dynamic(() => import('@/components/Header'), { ssr: true });
@@ -19,6 +20,50 @@ export default function PackageClient({ pkg, clientSnapshots, siteConfig }) {
   const [activeTab, setActiveTab] = useState('itinerary');
   const [showAllGallery, setShowAllGallery] = useState(false);
   const [lightbox, setLightbox] = useState({ open: false, index: 0 });
+  const [isInWishlist, setIsInWishlist] = useState(false);
+  const [wishlistLoading, setWishlistLoading] = useState(false);
+
+  useEffect(() => {
+    checkWishlist();
+  }, []);
+
+  const checkWishlist = async () => {
+    if (!authAPI.isAuthenticated()) return;
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/auth/wishlist`, {
+        headers: { 'Authorization': `Bearer ${authAPI.getToken()}` }
+      });
+      const data = await res.json();
+      if (data.success) {
+        const ids = data.data.map(p => p._id || p.id);
+        setIsInWishlist(ids.includes(pkg._id));
+      }
+    } catch (err) {
+      console.error('Wishlist check error:', err);
+    }
+  };
+
+  const handleToggleWishlist = async () => {
+    if (!authAPI.isAuthenticated()) {
+      window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`;
+      return;
+    }
+
+    setWishlistLoading(true);
+    try {
+      if (isInWishlist) {
+        await authAPI.removeFromWishlist(pkg._id);
+        setIsInWishlist(false);
+      } else {
+        await authAPI.addToWishlist(pkg._id);
+        setIsInWishlist(true);
+      }
+    } catch (err) {
+      console.error('Wishlist error:', err);
+    } finally {
+      setWishlistLoading(false);
+    }
+  };
 
   // Default Itinerary Fallback (if pkg.itinerary is empty)
   const defaultItinerary = [
@@ -80,6 +125,33 @@ export default function PackageClient({ pkg, clientSnapshots, siteConfig }) {
 
       {/* Page Header */}
       <div className="page-header" style={{ backgroundImage: `url(${pkg.gallery?.[0] || '/assets/img/Ajwa/trek.webp'})` }}>
+        <button
+          onClick={handleToggleWishlist}
+          disabled={wishlistLoading}
+          style={{
+            position: 'absolute',
+            top: 100,
+            right: 20,
+            width: 48,
+            height: 48,
+            borderRadius: '50%',
+            background: 'rgba(255,255,255,0.9)',
+            border: 'none',
+            cursor: wishlistLoading ? 'wait' : 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 2px 12px rgba(0,0,0,0.2)',
+            zIndex: 20,
+          }}
+          title={isInWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
+        >
+          <Heart
+            size={24}
+            fill={isInWishlist ? '#ef4444' : 'none'}
+            color={isInWishlist ? '#ef4444' : '#1a1a2e'}
+          />
+        </button>
         <div className="container page-header-content">
           <div className="hero-tag" style={{ background: 'rgba(99, 171, 69, 0.2)', color: 'var(--color-gold-light)', border: '1px solid var(--color-gold-light)' }}>
             <Clock size={14} />

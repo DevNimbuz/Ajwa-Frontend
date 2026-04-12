@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import DatePicker from 'react-datepicker';
 import { authAPI } from '@/lib/api';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -227,12 +228,21 @@ export default function ProfilePage() {
             <div className="grid" style={{ gridTemplateColumns: '1fr 2fr', gap: 24 }}>
               <div>
                 <label style={labelStyle}>Date of Birth</label>
-                <input
-                  type="date"
-                  value={form.dob}
-                  onChange={(e) => setForm({ ...form, dob: e.target.value })}
-                  style={inputStyle}
-                />
+                <div style={{ position: 'relative' }}>
+                  <Calendar size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', zIndex: 1, color: '#94a3b8', pointerEvents: 'none' }} />
+                  <DatePicker
+                    selected={form.dob ? new Date(form.dob) : null}
+                    onChange={(date) => setForm({ ...form, dob: date ? date.toISOString().split('T')[0] : '' })}
+                    dateFormat="dd-MM-yyyy"
+                    showMonthDropdown
+                    showYearDropdown
+                    dropdownMode="select"
+                    placeholderText="Select your birth date"
+                    className="premium-datepicker"
+                    maxDate={new Date()}
+                    customInput={<input style={{ ...inputStyle, paddingLeft: 44 }} />}
+                  />
+                </div>
               </div>
               <div>
                 <label style={labelStyle}>Permanent Address</label>
@@ -269,12 +279,21 @@ export default function ProfilePage() {
               </div>
               <div>
                 <label style={labelStyle}>Passport Expiry</label>
-                <input
-                  type="date"
-                  value={form.passportExpiry}
-                  onChange={(e) => setForm({ ...form, passportExpiry: e.target.value })}
-                  style={inputStyle}
-                />
+                <div style={{ position: 'relative' }}>
+                  <Calendar size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', zIndex: 1, color: '#94a3b8', pointerEvents: 'none' }} />
+                  <DatePicker
+                    selected={form.passportExpiry ? new Date(form.passportExpiry) : null}
+                    onChange={(date) => setForm({ ...form, passportExpiry: date ? date.toISOString().split('T')[0] : '' })}
+                    dateFormat="dd-MM-yyyy"
+                    showMonthDropdown
+                    showYearDropdown
+                    dropdownMode="select"
+                    placeholderText="Expiry date"
+                    className="premium-datepicker"
+                    minDate={new Date()}
+                    customInput={<input style={{ ...inputStyle, paddingLeft: 44 }} />}
+                  />
+                </div>
               </div>
             </div>
             <div style={{ marginTop: 24, padding: '16px 20px', background: '#f8fafc', borderRadius: 12, border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: 12 }}>

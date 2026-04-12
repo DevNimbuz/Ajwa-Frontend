@@ -146,22 +146,36 @@ export default function TicketBookingPage() {
                 <div>
                   <label style={labelStyle}>Departure Date</label>
                   <div style={{ position: 'relative' }}>
-                    <Calendar size={18} style={iconStyle} />
-                    <input 
-                      type="date" required value={form.departureDate} 
-                      onChange={e => setForm({...form, departureDate: e.target.value})}
-                      style={inputStyle} 
+                    <Calendar size={18} style={{ ...iconStyle, pointerEvents: 'none', zIndex: 1 }} />
+                    <DatePicker
+                      selected={form.departureDate ? new Date(form.departureDate) : null}
+                      onChange={(date) => setForm({ ...form, departureDate: date ? date.toISOString().split('T')[0] : '' })}
+                      dateFormat="dd-MM-yyyy"
+                      showMonthDropdown
+                      showYearDropdown
+                      dropdownMode="select"
+                      placeholderText="Select date"
+                      className="premium-datepicker"
+                      minDate={new Date()}
+                      customInput={<input style={{ ...inputStyle, paddingLeft: 44 }} />}
                     />
                   </div>
                 </div>
                 <div>
                   <label style={labelStyle}>Return Date (Optional)</label>
                   <div style={{ position: 'relative' }}>
-                    <Calendar size={18} style={iconStyle} />
-                    <input 
-                      type="date" value={form.returnDate} 
-                      onChange={e => setForm({...form, returnDate: e.target.value})}
-                      style={inputStyle} 
+                    <Calendar size={18} style={{ ...iconStyle, pointerEvents: 'none', zIndex: 1 }} />
+                    <DatePicker
+                      selected={form.returnDate ? new Date(form.returnDate) : null}
+                      onChange={(date) => setForm({ ...form, returnDate: date ? date.toISOString().split('T')[0] : '' })}
+                      dateFormat="dd-MM-yyyy"
+                      showMonthDropdown
+                      showYearDropdown
+                      dropdownMode="select"
+                      placeholderText="Add return"
+                      className="premium-datepicker"
+                      minDate={form.departureDate ? new Date(form.departureDate) : new Date()}
+                      customInput={<input style={{ ...inputStyle, paddingLeft: 44 }} />}
                     />
                   </div>
                 </div>

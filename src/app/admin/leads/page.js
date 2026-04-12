@@ -159,18 +159,23 @@ export default function AdminLeads() {
         </select>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#1e293b', border: '1px solid #334155', borderRadius: 8, padding: '0 12px' }}>
           <span style={{ fontSize: 11, color: '#64748b', fontWeight: 600 }}>FROM</span>
-          <input 
-            type="date" 
-            value={filters.startDate} 
-            onChange={e => setFilters({...filters, startDate: e.target.value, page: 1})}
-            style={{ padding: '8px 0', background: 'none', border: 'none', color: '#e2e8f0', fontSize: 13, outline: 'none' }}
+          <DatePicker
+            selected={filters.startDate ? new Date(filters.startDate) : null}
+            onChange={(date) => setFilters({...filters, startDate: date ? date.toISOString().split('T')[0] : '', page: 1})}
+            dateFormat="dd/MM/yy"
+            placeholderText="Start"
+            className="admin-datepicker"
+            customInput={<input style={{ width: 70, padding: '8px 0', background: 'none', border: 'none', color: '#e2e8f0', fontSize: 12, outline: 'none', cursor: 'pointer' }} />}
           />
           <span style={{ fontSize: 11, color: '#64748b', fontWeight: 600 }}>TO</span>
-          <input 
-            type="date" 
-            value={filters.endDate} 
-            onChange={e => setFilters({...filters, endDate: e.target.value, page: 1})}
-            style={{ padding: '8px 0', background: 'none', border: 'none', color: '#e2e8f0', fontSize: 13, outline: 'none' }}
+          <DatePicker
+            selected={filters.endDate ? new Date(filters.endDate) : null}
+            onChange={(date) => setFilters({...filters, endDate: date ? date.toISOString().split('T')[0] : '', page: 1})}
+            dateFormat="dd/MM/yy"
+            placeholderText="End"
+            className="admin-datepicker"
+            minDate={filters.startDate ? new Date(filters.startDate) : null}
+            customInput={<input style={{ width: 70, padding: '8px 0', background: 'none', border: 'none', color: '#e2e8f0', fontSize: 12, outline: 'none', cursor: 'pointer' }} />}
           />
         </div>
       </div>

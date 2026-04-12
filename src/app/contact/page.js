@@ -242,7 +242,14 @@ export default function ContactPage() {
                             </div>
                             <div className="form-group">
                               <label>Preferred Travel Date *</label>
-                              <input type="date" value={travelDate} onChange={e => setTravelDate(e.target.value)} className="form-control" style={{ color: travelDate ? '#100c08' : '#8b8fa3' }} />
+                              <DatePicker
+                                selected={travelDate ? new Date(travelDate) : null}
+                                onChange={(date) => setTravelDate(date ? date.toISOString().split('T')[0] : '')}
+                                dateFormat="dd-MM-yyyy"
+                                placeholderText="Select date"
+                                className="form-control"
+                                minDate={new Date()}
+                              />
                             </div>
                           </motion.div>
                         )}

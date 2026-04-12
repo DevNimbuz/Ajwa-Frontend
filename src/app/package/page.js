@@ -1,4 +1,3 @@
-import { Suspense } from 'react';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import Header from '@/components/Header';
@@ -7,19 +6,23 @@ import WhatsAppFloat from '@/components/WhatsAppFloat';
 import AnimatedSection from '@/components/AnimatedSection';
 import siteConfig from '@/data/siteConfig';
 import PackageGrid from '@/components/PackageGrid';
-import SkeletonCard from '@/components/SkeletonCard';
 
-function PackageSkeletonGrid() {
-  return (
-    <div className="grid grid-3">
-      {[...Array(6)].map((_, i) => (
-        <SkeletonCard key={i} />
-      ))}
-    </div>
-  );
+async function getPackages() {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/packages`, {
+      next: { revalidate: 60 }
+    });
+    const data = await res.json();
+    return data.success ? data.data : [];
+  } catch (error) {
+    console.error('Error fetching packages:', error);
+    return [];
+  }
 }
 
-export default function PackagesPage() {
+export default async function PackagesPage() {
+  const packages = await getPackages();
+
   return (
     <>
       <Header />
@@ -48,9 +51,7 @@ export default function PackagesPage() {
             </div>
           </AnimatedSection>
 
-          <Suspense fallback={<PackageSkeletonGrid />}>
-            <PackageGrid />
-          </Suspense>
+          <PackageGrid packages={packages} />
         </div>
       </section>
 

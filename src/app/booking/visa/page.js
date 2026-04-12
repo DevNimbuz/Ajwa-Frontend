@@ -184,11 +184,18 @@ export default function VisaBookingPage() {
                 <div>
                   <label style={labelStyle}>Planned Entry Date</label>
                   <div style={{ position: 'relative' }}>
-                    <Calendar size={18} style={iconStyle} />
-                    <input 
-                      type="date" required value={form.departureDate} 
-                      onChange={e => setForm({...form, departureDate: e.target.value})}
-                      style={inputStyle} 
+                    <Calendar size={18} style={{ ...iconStyle, pointerEvents: 'none', zIndex: 1 }} />
+                    <DatePicker
+                      selected={form.departureDate ? new Date(form.departureDate) : null}
+                      onChange={(date) => setForm({ ...form, departureDate: date ? date.toISOString().split('T')[0] : '' })}
+                      dateFormat="dd-MM-yyyy"
+                      showMonthDropdown
+                      showYearDropdown
+                      dropdownMode="select"
+                      placeholderText="Select planned entry date"
+                      className="premium-datepicker"
+                      minDate={new Date()}
+                      customInput={<input style={{ ...inputStyle, paddingLeft: 44 }} />}
                     />
                   </div>
                 </div>
