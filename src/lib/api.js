@@ -135,6 +135,37 @@ export const authAPI = {
     return data;
   },
 
+  /** Send OTP for email/phone verification */
+  async sendOTP(name, email, phone, password) {
+    const data = await apiFetch('/auth/send-otp', {
+      method: 'POST',
+      body: { name, email, phone, password },
+    });
+    return data;
+  },
+
+  /** Verify OTP and complete registration */
+  async verifyOTP(verifyToken, emailOTP) {
+    const data = await apiFetch('/auth/verify-otp', {
+      method: 'POST',
+      body: { verifyToken, emailOTP },
+    });
+    if (data.success && data.user) {
+      setUser(data.user);
+      if (data.token) setToken(data.token);
+    }
+    return data;
+  },
+
+  /** Resend OTP */
+  async resendOTP(verifyToken) {
+    const data = await apiFetch('/auth/resend-otp', {
+      method: 'POST',
+      body: { verifyToken },
+    });
+    return data;
+  },
+
   /** Get current user profile */
   async getMe() {
     return apiFetch('/auth/me');

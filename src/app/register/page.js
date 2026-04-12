@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { authAPI } from '@/lib/api';
-import { Plane, Eye, EyeOff, AlertCircle, Loader2, CheckCircle } from 'lucide-react';
+import { Plane, Eye, EyeOff, AlertCircle, Loader2, CheckCircle, Mail, ArrowLeft } from 'lucide-react';
 
 export default function RegisterPage() {
+  const [step, setStep] = useState(1);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -15,35 +16,144 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [verifyToken, setVerifyToken] = useState('');
+  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [resendTimer, setResendTimer] = useState(0);
+  const [maskedEmail, setMaskedEmail] = useState('');
   const router = useRouter();
+  const otpInputRefs = useRef([]);
 
-  const handleSubmit = async (e) => {
+  useEffect(() => {
+    if (resendTimer > 0) {
+      const timer = setTimeout(() => setResendTimer(resendTimer - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [resendTimer]);
+
+  const validatePassword = (pwd) => {
+    return pwd.length >= 8;
+  };
+
+  const handleInitialSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    if (!name.trim()) {
+      setError('Please enter your name');
+      return;
+    }
+
+    if (!email.match(/^\S+@\S+\.\S+$/)) {
+      setError('Please enter a valid email address');
+      return;
+    }
+
+    if (!phone.match(/^\+?[\d\s-]{10,}$/)) {
+      setError('Please enter a valid phone number');
+      return;
+    }
+
+    if (!validatePassword(password)) {
+      setError('Password must be at least 8 characters');
+      return;
+    }
 
     if (password !== confirmPassword) {
       setError('Passwords do not match');
       return;
     }
 
-    if (password.length < 8) {
-      setError('Password must be at least 8 characters');
+    setLoading(true);
+
+    try {
+      const data = await authAPI.sendOTP(name, email, phone, password);
+      if (data.success) {
+        setVerifyToken(data.verifyToken);
+        setMaskedEmail(data.emailMasked);
+        setStep(2);
+        setResendTimer(60);
+      }
+    } catch (err) {
+      setError(err.message || 'Failed to send verification code. Please try again.');
+    } finally {
       setLoading(false);
+    }
+  };
+
+  const handleOtpChange = (index, value) => {
+    const newOtp = [...otp];
+    
+    if (value.length > 1) {
+      const chars = value.slice(0, 6 - index).split('');
+      chars.forEach((char, i) => {
+        if (index + i < 6) newOtp[index + i] = char;
+      });
+      const targetIndex = Math.min(index + chars.length, 5);
+      setOtp(newOtp);
+      otpInputRefs.current[targetIndex]?.focus();
+      return;
+    }
+
+    newOtp[index] = value.replace(/\D/g, '');
+    setOtp(newOtp);
+    
+    if (value && index < 5) {
+      otpInputRefs.current[index + 1]?.focus();
+    }
+  };
+
+  const handleOtpKeyDown = (index, e) => {
+    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+      const newOtp = [...otp];
+      newOtp[index - 1] = '';
+      setOtp(newOtp);
+      otpInputRefs.current[index - 1]?.focus();
+    }
+  };
+
+  const handleVerify = async () => {
+    const otpCode = otp.join('');
+
+    if (otpCode.length !== 6) {
+      setError('Please enter the 6-digit verification code');
       return;
     }
 
     setLoading(true);
+    setError('');
 
     try {
-      const data = await authAPI.register(name, email, phone, password);
-      if (data.success) {
+      const data = await authAPI.verifyOTP(verifyToken, otpCode);
+      
+      if (data.success && data.user) {
+        localStorage.setItem('flyajwa_token', data.token);
+        localStorage.setItem('flyajwa_user', JSON.stringify(data.user));
         router.push('/dashboard');
       }
     } catch (err) {
-      setError(err.message || 'Registration failed. Please try again.');
+      setError(err.message || 'Verification failed. Please check your code and try again.');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleResend = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      await authAPI.resendOTP(verifyToken);
+      setResendTimer(60);
+      setOtp(['', '', '', '', '', '']);
+    } catch (err) {
+      setError(err.message || 'Failed to resend. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoBack = () => {
+    setStep(1);
+    setOtp(['', '', '', '', '', '']);
   };
 
   return (
@@ -59,7 +169,7 @@ export default function RegisterPage() {
       </div>
 
       <div style={{
-        width: '100%', maxWidth: 420, padding: 40,
+        width: '100%', maxWidth: 440, padding: 40,
         background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(20px)',
         border: '1px solid rgba(255,255,255,0.1)', borderRadius: 20,
         boxShadow: '0 20px 60px rgba(0,0,0,0.4)', position: 'relative', zIndex: 1,
@@ -73,8 +183,12 @@ export default function RegisterPage() {
           }}>
             <Plane size={32} color="#fff" />
           </div>
-          <h1 style={{ color: '#f1f5f9', fontSize: 24, fontWeight: 700, margin: '0 0 4px' }}>Join FlyAjwa</h1>
-          <p style={{ color: '#94a3b8', fontSize: 14, margin: 0 }}>Create your traveler account</p>
+          <h1 style={{ color: '#f1f5f9', fontSize: 24, fontWeight: 700, margin: '0 0 4px' }}>
+            {step === 1 ? 'Join FlyAjwa' : 'Verify Your Email'}
+          </h1>
+          <p style={{ color: '#94a3b8', fontSize: 14, margin: 0 }}>
+            {step === 1 ? 'Create your traveler account' : 'Enter the code sent to your email'}
+          </p>
         </div>
 
         {error && (
@@ -89,86 +203,20 @@ export default function RegisterPage() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: 16 }}>
-            <label style={{ display: 'block', color: '#94a3b8', fontSize: 13, fontWeight: 500, marginBottom: 6 }}>
-              Full Name
-            </label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              placeholder="John Doe"
-              style={{
-                width: '100%', padding: '12px 16px',
-                background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: 10, color: '#e2e8f0', fontSize: 15,
-                outline: 'none', transition: 'border 0.2s',
-                boxSizing: 'border-box',
-              }}
-              onFocus={(e) => e.target.style.borderColor = '#059669'}
-              onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
-            />
-          </div>
-
-          <div style={{ marginBottom: 16 }}>
-            <label style={{ display: 'block', color: '#94a3b8', fontSize: 13, fontWeight: 500, marginBottom: 6 }}>
-              Phone Number
-            </label>
-            <input
-              type="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              required
-              placeholder="+91 98466 17000"
-              style={{
-                width: '100%', padding: '12px 16px',
-                background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: 10, color: '#e2e8f0', fontSize: 15,
-                outline: 'none', transition: 'border 0.2s',
-                boxSizing: 'border-box',
-              }}
-              onFocus={(e) => e.target.style.borderColor = '#059669'}
-              onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
-            />
-          </div>
-
-          <div style={{ marginBottom: 16 }}>
-            <label style={{ display: 'block', color: '#94a3b8', fontSize: 13, fontWeight: 500, marginBottom: 6 }}>
-              Email Address
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              placeholder="you@example.com"
-              style={{
-                width: '100%', padding: '12px 16px',
-                background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: 10, color: '#e2e8f0', fontSize: 15,
-                outline: 'none', transition: 'border 0.2s',
-                boxSizing: 'border-box',
-              }}
-              onFocus={(e) => e.target.style.borderColor = '#059669'}
-              onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
-            />
-          </div>
-
-          <div style={{ marginBottom: 16 }}>
-            <label style={{ display: 'block', color: '#94a3b8', fontSize: 13, fontWeight: 500, marginBottom: 6 }}>
-              Password
-            </label>
-            <div style={{ position: 'relative' }}>
+        {step === 1 && (
+          <form onSubmit={handleInitialSubmit}>
+            <div style={{ marginBottom: 16 }}>
+              <label style={{ display: 'block', color: '#94a3b8', fontSize: 13, fontWeight: 500, marginBottom: 6 }}>
+                Full Name
+              </label>
               <input
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 required
-                placeholder="Min 8 characters"
+                placeholder="John Doe"
                 style={{
-                  width: '100%', padding: '12px 48px 12px 16px',
+                  width: '100%', padding: '12px 16px',
                   background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)',
                   borderRadius: 10, color: '#e2e8f0', fontSize: 15,
                   outline: 'none', transition: 'border 0.2s',
@@ -177,57 +225,220 @@ export default function RegisterPage() {
                 onFocus={(e) => e.target.style.borderColor = '#059669'}
                 onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                style={{
-                  position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)',
-                  background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', padding: 4,
-                }}
-              >
-                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-              </button>
             </div>
-          </div>
 
-          <div style={{ marginBottom: 24 }}>
-            <label style={{ display: 'block', color: '#94a3b8', fontSize: 13, fontWeight: 500, marginBottom: 6 }}>
-              Confirm Password
-            </label>
-            <input
-              type={showPassword ? 'text' : 'password'}
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-              placeholder="Re-enter password"
+            <div style={{ marginBottom: 16 }}>
+              <label style={{ display: 'block', color: '#94a3b8', fontSize: 13, fontWeight: 500, marginBottom: 6 }}>
+                Phone Number
+              </label>
+              <input
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                required
+                placeholder="+91 98466 17000"
+                style={{
+                  width: '100%', padding: '12px 16px',
+                  background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: 10, color: '#e2e8f0', fontSize: 15,
+                  outline: 'none', transition: 'border 0.2s',
+                  boxSizing: 'border-box',
+                }}
+                onFocus={(e) => e.target.style.borderColor = '#059669'}
+                onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+              />
+            </div>
+
+            <div style={{ marginBottom: 16 }}>
+              <label style={{ display: 'block', color: '#94a3b8', fontSize: 13, fontWeight: 500, marginBottom: 6 }}>
+                Email Address
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                placeholder="you@example.com"
+                style={{
+                  width: '100%', padding: '12px 16px',
+                  background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: 10, color: '#e2e8f0', fontSize: 15,
+                  outline: 'none', transition: 'border 0.2s',
+                  boxSizing: 'border-box',
+                }}
+                onFocus={(e) => e.target.style.borderColor = '#059669'}
+                onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+              />
+            </div>
+
+            <div style={{ marginBottom: 16 }}>
+              <label style={{ display: 'block', color: '#94a3b8', fontSize: 13, fontWeight: 500, marginBottom: 6 }}>
+                Password
+              </label>
+              <div style={{ position: 'relative' }}>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  placeholder="Min 8 characters"
+                  style={{
+                    width: '100%', padding: '12px 48px 12px 16px',
+                    background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: 10, color: '#e2e8f0', fontSize: 15,
+                    outline: 'none', transition: 'border 0.2s',
+                    boxSizing: 'border-box',
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = '#059669'}
+                  onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{
+                    position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)',
+                    background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', padding: 4,
+                  }}
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
+            </div>
+
+            <div style={{ marginBottom: 24 }}>
+              <label style={{ display: 'block', color: '#94a3b8', fontSize: 13, fontWeight: 500, marginBottom: 6 }}>
+                Confirm Password
+              </label>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+                placeholder="Re-enter password"
+                style={{
+                  width: '100%', padding: '12px 16px',
+                  background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: 10, color: '#e2e8f0', fontSize: 15,
+                  outline: 'none', transition: 'border 0.2s',
+                  boxSizing: 'border-box',
+                }}
+                onFocus={(e) => e.target.style.borderColor = '#059669'}
+                onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
               style={{
-                width: '100%', padding: '12px 16px',
-                background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: 10, color: '#e2e8f0', fontSize: 15,
-                outline: 'none', transition: 'border 0.2s',
-                boxSizing: 'border-box',
+                width: '100%', padding: '14px 20px',
+                background: loading ? 'rgba(255,255,255,0.1)' : 'linear-gradient(135deg, #059669, #047857)',
+                color: '#fff', border: 'none', borderRadius: 10,
+                fontSize: 15, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                transition: 'all 0.2s',
+                boxShadow: loading ? 'none' : '0 4px 16px rgba(5,150,105,0.3)',
               }}
-              onFocus={(e) => e.target.style.borderColor = '#059669'}
-              onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
-            />
-          </div>
+            >
+              {loading ? <><Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} /> Sending Code...</> : 'Continue'}
+            </button>
+          </form>
+        )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              width: '100%', padding: '14px 20px',
-              background: loading ? 'rgba(255,255,255,0.1)' : 'linear-gradient(135deg, #059669, #047857)',
-              color: '#fff', border: 'none', borderRadius: 10,
-              fontSize: 15, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-              transition: 'all 0.2s',
-              boxShadow: loading ? 'none' : '0 4px 16px rgba(5,150,105,0.3)',
-            }}
-          >
-            {loading ? <><Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} /> Creating Account...</> : 'Create Account'}
-          </button>
-        </form>
+        {step === 2 && (
+          <div>
+            <button
+              onClick={handleGoBack}
+              style={{
+                background: 'none', border: 'none', color: '#94a3b8',
+                cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
+                fontSize: 13, marginBottom: 24,
+              }}
+            >
+              <ArrowLeft size={14} /> Go back
+            </button>
+
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 12,
+              padding: 16, background: 'rgba(0,0,0,0.3)', borderRadius: 10, marginBottom: 24,
+            }}>
+              <div style={{
+                width: 40, height: 40, borderRadius: 10,
+                background: 'rgba(99,171,69,0.2)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <Mail size={20} color="#63ab45" />
+              </div>
+              <div style={{ flex: 1 }}>
+                <p style={{ margin: 0, color: '#94a3b8', fontSize: 12 }}>Verification Code Sent To</p>
+                <p style={{ margin: 0, color: '#e2e8f0', fontSize: 14, fontWeight: 500 }}>{maskedEmail}</p>
+              </div>
+            </div>
+
+            <div style={{ marginBottom: 24 }}>
+              <p style={{ color: '#94a3b8', fontSize: 13, marginBottom: 16, textAlign: 'center' }}>
+                Enter the 6-digit code from your email
+              </p>
+              <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
+                {[0, 1, 2, 3, 4, 5].map((i) => (
+                  <input
+                    key={i}
+                    ref={(el) => otpInputRefs.current[i] = el}
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={1}
+                    value={otp[i]}
+                    onChange={(e) => handleOtpChange(i, e.target.value)}
+                    onKeyDown={(e) => handleOtpKeyDown(i, e)}
+                    style={{
+                      width: 48, height: 56, textAlign: 'center',
+                      background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: 12, color: '#e2e8f0', fontSize: 22, fontWeight: 600,
+                      outline: 'none',
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = '#059669'}
+                    onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <button
+              onClick={handleVerify}
+              disabled={loading || otp.join('').length !== 6}
+              style={{
+                width: '100%', padding: '14px 20px',
+                background: loading ? 'rgba(255,255,255,0.1)' : 'linear-gradient(135deg, #059669, #047857)',
+                color: '#fff', border: 'none', borderRadius: 10,
+                fontSize: 15, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                transition: 'all 0.2s',
+                boxShadow: loading ? 'none' : '0 4px 16px rgba(5,150,105,0.3)',
+                opacity: otp.join('').length !== 6 ? 0.6 : 1,
+              }}
+            >
+              {loading ? <><Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} /> Verifying...</> : 'Verify & Create Account'}
+            </button>
+
+            <p style={{ textAlign: 'center', color: '#64748b', fontSize: 13, marginTop: 20 }}>
+              Didn't receive the code?{' '}
+              {resendTimer > 0 ? (
+                <span style={{ color: '#94a3b8' }}>Resend in {resendTimer}s</span>
+              ) : (
+                <button
+                  onClick={handleResend}
+                  disabled={loading}
+                  style={{
+                    background: 'none', border: 'none', color: '#63ab45',
+                    cursor: 'pointer', fontWeight: 600, fontSize: 13,
+                  }}
+                >
+                  Resend Code
+                </button>
+              )}
+            </p>
+          </div>
+        )}
 
         <p style={{ textAlign: 'center', color: '#94a3b8', fontSize: 14, marginTop: 24, marginBottom: 0 }}>
           Already have an account?{' '}
