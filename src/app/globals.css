@@ -862,12 +862,14 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @media (max-width: 900px) {
-  .header-nav,
-  .header-cta .btn {
+  .header-nav {
+    display: none;
+  }
+  .header-cta > .btn:not(.mobile-menu-btn) {
     display: none;
   }
   .mobile-menu-btn {
-    display: flex;
+    display: flex !important;
   }
 }
 
@@ -2274,6 +2276,19 @@ h1, h2, h3, h4, h5, h6 {
 .whatsapp-float svg {
   width: 30px;
   height: 30px;
+}
+
+@media (max-width: 768px) {
+  .whatsapp-float {
+    bottom: 80px; /* Lift above footer and mobile bars */
+    right: 20px;
+    width: 50px;
+    height: 50px;
+  }
+  .whatsapp-float svg {
+    width: 25px;
+    height: 25px;
+  }
 }
 
 /* ── Breadcrumb / Page Header ── */

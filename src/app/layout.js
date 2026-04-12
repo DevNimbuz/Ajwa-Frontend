@@ -7,6 +7,8 @@ import Script from 'next/script';
 import { Suspense } from 'react';
 import VisitorTracker from '@/components/VisitorTracker';
 import BackToTop from '@/components/BackToTop';
+import CookieBanner from '@/components/CookieBanner';
+
 
 export const metadata = {
   title: {
@@ -170,6 +172,7 @@ export default function RootLayout({ children }) {
         <Suspense fallback={null}><VisitorTracker /></Suspense>
         {children}
         <BackToTop />
+        <CookieBanner />
       </body>
     </html>
   );

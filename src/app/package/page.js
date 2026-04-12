@@ -20,6 +20,16 @@ async function getPackages() {
   }
 }
 
+export const metadata = {
+  title: 'Tour Packages',
+  description: 'Explore FlyAjwa\'s popular tour packages including Maldives, Thailand, Dubai, and more. Handpicked destinations for unforgettable experiences.',
+  openGraph: {
+    title: 'Tour Packages | FlyAjwa — Travels & Holidays',
+    description: 'Explore FlyAjwa\'s popular tour packages including Maldives, Thailand, Dubai, and more. Handpicked destinations for unforgettable experiences.',
+    url: 'https://www.flyajwa.com/package',
+  }
+};
+
 export default async function PackagesPage() {
   const packages = await getPackages();
 

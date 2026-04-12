@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import DatePicker from 'react-datepicker';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Phone, MessageCircle, Mail, MapPin, Clock } from 'lucide-react';
@@ -28,19 +29,24 @@ export default function ContactPage() {
     { title: 'Final Details', icon: '📝' }
   ];
 
+  const [travelDate, setTravelDate] = useState('');
+  const [message, setMessage] = useState('');
+  const [honeypot, setHoneypot] = useState(''); 
+  const [error, setError] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [destination, setDestination] = useState('');
+
   const handlePhoneChange = (e) => {
-    const value = e.target.value;
-    if (/^\d{0,10}$/.test(value)) {
-      setPhone(value);
-      setError('');
-    } else {
-      setError('Phone number must be exactly 10 digits.');
-    }
+    const val = e.target.value.replace(/\D/g, '');
+    setPhone(val);
   };
 
   const handlePhoneBlur = () => {
-    if (phone.length !== 10 && phone.length > 0) {
+    if (phone && phone.length !== 10) {
       setError('Phone number must be exactly 10 digits.');
+    } else {
+      setError('');
     }
   };
 
@@ -60,6 +66,11 @@ export default function ContactPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (honeypot) {
+      // Silently succeed for bots
+      setSubmitted(true);
+      return;
+    }
     setError('');
     setLoading(true);
     
@@ -214,6 +225,16 @@ export default function ContactPage() {
                     </motion.div>
                   ) : (
                     <form onSubmit={handleSubmit} className="contact-form-min">
+                      {/* Honeypot field - visually hidden, screen-reader hidden */}
+                      <input 
+                        type="text" 
+                        name="flyajwa_bot_check" 
+                        value={honeypot} 
+                        onChange={e => setHoneypot(e.target.value)} 
+                        style={{ display: 'none' }} 
+                        tabIndex="-1" 
+                        autoComplete="off" 
+                      />
                       <AnimatePresence mode="wait">
                         {currentStep === 1 && (
                           <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>

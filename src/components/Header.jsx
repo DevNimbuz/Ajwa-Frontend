@@ -97,6 +97,8 @@ export default function Header() {
             <img
               src={siteConfig.logo}
               alt="FlyAjwa"
+              fetchPriority="high"
+              loading="eager"
             />
           </Link>
 

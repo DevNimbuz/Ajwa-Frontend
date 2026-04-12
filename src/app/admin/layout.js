@@ -74,13 +74,31 @@ export default function AdminLayout({ children }) {
         return;
       }
       const stored = authAPI.getUser();
+      
+      const isAuthorizedAdmin = (userData) => {
+        return userData && (userData.role === 'SUPER_ADMIN' || userData.role === 'TEAM');
+      };
+
       if (stored) {
+        if (!isAuthorizedAdmin(stored)) {
+          authAPI.logout();
+          router.push('/login');
+          return;
+        }
         setUser(stored);
         setLoading(false);
       } else {
         authAPI.getMe()
-          .then(data => { setUser(data.user); setLoading(false); })
-          .catch(() => { authAPI.logout(); });
+          .then(data => { 
+            if (!isAuthorizedAdmin(data.user)) {
+              authAPI.logout();
+              router.push('/login');
+              return;
+            }
+            setUser(data.user); 
+            setLoading(false); 
+          })
+          .catch(() => { authAPI.logout(); router.push('/admin/login'); });
       }
     };
     checkAuth();
