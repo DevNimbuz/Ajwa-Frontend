@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { authAPI } from '@/lib/api';
-import { Shield, Eye, EyeOff, AlertCircle, Loader2, MapPin, Plane } from 'lucide-react';
+import { Shield, Eye, EyeOff, AlertCircle, Loader2, MapPin, Plane, ArrowLeft } from 'lucide-react';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -60,6 +60,10 @@ export default function LoginPage() {
         border: '1px solid rgba(255,255,255,0.1)', borderRadius: 20,
         boxShadow: '0 20px 60px rgba(0,0,0,0.4)', position: 'relative', zIndex: 1,
       }}>
+        <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#94a3b8', textDecoration: 'none', fontSize: 13, marginBottom: 20 }}>
+          <ArrowLeft size={14} /> Back to Home
+        </Link>
+
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
           <div style={{
             width: 64, height: 64, margin: '0 auto 16px',

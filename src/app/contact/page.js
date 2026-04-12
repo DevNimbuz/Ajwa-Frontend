@@ -19,6 +19,7 @@ export default function ContactPage() {
   const [message, setMessage] = useState('');
   const [destination, setDestination] = useState('');
   const [travelDate, setTravelDate] = useState('');
+  const [honeypot, setHoneypot] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -28,14 +29,6 @@ export default function ContactPage() {
     { title: 'Trip Context', icon: '🌍' },
     { title: 'Final Details', icon: '📝' }
   ];
-
-  const [travelDate, setTravelDate] = useState('');
-  const [message, setMessage] = useState('');
-  const [honeypot, setHoneypot] = useState(''); 
-  const [error, setError] = useState('');
-  const [submitted, setSubmitted] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [destination, setDestination] = useState('');
 
   const handlePhoneChange = (e) => {
     const val = e.target.value.replace(/\D/g, '');

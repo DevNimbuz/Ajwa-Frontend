@@ -475,10 +475,16 @@ export default function RegisterPage() {
         )}
 
         <p style={{ textAlign: 'center', color: '#94a3b8', fontSize: 14, marginTop: 24, marginBottom: 0 }}>
-          Already have an account?{' '}
-          <Link href="/login" style={{ color: '#059669', fontWeight: 600, textDecoration: 'none' }}>
-            Sign In
+          <Link href="/" style={{ color: '#64748b', textDecoration: 'none', marginRight: 12 }}>
+            ← Back to Home
           </Link>
+          <span style={{ color: '#475569' }}>|</span>
+          <span style={{ marginLeft: 12 }}>
+            Already have an account?{' '}
+            <Link href="/login" style={{ color: '#059669', fontWeight: 600, textDecoration: 'none' }}>
+              Sign In
+            </Link>
+          </span>
         </p>
       </div>
 
