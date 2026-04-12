@@ -27,7 +27,7 @@ export default function CookieBanner() {
       background: 'rgba(16, 12, 8, 0.95)',
       backdropFilter: 'blur(10px)',
       border: '1px solid rgba(255, 255, 255, 0.1)',
-      borderRadius: var(--radius-lg, '16px'),
+      borderRadius: '16px',
       padding: '20px',
       zIndex: 9999,
       boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
