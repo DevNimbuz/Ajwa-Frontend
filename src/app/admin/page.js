@@ -90,8 +90,20 @@ export default function AdminDashboard() {
   const byStatus = leadStats?.byStatus || {};
 
   return (
-    <div>
-      <h1 style={{ color: '#f1f5f9', fontSize: 24, fontWeight: 700, margin: '0 0 24px' }}>📊 Dashboard</h1>
+    <>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
+        <div style={{ width: 48, height: 48, background: 'transparent', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+          <img 
+            src="/assets/img/icon-flyajwa.png" 
+            alt="FlyAjwa Icon" 
+            style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
+          />
+        </div>
+        <div>
+          <h1 style={{ color: '#f1f5f9', fontSize: '1.5rem', fontWeight: 700, margin: 0 }}>Dashboard</h1>
+          <p style={{ color: '#94a3b8', fontSize: '0.875rem' }}>Welcome back! Here's what's happening today.</p>
+        </div>
+      </div>
 
       {/* ── Stat Cards ── */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 16, marginBottom: 32 }}>
@@ -208,6 +220,6 @@ export default function AdminDashboard() {
           )}
         </div>
       </div>
-    </div>
+    </>
   );
 }

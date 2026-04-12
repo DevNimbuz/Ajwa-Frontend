@@ -1,12 +1,13 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Shield, Search, Filter, Clock, Globe, Laptop, AlertTriangle, CheckCircle2, XCircle, Info, ShieldAlert, Settings } from 'lucide-react';
+import { Shield, Search, Filter, Clock, Globe, Laptop, AlertTriangle, CheckCircle2, XCircle, Info, ShieldAlert, Settings, X, Terminal, Fingerprint, Database, Copy } from 'lucide-react';
 import { authAPI } from '@/lib/api';
 
 export default function SecurityLogs() {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({ search: '', category: '', action: '' });
+  const [selectedLog, setSelectedLog] = useState(null);
 
   useEffect(() => {
     const fetchLogs = async () => {
@@ -23,7 +24,8 @@ export default function SecurityLogs() {
     fetchLogs();
   }, []);
 
-  const handleUnlock = async (email) => {
+  const handleUnlock = async (e, email) => {
+    e.stopPropagation();
     if (!window.confirm(`Are you sure you want to unlock account for ${email}?`)) return;
     try {
       const res = await authAPI.unlockUser(email);
@@ -151,10 +153,16 @@ export default function SecurityLogs() {
               const style = getCategoryStyles(log.category);
               const LogIcon = style.icon;
               return (
-                <tr key={i} style={{ borderBottom: '1px solid #334155', background: log.category === 'HAZARD' ? '#ef444405' : 'transparent' }}>
+                <tr 
+                  key={i} 
+                  onClick={() => setSelectedLog(log)}
+                  style={{ borderBottom: '1px solid #334155', background: log.category === 'HAZARD' ? '#ef444405' : 'transparent', cursor: 'pointer', transition: 'background 0.2s' }}
+                  onMouseEnter={e => e.currentTarget.style.background = '#33415540'}
+                  onMouseLeave={e => e.currentTarget.style.background = log.category === 'HAZARD' ? '#ef444405' : 'transparent'}
+                >
                   <td style={{ padding: '12px 16px' }}>
                     <div style={{ color: '#f1f5f9', fontSize: '0.875rem', fontWeight: 600 }}>{log.action}</div>
-                    <div style={{ color: log.category === 'HAZARD' ? '#f87171' : '#94a3b8', fontSize: '0.75rem', marginTop: '2px' }}>
+                    <div style={{ color: log.category === 'HAZARD' ? '#f87171' : '#94a3b8', fontSize: '0.75rem', marginTop: '2px', maxWidth: '300px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {log.reason || log.email || 'No additional details'}
                     </div>
                   </td>
@@ -184,14 +192,17 @@ export default function SecurityLogs() {
                     </div>
                   </td>
                   <td style={{ padding: '12px 16px', textAlign: 'right' }}>
-                    {log.action === 'LOGIN_FAILURE' && (
-                      <button 
-                        onClick={() => handleUnlock(log.email)}
-                        style={{ padding: '4px 8px', background: '#63ab4520', border: '1px solid #63ab4540', borderRadius: '4px', color: '#63ab45', fontSize: '0.7rem', fontWeight: 600, cursor: 'pointer' }}
-                      >
-                        Unlock User
-                      </button>
-                    )}
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+                      {log.action === 'LOGIN_FAILURE' && (
+                        <button 
+                          onClick={(e) => handleUnlock(e, log.email)}
+                          style={{ padding: '4px 8px', background: '#63ab4520', border: '1px solid #63ab4540', borderRadius: '4px', color: '#63ab45', fontSize: '0.7rem', fontWeight: 600, cursor: 'pointer' }}
+                        >
+                          Unlock User
+                        </button>
+                      )}
+                      <div style={{ color: '#63ab45', fontSize: '0.7rem', fontWeight: 600, padding: '4px 8px' }}>View Detail →</div>
+                    </div>
                   </td>
                 </tr>
               );
@@ -199,11 +210,106 @@ export default function SecurityLogs() {
           </tbody>
         </table>
       </div>
+
+      {/* Event Detail Modal */}
+      {selectedLog && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', background: 'rgba(2, 6, 23, 0.8)', backdropFilter: 'blur(4px)' }}>
+          <div style={{ background: '#1e293b', width: '100%', maxWidth: '600px', borderRadius: '16px', border: '1px solid #334155', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)', overflow: 'hidden', position: 'relative', animation: 'modalIn 0.3s ease-out' }}>
+            {/* Header */}
+            <div style={{ padding: '20px 24px', background: '#0f172a', borderBottom: '1px solid #334155', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ padding: '8px', background: getCategoryStyles(selectedLog.category).bg, color: getCategoryStyles(selectedLog.category).text, borderRadius: '8px' }}>
+                  <Shield size={20} />
+                </div>
+                <div>
+                  <div style={{ color: '#94a3b8', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 700 }}>Event Insight</div>
+                  <div style={{ color: '#f1f5f9', fontSize: '1.25rem', fontWeight: 700 }}>{selectedLog.action}</div>
+                </div>
+              </div>
+              <button 
+                onClick={() => setSelectedLog(null)}
+                style={{ padding: '8px', background: 'transparent', border: 'none', color: '#64748b', cursor: 'pointer', borderRadius: '50%', transition: 'background 0.2s' }}
+                onMouseEnter={e => e.currentTarget.style.background = '#334155'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div style={{ padding: '24px', maxHeight: '70vh', overflowY: 'auto' }}>
+              <div style={{ marginBottom: '24px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#63ab45', fontSize: '0.875rem', fontWeight: 600, marginBottom: '8px' }}>
+                  <Info size={16} /> What Happened?
+                </div>
+                <div style={{ color: '#f1f5f9', fontSize: '1rem', lineHeight: 1.6, padding: '16px', background: '#0f172a', borderRadius: '12px', borderLeft: `4px solid ${getCategoryStyles(selectedLog.category).text}` }}>
+                  {selectedLog.reason || 'No descriptive reason provided for this event.'}
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px', marginBottom: '24px' }}>
+                <div style={{ padding: '12px', background: '#0f172a', borderRadius: '12px' }}>
+                  <div style={{ color: '#64748b', fontSize: '0.7rem', display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '4px' }}><Globe size={12}/> IP Address</div>
+                  <div style={{ color: '#f1f5f9', fontSize: '0.875rem', fontWeight: 600 }}>{selectedLog.ip}</div>
+                </div>
+                <div style={{ padding: '12px', background: '#0f172a', borderRadius: '12px' }}>
+                  <div style={{ color: '#64748b', fontSize: '0.7rem', display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '4px' }}><Clock size={12}/> Exact Time</div>
+                  <div style={{ color: '#f1f5f9', fontSize: '0.875rem', fontWeight: 600 }}>{new Date(selectedLog.createdAt).toLocaleTimeString()}</div>
+                </div>
+                <div style={{ padding: '12px', background: '#0f172a', borderRadius: '12px' }}>
+                  <div style={{ color: '#64748b', fontSize: '0.7rem', display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '4px' }}><Fingerprint size={12}/> Linked Identifier</div>
+                  <div style={{ color: '#f1f5f9', fontSize: '0.875rem', fontWeight: 600, wordBreak: 'break-all' }}>{selectedLog.email || selectedLog.user || 'Anonymous'}</div>
+                </div>
+                <div style={{ padding: '12px', background: '#0f172a', borderRadius: '12px' }}>
+                  <div style={{ color: '#64748b', fontSize: '0.7rem', display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '4px' }}><Laptop size={12}/> Device Fingerprint</div>
+                  <div style={{ color: '#f1f5f9', fontSize: '0.875rem', fontWeight: 600, textTransform: 'capitalize' }}>{selectedLog.device}</div>
+                </div>
+              </div>
+
+              {selectedLog.userAgent && (
+                <div style={{ marginBottom: '24px' }}>
+                  <div style={{ color: '#64748b', fontSize: '0.7rem', display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '8px' }}><Terminal size={12}/> Full User Agent</div>
+                  <code style={{ display: 'block', padding: '8px 12px', background: '#0f172a', borderRadius: '8px', color: '#94a3b8', fontSize: '0.75rem', fontFamily: 'monospace', border: '1px solid #334155' }}>
+                    {selectedLog.userAgent}
+                  </code>
+                </div>
+              )}
+
+              {(selectedLog.metadata || selectedLog.details) && (
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#f59e0b', fontSize: '0.875rem', fontWeight: 600, marginBottom: '12px' }}>
+                    <Database size={16} /> Extended Technical Metadata
+                  </div>
+                  <pre style={{ margin: 0, padding: '16px', background: '#020617', borderRadius: '12px', color: '#63ab45', fontSize: '0.8rem', fontFamily: 'monospace', overflow: 'auto', border: '1px solid #63ab4530' }}>
+                    {JSON.stringify(selectedLog.metadata || { details: selectedLog.details }, null, 2)}
+                  </pre>
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div style={{ padding: '16px 24px', background: '#0f172a', borderTop: '1px solid #334155', display: 'flex', justifyContent: 'flex-end' }}>
+              <button 
+                onClick={() => setSelectedLog(null)}
+                style={{ padding: '8px 24px', background: '#63ab45', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '0.875rem', fontWeight: 600, cursor: 'pointer', transition: 'transform 0.2s' }}
+                onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
+                onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+              >
+                Close Insight
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       
       <style jsx>{`
         @keyframes pulse {
           0%, 100% { opacity: 1; }
           50% { opacity: .5; }
+        }
+        @keyframes modalIn {
+          from { opacity: 0; transform: scale(0.95); }
+          to { opacity: 1; transform: scale(1); }
         }
       `}</style>
     </div>

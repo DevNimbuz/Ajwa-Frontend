@@ -13,7 +13,7 @@ import DocumentVaultView from '@/components/dashboard/DocumentVaultView';
 import { 
   Plane, Heart, User, LogOut, Loader2, 
   MapPin, Calendar, ChevronRight, MessageSquare, 
-  Menu, Bell, Plus, ArrowRight, ExternalLink, LayoutDashboard, FileText
+  Menu, Bell, Plus, ArrowRight, ExternalLink, LayoutDashboard, FileText, Globe
 } from 'lucide-react';
 
 function LoadingState() {

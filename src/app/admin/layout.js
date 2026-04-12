@@ -125,8 +125,12 @@ export default function AdminLayout({ children }) {
       }}>
         {/* Logo */}
         <div style={{ padding: '20px 16px', borderBottom: '1px solid #334155', display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{ width: 36, height: 36, background: 'linear-gradient(135deg, #63ab45, #4d8a35)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Shield size={20} color="#fff" />
+          <div style={{ width: 36, height: 36, background: 'transparent', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+            <img 
+              src="/assets/img/icon-flyajwa.png" 
+              alt="FlyAjwa Logo" 
+              style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
+            />
           </div>
           <div>
             <div style={{ color: '#f1f5f9', fontWeight: 700, fontSize: 16 }}>FlyAjwa</div>

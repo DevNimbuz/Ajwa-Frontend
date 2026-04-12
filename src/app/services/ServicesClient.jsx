@@ -9,7 +9,6 @@ import { authAPI } from '@/lib/api';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import WhatsAppFloat from '@/components/WhatsAppFloat';
-import AnimatedSection from '@/components/AnimatedSection';
 
 const services = [
   {
@@ -277,49 +276,45 @@ export default function ServicesClient() {
 
       <section className="section">
         <div className="container">
-          <AnimatedSection>
-            <div className="section-header">
-              <span className="subtitle">What We Offer</span>
-              <h2 className="heading-2">Our Premium Services</h2>
-              <p>From holiday packages to visa processing, we provide end-to-end travel solutions.</p>
-            </div>
-          </AnimatedSection>
+          <div className="section-header">
+            <span className="subtitle">What We Offer</span>
+            <h2 className="heading-2">Our Premium Services</h2>
+            <p>From holiday packages to visa processing, we provide end-to-end travel solutions.</p>
+          </div>
 
           <div className="grid grid-3">
-            {services.map((s, i) => (
-              <AnimatedSection key={s.title} delay={(i % 3) * 0.05}>
-                <div className="service-card">
-                  <div className="service-card-img" style={{ position: 'relative' }}>
-                    <NextImage 
-                      src={s.img} 
-                      alt={s.title} 
-                      fill
-                      className="img-cover"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    />
-                  </div>
-                  <div className="service-card-body">
-                    <h3>{s.title}</h3>
-                    <p>{s.desc}</p>
-                    
-                    {s.authRequired && !isLoggedIn && (
-                      <div className="auth-badge animate-fade-in">
-                        <Lock size={12} />
-                        Account Required
-                      </div>
-                    )}
-
-                    <button 
-                      onClick={() => handleServiceClick(s)} 
-                      className={`btn btn-sm ${s.authRequired && !isLoggedIn ? 'btn-primary' : 'btn-outline'}`}
-                      style={{ width: 'fit-content' }}
-                    >
-                      {s.authRequired && !isLoggedIn ? 'Login to Book' : s.cta}
-                      <ArrowRight size={14} />
-                    </button>
-                  </div>
+            {services.map((s) => (
+              <div key={s.title} className="service-card">
+                <div className="service-card-img" style={{ position: 'relative' }}>
+                  <NextImage 
+                    src={s.img} 
+                    alt={s.title} 
+                    fill
+                    className="img-cover"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  />
                 </div>
-              </AnimatedSection>
+                <div className="service-card-body">
+                  <h3>{s.title}</h3>
+                  <p>{s.desc}</p>
+                  
+                  {s.authRequired && !isLoggedIn && (
+                    <div className="auth-badge animate-fade-in">
+                      <Lock size={12} />
+                      Account Required
+                    </div>
+                  )}
+
+                  <button 
+                    onClick={() => handleServiceClick(s)} 
+                    className={`btn btn-sm ${s.authRequired && !isLoggedIn ? 'btn-primary' : 'btn-outline'}`}
+                    style={{ width: 'fit-content' }}
+                  >
+                    {s.authRequired && !isLoggedIn ? 'Login to Book' : s.cta}
+                    <ArrowRight size={14} />
+                  </button>
+                </div>
+              </div>
             ))}
           </div>
         </div>

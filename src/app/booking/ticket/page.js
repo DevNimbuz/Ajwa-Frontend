@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { authAPI, leadsAPI } from '@/lib/api';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import AirportAutocomplete from '@/components/AirportAutocomplete';
 import { 
   Plane, Calendar, MapPin, Users, Info, 
   ArrowRight, Loader2, CheckCircle, ChevronLeft,
@@ -29,6 +30,11 @@ export default function TicketBookingPage() {
     message: '',
   });
 
+  const extractCode = (val) => {
+    const match = val.match(/\(([A-Z]{3})\)/);
+    return match ? match[1] : val;
+  };
+
   useEffect(() => {
     const checkAuth = async () => {
       const data = await authAPI.getMe();
@@ -47,16 +53,21 @@ export default function TicketBookingPage() {
     setSubmitting(true);
 
     try {
+      const fromCode = extractCode(form.from);
+      const toCode = extractCode(form.to);
+      
       const leadData = {
         name: user.name,
         email: user.email,
         phone: user.phone,
-        destination: `${form.from} to ${form.to}`,
+        destination: `${fromCode} to ${toCode}`,
         serviceType: 'Flight Ticket',
         message: `Booking Request: ${form.passengers} passengers, Class: ${form.travelClass}. Passport: ${form.passportNo}. ${form.message}`,
         serviceDetails: {
           from: form.from,
           to: form.to,
+          fromCode,
+          toCode,
           departureDate: form.departureDate,
           returnDate: form.returnDate,
           passengers: form.passengers,
@@ -87,7 +98,7 @@ export default function TicketBookingPage() {
             </div>
             <h1 className="heading-2" style={{ marginBottom: 12 }}>Booking Request Sent!</h1>
             <p style={{ color: '#64748b', fontSize: 16, marginBottom: 32 }}>
-              Your ticket booking request for <strong>{form.to}</strong> has been received. Our flight experts will contact you shortly with the best available quotes.
+              Your ticket booking request for <strong>{extractCode(form.to)}</strong> has been received. Our flight experts will contact you shortly with the best available quotes.
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <Link href="/dashboard" className="btn btn-primary" style={{ width: '100%' }}>View in Dashboard</Link>
@@ -117,28 +128,18 @@ export default function TicketBookingPage() {
           <div className="glass-card" style={{ padding: 40 }}>
             <form onSubmit={handleSubmit} style={{ display: 'grid', gap: 24 }}>
               <div className="grid grid-2" style={{ gap: 20 }}>
-                <div>
-                  <label style={labelStyle}>Departure From</label>
-                  <div style={{ position: 'relative' }}>
-                    <MapPin size={18} style={iconStyle} />
-                    <input 
-                      type="text" required value={form.from} 
-                      onChange={e => setForm({...form, from: e.target.value})}
-                      placeholder="City or Airport" style={inputStyle} 
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label style={labelStyle}>Destination To</label>
-                  <div style={{ position: 'relative' }}>
-                    <MapPin size={18} style={iconStyle} />
-                    <input 
-                      type="text" required value={form.to} 
-                      onChange={e => setForm({...form, to: e.target.value})}
-                      placeholder="Where are you going?" style={inputStyle} 
-                    />
-                  </div>
-                </div>
+                <AirportAutocomplete
+                  value={form.from}
+                  onChange={val => setForm({...form, from: val})}
+                  placeholder="City or Airport"
+                  label="Departure From"
+                />
+                <AirportAutocomplete
+                  value={form.to}
+                  onChange={val => setForm({...form, to: val})}
+                  placeholder="Where are you going?"
+                  label="Destination To"
+                />
               </div>
 
               <div className="grid grid-2" style={{ gap: 20 }}>

@@ -1194,6 +1194,29 @@ h1, h2, h3, h4, h5, h6 {
 #about{
   padding-bottom: 55px;
 }
+#about-detail{
+  padding-top: 80px;
+  padding-bottom: 40px;
+}
+#our-story{
+  padding-top: 40px;
+  padding-bottom: 20px;
+}
+#core-values{
+  padding-top: 40px;
+  padding-bottom: 20px;
+}
+#why-choose{
+  padding-top: 40px;
+  padding-bottom: 20px;
+}
+#team{
+  padding-top: 60px;
+  padding-bottom: 20px;
+}
+#activities{
+  padding-bottom: 20px;
+}
 /* ── Destination CTA Card ── */
 .dest-cta {
   background: linear-gradient(135deg, #63ab45 0%, #4e8c36 50%, #3a7029 100%);
@@ -1466,7 +1489,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .package-card-body {
-  padding: var(--space-xl);
+  padding: 1.25rem var(--space-lg);
 }
 
 .package-card-title {
@@ -1479,9 +1502,9 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   align-items: center;
   gap: var(--space-md);
-  margin-bottom: var(--space-md);
-  font-size: var(--text-sm);
-  color: var(--color-text-muted);
+  margin-bottom: var(--space-sm);
+  font-size: 0.95rem;
+  color: var(--color-text-secondary);
 }
 
 .package-card-meta svg {
@@ -1492,22 +1515,26 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: var(--space-md);
+  padding-top: 0.75rem;
+  margin-top: 0.5rem;
   border-top: 1px solid var(--color-border);
 }
 
 .package-card-price {
   font-family: var(--font-heading);
-  font-size: var(--text-2xl);
+  font-size: 1.65rem;
   font-weight: 700;
   color: var(--color-gold);
+  line-height: 1.2;
 }
 
 .package-card-price span {
-  font-size: var(--text-sm);
+  font-size: 0.82rem;
   font-family: var(--font-body);
   font-weight: 400;
   color: var(--color-text-muted);
+  display: inline-block;
+  margin-left: 2px;
 }
 
 /* ── Testimonial Card ── */
@@ -3184,9 +3211,10 @@ h1, h2, h3, h4, h5, h6 {
 
 .package-pricing-amount {
   display: flex;
-  align-items: baseline;
-  gap: 12px;
+  align-items: flex-end;
+  gap: 8px;
   margin-bottom: 2.5rem;
+  line-height: 1;
 }
 
 .package-pricing-amount .price {
@@ -3194,11 +3222,13 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 800;
   color: #fff;
   letter-spacing: -0.02em;
+  line-height: 1;
 }
 
 .package-pricing-amount .per {
-  color: rgba(255,255,255,0.4);
-  font-size: 1.1rem;
+  color: rgba(255,255,255,0.5);
+  font-size: 1rem;
+  font-weight: 500;
 }
 
 .package-pricing-features {
@@ -3241,7 +3271,7 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 2.5rem;
   }
   .package-pricing-amount .per {
-    font-size: 0.95rem;
+    font-size: 0.85rem;
   }
   .package-pricing-features {
     margin-bottom: 2rem;

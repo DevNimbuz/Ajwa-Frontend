@@ -9,7 +9,7 @@ import Footer from '@/components/Footer';
 import { 
   User, Lock, FileText, Plane, Heart, ChevronRight,
   Loader2, Save, AlertCircle, CheckCircle, Download, 
-  Calendar, Mail, Phone, MapPin, ShieldCheck, Briefcase, FileSearch
+  Calendar, Mail, Phone, MapPin, ShieldCheck, Briefcase, FileSearch, Info
 } from 'lucide-react';
 
 const MEAL_OPTIONS = [
