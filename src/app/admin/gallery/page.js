@@ -115,29 +115,36 @@ export default function AdminGalleryPage() {
   if (loading) return <div style={{ padding: '2rem', color: '#fff' }}>Loading gallery...</div>;
 
   return (
-    <div style={{ padding: '2rem', maxWidth: 1200, margin: '0 auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
+    <div style={{ padding: '2rem 1rem', maxWidth: 1200, margin: '0 auto' }}>
+      <div className="admin-card-header">
         <div>
           <h1 style={{ color: '#f1f5f9', fontSize: '1.875rem', fontWeight: 700 }}>Interactive Gallery</h1>
           <p style={{ color: '#94a3b8' }}>Upload memories to be displayed on the public Reviews & Gallery page.</p>
         </div>
         
-        <form onSubmit={handleUpload} style={{ display: 'flex', gap: '1rem', alignItems: 'center', background: '#1e293b', padding: '16px', borderRadius: '12px', border: '1px solid #334155' }}>
+        <form 
+          onSubmit={handleUpload} 
+          style={{ 
+            display: 'flex', gap: '1rem', alignItems: 'center', 
+            background: '#1e293b', padding: '16px', borderRadius: '12px', 
+            border: '1px solid #334155', flexWrap: 'wrap', width: '100%', maxWidth: 'none'
+          }}
+        >
           {selectedIds.length > 0 && (
             <button 
               type="button"
               onClick={confirmBulkDelete}
-              style={{ background: '#ef4444', color: '#fff', padding: '8px 16px', borderRadius: '6px', border: 'none', cursor: 'pointer', fontWeight: 600, fontSize: '0.875rem' }}
+              style={{ background: '#ef4444', color: '#fff', padding: '8px 16px', borderRadius: '6px', border: 'none', cursor: 'pointer', fontWeight: 600, fontSize: '0.875rem', flex: '1 1 auto' }}
             >
               Delete Selected ({selectedIds.length})
             </button>
           )}
 
-          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flex: '1 1 200px', flexWrap: 'wrap' }}>
             <select 
               value={targetPackage}
               onChange={e => setTargetPackage(e.target.value)}
-              style={{ padding: '8px 12px', background: '#334155', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '0.875rem', cursor: 'pointer' }}
+              style={{ padding: '10px 12px', background: '#334155', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '0.875rem', cursor: 'pointer', flex: '1 1 120px' }}
             >
               <option value="">General Gallery</option>
               {Object.keys(packagesData).map(slug => (
@@ -153,7 +160,7 @@ export default function AdminGalleryPage() {
               onChange={e => setFiles(e.target.files)} 
               style={{ display: 'none' }}
             />
-            <label htmlFor="gallery-upload" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', background: '#334155', color: '#cbd5e1', borderRadius: '6px', cursor: 'pointer', fontSize: '0.875rem', transition: 'all 0.2s' }}>
+            <label htmlFor="gallery-upload" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px', background: '#334155', color: '#cbd5e1', borderRadius: '6px', cursor: 'pointer', fontSize: '0.875rem', transition: 'all 0.2s', flex: '1 1 auto', justifyContent: 'center' }}>
               <ImageIcon size={18} />
               {files.length > 0 ? `${files.length} selected` : 'Choose Photos'}
             </label>
@@ -161,7 +168,7 @@ export default function AdminGalleryPage() {
           <button 
             type="submit" 
             disabled={uploading || files.length === 0}
-            style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#63ab45', color: '#fff', padding: '8px 20px', borderRadius: '6px', border: 'none', cursor: 'pointer', fontWeight: 600, opacity: uploading || files.length === 0 ? 0.6 : 1 }}
+            style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#63ab45', color: '#fff', padding: '10px 20px', borderRadius: '6px', border: 'none', cursor: 'pointer', fontWeight: 600, opacity: uploading || files.length === 0 ? 0.6 : 1, flex: '1 1 auto', justifyContent: 'center' }}
           >
             {uploading ? <UploadCloud size={16} className="spin" /> : <UploadCloud size={16} />}
             {uploading ? 'Uploading...' : 'Upload'}

@@ -118,9 +118,9 @@ export default function DocumentBookingPage() {
           <p style={{ color: '#64748b', fontSize: 18 }}>Safe, secure, and professional document handling for your global ambitions.</p>
         </div>
 
-        <div className="grid" style={{ gridTemplateColumns: '1.5fr 1fr', gap: 40 }}>
+        <div className="booking-layout-grid">
           {/* Form Section */}
-          <div className="glass-card" style={{ padding: 40 }}>
+          <div className="booking-form-card">
             <form onSubmit={handleSubmit} style={{ display: 'grid', gap: 24 }}>
               <div>
                 <label style={labelStyle}>Type of Document</label>
@@ -137,7 +137,7 @@ export default function DocumentBookingPage() {
                 </div>
               </div>
 
-              <div className="grid grid-2" style={{ gap: 20 }}>
+              <div className="form-grid-2">
                 <div>
                   <label style={labelStyle}>Target Country</label>
                   <div style={{ position: 'relative' }}>

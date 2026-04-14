@@ -88,11 +88,11 @@ export default function SecurityLogs() {
 
       {/* Filters */}
       <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
-        <div style={{ position: 'relative', flex: 1, minWidth: '300px' }}>
+        <div style={{ position: 'relative', flex: '1 1 280px' }}>
           <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#64748b' }} />
           <input 
             type="text" 
-            placeholder="Search by Email, IP, or Event Reason..." 
+            placeholder="Search logs..." 
             value={filters.search}
             onChange={e => setFilters({...filters, search: e.target.value})}
             style={{ width: '100%', padding: '10px 12px 10px 40px', background: '#1e293b', border: '1px solid #334155', borderRadius: '8px', color: '#f1f5f9', outline: 'none' }}
@@ -129,8 +129,8 @@ export default function SecurityLogs() {
         </button>
       </div>
 
-      {/* Table */}
-      <div style={{ background: '#1e293b', borderRadius: '12px', border: '1px solid #334155', overflow: 'hidden' }}>
+      {/* Table Wrapped in Scroll Container */}
+      <div className="admin-table-wrapper">
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead style={{ background: '#0f172a' }}>
             <tr>
@@ -247,7 +247,7 @@ export default function SecurityLogs() {
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px', marginBottom: '24px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
                 <div style={{ padding: '12px', background: '#0f172a', borderRadius: '12px' }}>
                   <div style={{ color: '#64748b', fontSize: '0.7rem', display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '4px' }}><Globe size={12}/> IP Address</div>
                   <div style={{ color: '#f1f5f9', fontSize: '0.875rem', fontWeight: 600 }}>{selectedLog.ip}</div>

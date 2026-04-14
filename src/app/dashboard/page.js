@@ -96,7 +96,7 @@ export default function DashboardPage() {
         return <DocumentVaultView documents={user?.documents || []} />;
       default:
         return (
-          <div className="grid grid-2" style={{ gridTemplateColumns: 'minmax(0, 1.5fr) minmax(0, 1fr)', alignItems: 'start' }}>
+          <div className="grid grid-2-responsive" style={{ alignItems: 'start' }}>
             {/* Recent Bookings Section */}
             <section>
               <div className="flex-between" style={{ marginBottom: 20 }}>
@@ -212,7 +212,7 @@ export default function DashboardPage() {
 
       <main className="dashboard-main animate-fade-in">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 32, flexWrap: 'wrap', gap: 20 }}>
-          <div>
+          <div style={{ flex: '1 1 300px' }}>
             <h1 className="heading-1" style={{ marginBottom: 8, color: '#1e293b' }}>
               {currentTab === 'overview' ? `Marhaba, ${user.name?.split(' ')[0]}! 👋` : currentTab.charAt(0).toUpperCase() + currentTab.slice(1)}
             </h1>
@@ -225,7 +225,7 @@ export default function DashboardPage() {
             </p>
           </div>
 
-          <div style={{ display: 'flex', gap: 12, position: 'relative' }}>
+          <div style={{ display: 'flex', gap: 12, position: 'relative', flexWrap: 'wrap' }}>
              <button 
               onClick={() => setShowNotifications(!showNotifications)}
               className="glass-card flex-center"
@@ -236,7 +236,7 @@ export default function DashboardPage() {
              </button>
 
              {showNotifications && (
-                <div className="glass-card animate-slide-up" style={{ position: 'absolute', top: 'calc(100% + 12px)', right: 0, width: 320, padding: 16, zIndex: 9999, overflow: 'hidden' }}>
+                <div className="glass-card animate-slide-up" style={{ position: 'absolute', top: 'calc(100% + 12px)', right: 0, width: Math.min(320, typeof window !== 'undefined' ? window.innerWidth - 40 : 320), padding: 16, zIndex: 9999, overflow: 'hidden' }}>
                   <div className="flex-between" style={{ marginBottom: 12 }}>
                     <h3 style={{ fontSize: 15, fontWeight: 700, color: '#1e293b' }}>Notifications</h3>
                     <span style={{ fontSize: 11, color: '#94a3b8' }}>{notifications.length} New</span>
@@ -255,7 +255,7 @@ export default function DashboardPage() {
                 </div>
              )}
 
-             <Link href="/booking/ticket" className="btn btn-primary btn-sm" style={{ padding: '0 24px', height: 48 }}>
+             <Link href="/booking/ticket" className="btn btn-primary btn-sm" style={{ padding: '0 24px', height: 48, flex: '1 1 auto' }}>
                <Plus size={18} /> New Ticket Booking
              </Link>
           </div>
@@ -271,9 +271,6 @@ export default function DashboardPage() {
           {renderTabContent()}
         </div>
 
-        <button onClick={() => setMobileMenuOpen(true)} className="dashboard-fab flex-center shadow-gold">
-          <Menu size={28} />
-        </button>
       </main>
 
       <style jsx>{`
@@ -282,7 +279,16 @@ export default function DashboardPage() {
         .dashboard-fab { position: fixed; bottom: 32; right: 32; width: 60; height: 60; borderRadius: 50%; background: var(--gradient-gold); color: #fff; zIndex: 100; border: none; transition: all 0.3s; display: flex; align-items: center; justify-content: center; }
         .dashboard-fab:hover { transform: scale(1.1) rotate(5deg); }
         @media (min-width: 1025px) { .dashboard-fab { display: none; } }
-        @media (max-width: 1024px) { .grid-2 { grid-template-columns: 1fr; } }
+        @media (max-width: 1024px) { 
+          .grid-2-responsive { grid-template-columns: 1fr; gap: 24px; } 
+        }
+        @media (min-width: 1025px) {
+          .grid-2-responsive { grid-template-columns: 1.5fr 1fr; gap: 40px; }
+          .mobile-only-inline { display: none !important; }
+        }
+        @media (max-width: 1024px) {
+          .mobile-actions-row { flex-direction: row-reverse; justify-content: space-between !important; }
+        }
       `}</style>
     </div>
   );

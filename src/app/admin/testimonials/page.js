@@ -70,24 +70,36 @@ export default function AdminTestimonialsPage() {
   if (loading) return <div style={{ padding: '2rem', color: '#fff' }}>Loading testimonials...</div>;
 
   return (
-    <div style={{ padding: '2rem', maxWidth: 1200, margin: '0 auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
+    <div style={{ padding: '2rem 1rem', maxWidth: 1200, margin: '0 auto' }}>
+      <div className="admin-card-header">
         <div>
           <h1 style={{ color: '#f1f5f9', fontSize: '1.875rem', fontWeight: 700 }}>Testimonials & Reviews</h1>
           <p style={{ color: '#94a3b8' }}>Approve website submissions and sync Google Business ratings.</p>
         </div>
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', background: '#1e293b', padding: '12px 16px', borderRadius: '8px', border: '1px solid #334155' }}>
+        <div style={{ 
+          display: 'flex', gap: '1rem', alignItems: 'center', 
+          background: '#1e293b', padding: '12px 16px', borderRadius: '12px', 
+          border: '1px solid #334155', flexWrap: 'wrap' 
+        }}>
           <input 
             type="text" 
             placeholder="Google Place ID..." 
             value={placeId} 
             onChange={e => setPlaceId(e.target.value)} 
-            style={{ padding: '8px 12px', borderRadius: '4px', border: '1px solid #475569', background: '#0f172a', color: '#fff' }}
+            style={{ 
+              padding: '8px 12px', borderRadius: '4px', border: '1px solid #475569', 
+              background: '#0f172a', color: '#fff', flex: '1 1 200px'
+            }}
           />
           <button 
             onClick={handleGoogleSync} 
             disabled={syncing}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#3b82f6', color: '#fff', padding: '8px 16px', borderRadius: '6px', border: 'none', cursor: 'pointer', fontWeight: 500 }}
+            style={{ 
+              display: 'flex', alignItems: 'center', gap: 6, background: '#3b82f6', 
+              color: '#fff', padding: '10px 16px', borderRadius: '6px', 
+              border: 'none', cursor: 'pointer', fontWeight: 600, flex: '1 1 auto', 
+              justifyContent: 'center' 
+            }}
           >
             {syncing ? <RefreshCw size={16} className="spin" /> : <DownloadCloud size={16} />}
             {syncing ? 'Syncing...' : 'Sync Google'}
@@ -99,10 +111,10 @@ export default function AdminTestimonialsPage() {
       <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
         <input 
           type="text" 
-          placeholder="Search by name or review text..." 
+          placeholder="Search reviews..." 
           value={search}
           onChange={e => setSearch(e.target.value)}
-          style={{ flex: 1, minWidth: '300px', padding: '10px 16px', background: '#1e293b', border: '1px solid #334155', borderRadius: '8px', color: '#fff', outline: 'none' }}
+          style={{ flex: '1 1 240px', padding: '10px 16px', background: '#1e293b', border: '1px solid #334155', borderRadius: '8px', color: '#fff', outline: 'none' }}
         />
         <select 
           value={statusFilter}
@@ -116,7 +128,7 @@ export default function AdminTestimonialsPage() {
         </select>
       </div>
 
-      <div style={{ background: '#1e293b', borderRadius: '12px', border: '1px solid #334155', overflow: 'hidden' }}>
+      <div className="admin-table-wrapper">
         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', color: '#cbd5e1' }}>
           <thead>
             <tr style={{ background: '#0f172a', color: '#94a3b8', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>

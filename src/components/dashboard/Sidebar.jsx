@@ -104,42 +104,6 @@ export default function Sidebar({ user, onLogout, mobileOpen, setMobileOpen }) {
         {sidebarContent}
       </aside>
 
-      {/* Mobile Drawer */}
-      <div 
-        style={{
-          position: 'fixed',
-          inset: 0,
-          background: 'rgba(15, 23, 42, 0.4)',
-          backdropFilter: 'blur(4px)',
-          zIndex: 2000,
-          opacity: mobileOpen ? 1 : 0,
-          visibility: mobileOpen ? 'visible' : 'hidden',
-          transition: 'all 0.3s ease',
-        }}
-        onClick={() => setMobileOpen(false)}
-      >
-        <aside 
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: mobileOpen ? 0 : '-100%',
-            bottom: 0,
-            width: '280px',
-            background: '#fff',
-            padding: '32px 24px',
-            transition: 'left 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-            boxShadow: '20px 0 60px rgba(0,0,0,0.1)',
-          }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
-            <button onClick={() => setMobileOpen(false)} style={{ color: '#94a3b8' }}>
-              <X size={24} />
-            </button>
-          </div>
-          {sidebarContent}
-        </aside>
-      </div>
 
       <style jsx global>{`
         @media (max-width: 1024px) {

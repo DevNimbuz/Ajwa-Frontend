@@ -115,7 +115,7 @@ export default function TicketBookingPage() {
     <div style={{ minHeight: '100vh', background: '#f8fafc' }}>
       <Header />
       
-      <main style={{ padding: '120px 20px 80px', maxWidth: 1100, margin: '0 auto' }}>
+      <main style={{ padding: '120px 20px 80px', maxWidth: 1100, margin: '0 auto' }} className="animate-fade-in">
         <div style={{ marginBottom: 40 }}>
           <Link href="/dashboard" style={{ color: '#63ab45', fontSize: 14, fontWeight: 600, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6, marginBottom: 16 }}>
              <ChevronLeft size={16} /> Back to Hub
@@ -124,11 +124,11 @@ export default function TicketBookingPage() {
           <p style={{ color: '#64748b', fontSize: 18 }}>Share your travel plans and get the best group & individual flight rates.</p>
         </div>
 
-        <div className="grid" style={{ gridTemplateColumns: '1.5fr 1fr', gap: 40 }}>
+        <div className="booking-layout-grid">
           {/* Form Section */}
-          <div className="glass-card" style={{ padding: 40 }}>
+          <div className="booking-form-card">
             <form onSubmit={handleSubmit} style={{ display: 'grid', gap: 24 }}>
-              <div className="grid grid-2" style={{ gap: 20 }}>
+              <div className="form-grid-2">
                 <AirportAutocomplete
                   value={form.from}
                   onChange={val => setForm({...form, from: val})}
@@ -143,7 +143,7 @@ export default function TicketBookingPage() {
                 />
               </div>
 
-              <div className="grid grid-2" style={{ gap: 20 }}>
+              <div className="form-grid-2">
                 <div>
                   <label style={labelStyle}>Departure Date</label>
                   <div style={{ position: 'relative' }}>
@@ -182,7 +182,7 @@ export default function TicketBookingPage() {
                 </div>
               </div>
 
-              <div className="grid grid-2" style={{ gap: 20 }}>
+              <div className="form-grid-2">
                 <div>
                   <label style={labelStyle}>No. of Passengers</label>
                   <div style={{ position: 'relative' }}>

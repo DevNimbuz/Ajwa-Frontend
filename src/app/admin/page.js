@@ -106,7 +106,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* ── Stat Cards ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 16, marginBottom: 32 }}>
+      <div className="grid-responsive" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 16, marginBottom: 32 }}>
         {[
           { label: 'Total Leads', value: overview.total, icon: Users, color: '#3b82f6', bg: '#3b82f615' },
           { label: 'Today', value: overview.today, icon: Clock, color: '#22c55e', bg: '#22c55e15' },
@@ -133,9 +133,9 @@ export default function AdminDashboard() {
         })}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 32 }}>
+      <div className="admin-grid-2" style={{ marginBottom: 32 }}>
         {/* ── Lead Conversion Funnel ── */}
-        <div style={{ background: '#1e293b', borderRadius: 12, padding: 24, border: '1px solid #334155' }}>
+        <div style={{ background: '#1e293b', borderRadius: 12, padding: 24, border: '1px solid #334155', minHeight: 388 }}>
           <h2 style={{ color: '#f1f5f9', fontSize: 16, fontWeight: 600, margin: '0 0 20px' }}>Lead Conversion Funnel</h2>
           <FunnelChart 
             data={Object.entries(statusColors).map(([status, color]) => ({
@@ -147,7 +147,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* ── Top Destinations ── */}
-        <div style={{ background: '#1e293b', borderRadius: 12, padding: 24, border: '1px solid #334155', maxHeight: 388, overflowY: 'auto' }}>
+        <div style={{ background: '#1e293b', borderRadius: 12, padding: 24, border: '1px solid #334155', minHeight: 388, overflowY: 'auto' }}>
           <h2 style={{ color: '#f1f5f9', fontSize: 16, fontWeight: 600, margin: '0 0 20px' }}>Top Destinations</h2>
           {(leadStats?.topDestinations || []).length === 0 ? (
             <p style={{ color: '#64748b', fontSize: 14 }}>No lead data yet</p>
@@ -170,9 +170,9 @@ export default function AdminDashboard() {
       </div>
 
       {/* ── Secondary Insights ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 24, marginBottom: 32 }}>
+      <div className="admin-grid-1-2" style={{ marginBottom: 32 }}>
         {/* ── Devices Chart ── */}
-        <div style={{ background: '#1e293b', borderRadius: 12, padding: 24, border: '1px solid #334155' }}>
+        <div style={{ background: '#1e293b', borderRadius: 12, padding: 24, border: '1px solid #334155', minHeight: 400 }}>
           <h2 style={{ color: '#f1f5f9', fontSize: 16, fontWeight: 600, margin: '0 0 20px' }}>Device Analytics</h2>
           <DevicePieChart 
             data={[
@@ -184,7 +184,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* ── Recent Leads ── */}
-        <div style={{ background: '#1e293b', borderRadius: 12, padding: 24, border: '1px solid #334155' }}>
+        <div style={{ background: '#1e293b', borderRadius: 12, padding: 24, border: '1px solid #334155', overflowX: 'auto' }}>
           <h2 style={{ color: '#f1f5f9', fontSize: 16, fontWeight: 600, margin: '0 0 20px' }}>Recent Leads</h2>
           {(leadStats?.recentLeads || []).length === 0 ? (
             <p style={{ color: '#64748b', fontSize: 14 }}>No leads yet — they will appear here once visitors submit enquiries.</p>

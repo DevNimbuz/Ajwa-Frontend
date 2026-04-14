@@ -4,8 +4,9 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { usePathname } from 'next/navigation';
 import { 
-  Phone, Mail, MapPin, X, User, ArrowRight, 
-  LogIn, LogOut, Bell, Settings, LayoutDashboard 
+  LogIn, LogOut, Bell, Settings, LayoutDashboard,
+  Home, Plane, Heart, FileText, Globe,
+  Phone, Mail, MapPin, X, User, ArrowRight, Info, MessageSquare, Briefcase
 } from 'lucide-react';
 import siteConfig from '@/data/siteConfig';
 import { authAPI } from '@/lib/api';
@@ -258,7 +259,7 @@ export default function Header() {
       <div className={`mobile-drawer-overlay ${mobileOpen ? 'open' : ''}`} onClick={() => setMobileOpen(false)} />
       
       <div className={`mobile-drawer ${mobileOpen ? 'open' : ''}`}>
-        <div className="mobile-drawer-header">
+        <div style={{ padding: '0 24px 20px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
           <Link href="/" className="mobile-drawer-logo">
             <img src={siteConfig.logo} alt="FlyAjwa" />
           </Link>
@@ -271,22 +272,80 @@ export default function Header() {
           </button>
         </div>
 
-        <nav className="mobile-drawer-nav">
-          {siteConfig.nav.map((item, i) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={pathname === item.href ? 'active' : ''}
-              style={{ transitionDelay: `${i * 0.05}s` }}
-            >
-              {item.label}
-            </Link>
-          ))}
-          {user && (
-            <Link href="/dashboard" className={pathname === '/dashboard' ? 'active' : ''}>
-              Dashboard
-            </Link>
+        <nav 
+          className="mobile-drawer-nav" 
+          style={{ 
+            display: 'flex', flexDirection: 'column', gap: 24, 
+            padding: '24px 0', flex: 1, overflowY: 'auto' 
+          }}
+        >
+          {/* Dashboard Contextual Section */}
+          {user && user.role === 'CUSTOMER' && (
+            <div>
+              <p style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>
+                Traveler Hub
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                {[
+                  { label: 'Overview', href: '/dashboard', icon: Home },
+                  { label: 'My Bookings', href: '/dashboard?tab=bookings', icon: Plane },
+                  { label: 'Wishlist', href: '/dashboard?tab=wishlist', icon: Heart },
+                  { label: 'My Documents', href: '/dashboard?tab=documents', icon: FileText },
+                  { label: 'My Profile', href: '/profile', icon: User },
+                ].map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setMobileOpen(false)}
+                    style={{ 
+                      padding: '12px 14px', borderRadius: 12, display: 'flex', alignItems: 'center', gap: 12,
+                      background: pathname === item.href ? 'rgba(99, 171, 69, 0.15)' : 'transparent',
+                      color: pathname === item.href ? '#63ab45' : '#fff',
+                      fontSize: 14, fontWeight: 600, textDecoration: 'none'
+                    }}
+                  >
+                    <item.icon size={18} />
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
           )}
+
+          <div>
+            <p style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>
+              Quick Links
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              {siteConfig.nav.map((item, i) => {
+                // Icon Mapping
+                let Icon = Globe;
+                if (item.label === 'Home') Icon = Home;
+                if (item.label === 'About Us') Icon = Info;
+                if (item.label === 'Packages') Icon = Globe;
+                if (item.label === 'Services') Icon = Briefcase;
+                if (item.label === 'Reviews') Icon = MessageSquare;
+                if (item.label === 'Contact') Icon = Mail;
+
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setMobileOpen(false)}
+                    style={{ 
+                      padding: '12px 14px', borderRadius: 12, display: 'flex', alignItems: 'center', gap: 12,
+                      background: pathname === item.href ? 'rgba(99, 171, 69, 0.15)' : 'transparent',
+                      color: pathname === item.href ? '#63ab45' : '#fff',
+                      fontSize: 14, fontWeight: 600, textDecoration: 'none',
+                    }}
+                  >
+                    <Icon size={18} />
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
         </nav>
 
         <div className="mobile-drawer-footer">

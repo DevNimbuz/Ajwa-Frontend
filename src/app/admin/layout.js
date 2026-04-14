@@ -125,22 +125,11 @@ export default function AdminLayout({ children }) {
   return (
     <NotificationProvider>
       <NotificationToast />
-      <div style={{ display: 'flex', minHeight: '100vh', background: '#0f172a', fontFamily: "'Inter', 'Segoe UI', sans-serif" }}>
+      <div className={`admin-layout-wrapper ${sidebarOpen ? 'sidebar-active' : ''}`}>
         <ActivityWatchdog />
       
       {/* ── Sidebar ── */}
-      <aside style={{
-        width: sidebarOpen ? 260 : 260,
-        background: '#1e293b',
-        borderRight: '1px solid #334155',
-        display: 'flex',
-        flexDirection: 'column',
-        position: 'fixed',
-        top: 0, left: 0, bottom: 0,
-        zIndex: 50,
-        transform: sidebarOpen ? 'translateX(0)' : (typeof window !== 'undefined' && window.innerWidth < 768 ? 'translateX(-100%)' : 'translateX(0)'),
-        transition: 'transform 0.3s ease',
-      }}>
+      <aside className="admin-sidebar" style={{ zIndex: 1001 }}>
         {/* Logo */}
         <div style={{ padding: '20px 16px', borderBottom: '1px solid #334155', display: 'flex', alignItems: 'center', gap: 12 }}>
           <div style={{ width: 36, height: 36, background: 'transparent', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
@@ -221,16 +210,12 @@ export default function AdminLayout({ children }) {
       </aside>
 
       {/* ── Main Content Area ── */}
-      <div style={{ flex: 1, marginLeft: 260 }}>
-        {/* Top Header (Mobile) */}
-        <header style={{
-          padding: '12px 24px', background: '#1e293b', borderBottom: '1px solid #334155',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        }}>
+      <div className="admin-main">
+        <header className="admin-mobile-header">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
             aria-label={sidebarOpen ? "Close Sidebar Menu" : "Open Sidebar Menu"}
-            style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', display: 'none' }}
+            style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}
           >
             {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -256,18 +241,12 @@ export default function AdminLayout({ children }) {
       {sidebarOpen && (
         <div
           onClick={() => setSidebarOpen(false)}
-          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 40 }}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000 }}
         />
       )}
 
       <style jsx global>{`
         @keyframes spin { to { transform: rotate(360deg); } }
-        @media (max-width: 768px) {
-          aside { transform: translateX(-100%) !important; }
-          aside[style*="translateX(0)"] { transform: translateX(0) !important; }
-          div[style*="marginLeft: 260"] { margin-left: 0 !important; }
-          button[style*="display: none"] { display: block !important; }
-        }
       `}</style>
       </div>
     </NotificationProvider>
