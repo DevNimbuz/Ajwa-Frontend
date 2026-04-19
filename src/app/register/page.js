@@ -140,8 +140,6 @@ export default function RegisterPage() {
       const data = await authAPI.verifyOTP(verifyToken, otpCode);
       
       if (data.success && data.user) {
-        localStorage.setItem('flyajwa_token', data.token);
-        localStorage.setItem('flyajwa_user', JSON.stringify(data.user));
         router.push('/dashboard');
       }
     } catch (err) {

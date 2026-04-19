@@ -38,8 +38,8 @@ export function NotificationProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    const token = authAPI.getToken();
-    if (!token) return;
+    const user = authAPI.getUser();
+    if (!user || !['SUPER_ADMIN', 'TEAM'].includes(user.role)) return;
 
     const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
     const eventSource = new EventSource(`${API_BASE}/notifications/stream`, {

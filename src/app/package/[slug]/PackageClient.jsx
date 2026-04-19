@@ -30,10 +30,7 @@ export default function PackageClient({ pkg, clientSnapshots, siteConfig }) {
   const checkWishlist = async () => {
     if (!authAPI.isAuthenticated()) return;
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/auth/wishlist`, {
-        headers: { 'Authorization': `Bearer ${authAPI.getToken()}` }
-      });
-      const data = await res.json();
+      const data = await authAPI.getWishlist();
       if (data.success) {
         const ids = data.data.map(p => p._id || p.id);
         setIsInWishlist(ids.includes(pkg._id));

@@ -8,35 +8,63 @@
 
 // Backend API URL — set in .env.local or defaults to localhost
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const USER_STORAGE_KEY = 'flyajwa_user';
+const LEGACY_USER_STORAGE_KEY = 'flyajwa_user';
+const LEGACY_TOKEN_STORAGE_KEY = 'flyajwa_token';
+const CSRF_STORAGE_KEY = 'flyajwa_csrf';
 
-/** Store user info and JWT token after login */
-function setUser(user) {
+function clearLegacyAuthStorage() {
   if (typeof window === 'undefined') return;
-  sessionStorage.setItem('flyajwa_user', JSON.stringify(user));
+  sessionStorage.removeItem(LEGACY_TOKEN_STORAGE_KEY);
+  localStorage.removeItem(LEGACY_TOKEN_STORAGE_KEY);
+  localStorage.removeItem(LEGACY_USER_STORAGE_KEY);
 }
 
-function setToken(token) {
+/** Store user info for the active browser session */
+function setUser(user) {
   if (typeof window === 'undefined') return;
-  sessionStorage.setItem('flyajwa_token', token);
+  clearLegacyAuthStorage();
+  sessionStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
+}
+
+function setCSRFToken(token) {
+  if (typeof window === 'undefined') return;
+  if (!token) {
+    sessionStorage.removeItem(CSRF_STORAGE_KEY);
+    return;
+  }
+  sessionStorage.setItem(CSRF_STORAGE_KEY, token);
 }
 
 function getToken() {
+  return null;
+}
+
+function getCSRFToken() {
   if (typeof window === 'undefined') return null;
-  return sessionStorage.getItem('flyajwa_token');
+  return sessionStorage.getItem(CSRF_STORAGE_KEY);
 }
 
 /** Remove session data on logout */
 function removeSession() {
   if (typeof window === 'undefined') return;
-  sessionStorage.removeItem('flyajwa_user');
-  sessionStorage.removeItem('flyajwa_token');
+  sessionStorage.removeItem(USER_STORAGE_KEY);
+  sessionStorage.removeItem(CSRF_STORAGE_KEY);
+  clearLegacyAuthStorage();
 }
 
 /** Get stored user info */
 function getUser() {
   if (typeof window === 'undefined') return null;
-  const data = sessionStorage.getItem('flyajwa_user');
-  return data ? JSON.parse(data) : null;
+  const data = sessionStorage.getItem(USER_STORAGE_KEY);
+  if (!data) return null;
+
+  try {
+    return JSON.parse(data);
+  } catch {
+    sessionStorage.removeItem(USER_STORAGE_KEY);
+    return null;
+  }
 }
 
 /**
@@ -49,14 +77,14 @@ async function apiFetch(endpoint, options = {}) {
   const url = `${API_BASE}${endpoint}`;
 
   const isFormData = options.body instanceof FormData;
-  const token = getToken();
+  const method = (options.method || 'GET').toUpperCase();
+  const csrfToken = getCSRFToken();
 
   const config = {
     credentials: 'include',
     headers: {
       ...(!isFormData && { 'Content-Type': 'application/json' }),
-      // Send token as Bearer header — works cross-domain (Vercel → Render)
-      ...(token && { 'Authorization': `Bearer ${token}` }),
+      ...(['POST', 'PUT', 'PATCH', 'DELETE'].includes(method) && csrfToken ? { 'X-CSRF-Token': csrfToken } : {}),
       ...options.headers,
     },
     ...options,
@@ -69,6 +97,10 @@ async function apiFetch(endpoint, options = {}) {
 
   try {
     const response = await fetch(url, config);
+    const nextCSRFToken = response.headers.get('X-CSRF-Token') || response.headers.get('x-csrf-token');
+    if (nextCSRFToken) {
+      setCSRFToken(nextCSRFToken);
+    }
 
     // Handle CSV export (blob response)
     if (response.headers.get('content-type')?.includes('text/csv')) {
@@ -124,7 +156,6 @@ export const authAPI = {
     });
     if (data.success) {
       setUser(data.user);
-      if (data.token) setToken(data.token); // Store for Authorization header
     }
     return data;
   },
@@ -137,7 +168,6 @@ export const authAPI = {
     });
     if (data.success) {
       setUser(data.user);
-      if (data.token) setToken(data.token);
     }
     return data;
   },
@@ -159,7 +189,6 @@ export const authAPI = {
     });
     if (data.success && data.user) {
       setUser(data.user);
-      if (data.token) setToken(data.token);
     }
     return data;
   },
@@ -175,12 +204,29 @@ export const authAPI = {
 
   /** Get current user profile */
   async getMe() {
-    return apiFetch('/auth/me');
+    const data = await apiFetch('/auth/me');
+    if (data.success && data.user) {
+      setUser(data.user);
+    }
+    return data;
   },
 
   /** Get security audit logs (Admin only) */
   async getLogs() {
     return apiFetch('/auth/logs');
+  },
+
+  /** Unlock a locked user (super admin only) */
+  async unlockUser(email) {
+    return apiFetch('/auth/unlock', {
+      method: 'POST',
+      body: { email },
+    });
+  },
+
+  /** Clear audit logs (super admin only) */
+  async clearLogs() {
+    return apiFetch('/auth/logs', { method: 'DELETE' });
   },
 
   /** Change password */
@@ -205,7 +251,7 @@ export const authAPI = {
 
   /** Check if user is authenticated */
   isAuthenticated() {
-    return !!getUser() && !!getToken();
+    return !!getUser();
   },
 
   /** Get current user */
