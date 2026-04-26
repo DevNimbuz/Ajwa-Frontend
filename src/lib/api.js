@@ -7,7 +7,7 @@
  */
 
 // Backend API URL — set in .env.local or defaults to localhost
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://ajwa-backend-1.onrender.com/api';
 const USER_STORAGE_KEY = 'flyajwa_user';
 const LEGACY_USER_STORAGE_KEY = 'flyajwa_user';
 const LEGACY_TOKEN_STORAGE_KEY = 'flyajwa_token';
