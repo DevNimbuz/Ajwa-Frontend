@@ -21,10 +21,11 @@ function clearLegacyAuthStorage() {
 }
 
 /** Store user info for the active browser session */
-function setUser(user) {
+function setUser(user, token) {
   if (typeof window === 'undefined') return;
   clearLegacyAuthStorage();
   sessionStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
+  if (token) localStorage.setItem('flyajwa_token', token);
 }
 
 function setCSRFToken(token) {
@@ -37,7 +38,8 @@ function setCSRFToken(token) {
 }
 
 function getToken() {
-  return null;
+  if (typeof window === 'undefined') return null;
+  return localStorage.getItem('flyajwa_token');
 }
 
 function getCSRFToken() {
@@ -50,6 +52,7 @@ function removeSession() {
   if (typeof window === 'undefined') return;
   sessionStorage.removeItem(USER_STORAGE_KEY);
   sessionStorage.removeItem(CSRF_STORAGE_KEY);
+  localStorage.removeItem('flyajwa_token');
   clearLegacyAuthStorage();
 }
 
@@ -80,11 +83,14 @@ async function apiFetch(endpoint, options = {}) {
   const method = (options.method || 'GET').toUpperCase();
   const csrfToken = getCSRFToken();
 
+  const backupToken = typeof window !== 'undefined' ? localStorage.getItem('flyajwa_token') : null;
+
   const config = {
     credentials: 'include',
     headers: {
       ...(!isFormData && { 'Content-Type': 'application/json' }),
       ...(['POST', 'PUT', 'PATCH', 'DELETE'].includes(method) && csrfToken ? { 'X-CSRF-Token': csrfToken } : {}),
+      ...(backupToken ? { 'Authorization': `Bearer ${backupToken}` } : {}),
       ...options.headers,
     },
     ...options,
