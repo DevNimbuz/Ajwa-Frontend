@@ -12,7 +12,7 @@ import DatePicker from 'react-datepicker';
 import { leadsAPI, usersAPI, authAPI } from '@/lib/api';
 import {
   Search, Filter, Download, ChevronLeft, ChevronRight,
-  MessageSquare, Phone, Mail, MapPin, Clock, X, Plus
+  MessageSquare, Phone, Mail, MapPin, Clock, X, Plus, Trash2
 } from 'lucide-react';
 
 const statusColors = {
@@ -94,6 +94,28 @@ export default function AdminLeads() {
     if (!noteText.trim() || !selectedLead) return;
     await updateLead(selectedLead._id, { note: noteText.trim() });
     setNoteText('');
+  };
+
+  const priorityColors = {
+    LOW: '#94a3b8',
+    NORMAL: '#3b82f6',
+    HIGH: '#f59e0b',
+    URGENT: '#ef4444',
+  };
+
+  const handleDelete = async (e, id) => {
+    e.stopPropagation(); // Don't open the sidebar
+    if (!window.confirm('Are you sure you want to delete this lead?')) return;
+    
+    try {
+      const data = await leadsAPI.delete(id);
+      if (data.success) {
+        setLeads(prev => prev.filter(l => l._id !== id));
+        if (selectedLead?._id === id) setSelectedLead(null);
+      }
+    } catch (err) {
+      alert(err.message || 'Delete failed');
+    }
   };
 
   const exportCSV = async () => {
@@ -186,16 +208,16 @@ export default function AdminLeads() {
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ background: '#0f172a' }}>
-              {['Name', 'Contact', 'Destination', 'Assigned To', 'WhatsApp', 'Date'].map(h => (
+              {['Name', 'Contact', 'Destination', 'Assigned To', 'Priority', 'Date', ''].map(h => (
                 <th key={h} style={{ textAlign: 'left', padding: '12px 16px', color: '#64748b', fontSize: 12, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={6} style={{ padding: 40, textAlign: 'center', color: '#64748b' }}>Loading...</td></tr>
+              <tr><td colSpan={7} style={{ padding: 40, textAlign: 'center', color: '#64748b' }}>Loading...</td></tr>
             ) : leads.length === 0 ? (
-              <tr><td colSpan={6} style={{ padding: 40, textAlign: 'center', color: '#64748b' }}>No leads found</td></tr>
+              <tr><td colSpan={7} style={{ padding: 40, textAlign: 'center', color: '#64748b' }}>No leads found</td></tr>
             ) : leads.map(lead => (
               <tr
                 key={lead._id}
@@ -224,15 +246,28 @@ export default function AdminLeads() {
                 </td>
                 <td style={{ padding: '12px 16px' }}>
                   <span style={{
-                    background: lead.whatsappStatus === 'SENT' ? '#3b82f620' : lead.whatsappStatus === 'QUALIFIED' ? '#22c55e20' : '#47556920',
-                    color: lead.whatsappStatus === 'SENT' ? '#3b82f6' : lead.whatsappStatus === 'QUALIFIED' ? '#22c55e' : '#64748b',
+                    background: (priorityColors[lead.priority] || '#3b82f6') + '20',
+                    color: priorityColors[lead.priority] || '#3b82f6',
                     padding: '3px 8px', borderRadius: 4, fontSize: 10, fontWeight: 700
                   }}>
-                    {lead.whatsappStatus || 'NONE'}
+                    {lead.priority || 'NORMAL'}
                   </span>
                 </td>
                 <td style={{ padding: '12px 16px', color: '#64748b', fontSize: 12 }}>
                   {new Date(lead.createdAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}
+                </td>
+                <td style={{ padding: '12px 16px', textAlign: 'right' }}>
+                  <button 
+                    onClick={(e) => handleDelete(e, lead._id)}
+                    style={{
+                      background: 'none', border: 'none', color: '#475569', cursor: 'pointer',
+                      padding: 6, borderRadius: 6, transition: 'all 0.2s',
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.color = '#ef4444'}
+                    onMouseLeave={(e) => e.currentTarget.style.color = '#475569'}
+                  >
+                    <Trash2 size={16} />
+                  </button>
                 </td>
               </tr>
             ))}
@@ -369,33 +404,51 @@ export default function AdminLeads() {
           )}
 
           {/* Notes */}
-          <div style={{ marginBottom: 16 }}>
-            <label style={{ color: '#94a3b8', fontSize: 12, fontWeight: 600, marginBottom: 6, display: 'block' }}>NOTES</label>
-            <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
+          <div style={{ marginBottom: 32 }}>
+            <label style={{ color: '#94a3b8', fontSize: 12, fontWeight: 600, marginBottom: 12, display: 'block' }}>NOTES</label>
+            <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
               <input
                 value={noteText}
                 onChange={(e) => setNoteText(e.target.value)}
                 placeholder="Add a note..."
                 onKeyDown={(e) => e.key === 'Enter' && addNote()}
                 style={{
-                  flex: 1, padding: '6px 12px', background: '#0f172a', border: '1px solid #334155',
-                  borderRadius: 6, color: '#e2e8f0', fontSize: 13, outline: 'none',
+                  flex: 1, padding: '8px 12px', background: '#0f172a', border: '1px solid #334155',
+                  borderRadius: 8, color: '#e2e8f0', fontSize: 13, outline: 'none',
                 }}
               />
               <button onClick={addNote} style={{
-                padding: '6px 12px', background: '#63ab45', border: 'none', borderRadius: 6,
+                padding: '8px 16px', background: '#63ab45', border: 'none', borderRadius: 8,
                 color: '#fff', cursor: 'pointer', fontSize: 13,
-              }}><Plus size={14} /></button>
+              }}><Plus size={16} /></button>
             </div>
             {(selectedLead.notes || []).map((note, i) => (
-              <div key={i} style={{ background: '#0f172a', borderRadius: 6, padding: 10, marginBottom: 6 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+              <div key={i} style={{ background: '#0f172a', borderRadius: 10, padding: 12, marginBottom: 8, border: '1px solid #1e293b' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
                   <span style={{ color: '#63ab45', fontSize: 11, fontWeight: 600 }}>{note.by}</span>
                   <span style={{ color: '#475569', fontSize: 10 }}>{new Date(note.at).toLocaleString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
                 </div>
-                <p style={{ color: '#94a3b8', fontSize: 13, margin: 0 }}>{note.text}</p>
+                <p style={{ color: '#94a3b8', fontSize: 13, margin: 0, lineHeight: 1.5 }}>{note.text}</p>
               </div>
             ))}
+          </div>
+
+          {/* Dangerous Zone */}
+          <div style={{ borderTop: '1px solid #334155', paddingTop: 20, marginTop: 40 }}>
+            <button
+              onClick={(e) => handleDelete(e, selectedLead._id)}
+              style={{
+                width: '100%', padding: '12px', background: 'rgba(239, 68, 68, 0.1)',
+                border: '1px solid rgba(239, 68, 68, 0.4)', borderRadius: 10,
+                color: '#ef4444', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                transition: 'all 0.2s',
+              }}
+              onMouseEnter={(e) => e.target.style.background = 'rgba(239, 68, 68, 0.2)'}
+              onMouseLeave={(e) => e.target.style.background = 'rgba(239, 68, 68, 0.1)'}
+            >
+              <Trash2 size={16} /> Delete Lead Permanentally
+            </button>
           </div>
         </div>
       )}
