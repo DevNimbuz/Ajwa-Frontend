@@ -4,7 +4,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'res.cloudinary.com',
+        hostname: process.env.IMAGE_REMOTE_HOSTNAME || 'res.cloudinary.com',
         pathname: '/**',
       },
       {
@@ -15,12 +15,10 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'ajwa-backend-1.onrender.com',
+        hostname: process.env.BACKEND_API_HOSTNAME || 'ajwa-backend-1.onrender.com',
         pathname: '/uploads/**',
       },
     ],
-    // In dev: let browser fetch from localhost:5000 directly (no optimizer proxy)
-    // In prod: Vercel optimizer handles it using remotePatterns above
     unoptimized: process.env.NODE_ENV === 'development',
   },
   async redirects() {
@@ -44,6 +42,14 @@ const nextConfig = {
           {
             key: 'X-Content-Type-Options',
             value: 'nosniff',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin',
+          },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=()',
           },
         ],
       },

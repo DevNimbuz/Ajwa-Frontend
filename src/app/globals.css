@@ -49,64 +49,64 @@
   --gradient-card: linear-gradient(180deg, transparent 0%, rgba(16,12,8,0.85) 100%);
   --gradient-section: linear-gradient(180deg, var(--color-bg-primary) 0%, var(--color-bg-secondary) 50%, var(--color-bg-primary) 100%);
 
-  /* Typography */
+  /* Typography — Refined Sizing */
   --font-heading: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 
-  /* Font Sizes */
-  --text-xs: 0.88rem;
-  --text-sm: 1.02rem;
-  --text-base: 1.16rem;
-  --text-lg: 1.32rem;
-  --text-xl: 1.51rem;
-  --text-2xl: 1.82rem;
-  --text-3xl: 2.42rem;
-  --text-4xl: 3.03rem;
-  --text-5xl: 3.85rem;
-  --text-6xl: 4.68rem;
-  --text-hero: clamp(3.03rem, 6.6vw, 6.05rem);
+  /* Font Sizes — Reduced for cleaner aesthetic */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 2.125rem;
+  --text-4xl: 2.75rem;
+  --text-5xl: 3.5rem;
+  --text-6xl: 4rem;
+  --text-hero: clamp(2.5rem, 5vw, 4.5rem);
 
   /* Spacing */
   --space-xs: 0.25rem;
   --space-sm: 0.5rem;
-  --space-md: 1rem;
-  --space-lg: 1.5rem;
-  --space-xl: 2rem;
-  --space-2xl: 3rem;
-  --space-3xl: 4rem;
-  --space-4xl: 6rem;
-  --space-5xl: 8rem;
-  --space-section: clamp(4rem, 8vw, 8rem);
+  --space-md: 0.75rem;
+  --space-lg: 1.25rem;
+  --space-xl: 1.75rem;
+  --space-2xl: 2.5rem;
+  --space-3xl: 3.5rem;
+  --space-4xl: 5rem;
+  --space-5xl: 7rem;
+  --space-section: clamp(3.5rem, 7vw, 7rem);
 
   /* Border Radius */
-  --radius-sm: 6px;
-  --radius-md: 12px;
-  --radius-lg: 20px;
-  --radius-xl: 28px;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
   --radius-full: 9999px;
 
-  /* Shadows */
-  --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
-  --shadow-md: 0 4px 20px rgba(0,0,0,0.08);
-  --shadow-lg: 0 8px 40px rgba(0,0,0,0.1);
-  --shadow-xl: 0 16px 60px rgba(0,0,0,0.12);
-  --shadow-gold: 0 4px 30px rgba(99, 171, 69, 0.2);
+  /* Shadows — More subtle and diffuse */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.05), 0 1px 4px rgba(0,0,0,0.03);
+  --shadow-lg: 0 12px 30px rgba(0,0,0,0.07);
+  --shadow-xl: 0 20px 50px rgba(0,0,0,0.1);
+  --shadow-gold: 0 8px 25px rgba(99, 171, 69, 0.15);
   --shadow-glow: 0 0 40px rgba(99, 171, 69, 0.12);
 
   /* Transitions */
-  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: 0.15s ease-out;
+  --transition-base: 0.25s ease-in-out;
+  --transition-slow: 0.45s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-spring: 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 
   /* Layout */
-  --container-max: 1280px;
-  --container-wide: 1440px;
-  --header-height: 80px;
+  --container-max: 1200px;
+  --container-wide: 1400px;
+  --header-height: 72px; /* Reduced from 80px */
   --sidebar-width: 280px;
   --admin-sidebar-width: 260px;
   --admin-main-margin: 260px;
-  --color-success: #22c55e;
+  --color-success: #10b981;
   --color-warning: #f59e0b;
   --color-info: #3b82f6;
   --color-danger: #ef4444;
@@ -128,6 +128,7 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--header-height) + 20px); /* Prevents header from covering anchor links */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -211,9 +212,9 @@ h1, h2, h3, h4, h5, h6 {
 /* ── Typography Classes ── */
 .heading-hero {
   font-size: var(--text-hero);
-  font-weight: 700;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
 }
 
 .heading-1 {
@@ -596,11 +597,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .header-solid {
-  background: var(--color-bg-primary);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.85); /* Slightly more transparent */
+  backdrop-filter: blur(40px); /* Deeper blur for premium feel */
+  -webkit-backdrop-filter: blur(40px);
   border-bottom: 1px solid var(--color-border);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03); /* Softer shadow */
 }
 
 .header-inner {
@@ -614,14 +615,14 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .header-logo img {
-  height: 125px;
+  height: 80px; /* Reduced from 125px */
   width: auto;
   transition: all var(--transition-base);
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
 }
 
 .header-solid .header-logo img {
-  height: 105px;
+  height: 64px; /* Reduced from 105px */
   filter: none;
 }
 
@@ -756,8 +757,8 @@ h1, h2, h3, h4, h5, h6 {
   right: -100%;
   bottom: 0;
   width: 85%;
-  max-width: 380px;
-  background: rgba(16, 12, 8, 0.98);
+  max-width: 340px;
+  background: linear-gradient(165deg, #100c08 0%, #1a2e1a 100%); /* Hint of brand green depth */
   backdrop-filter: blur(40px);
   -webkit-backdrop-filter: blur(40px);
   z-index: 2001;
