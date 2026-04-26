@@ -24,6 +24,11 @@ export default function LoginPage() {
     try {
       const data = await authAPI.login(email, password);
       if (data.success) {
+        // Save token for persistent session (localStorage fallback)
+        if (data.token) {
+          localStorage.setItem('flyajwa_token', data.token);
+        }
+
         if (redirectPath) {
           router.push(redirectPath);
           return;

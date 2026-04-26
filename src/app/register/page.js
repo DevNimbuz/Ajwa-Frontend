@@ -140,7 +140,16 @@ export default function RegisterPage() {
       const data = await authAPI.verifyOTP(verifyToken, otpCode);
       
       if (data.success && data.user) {
-        router.push('/dashboard');
+        // Save token for auto-login
+        if (data.token) {
+          localStorage.setItem('flyajwa_token', data.token);
+        }
+        
+        // Success state
+        setStep(3); // I'll add a success step
+        setTimeout(() => {
+          router.push('/dashboard');
+        }, 2000);
       }
     } catch (err) {
       setError(err.message || 'Verification failed. Please check your code and try again.');
@@ -472,22 +481,45 @@ export default function RegisterPage() {
           </div>
         )}
 
-        <div className="auth-footer-links">
-          <Link href="/" style={{ color: '#64748b', textDecoration: 'none' }}>
-            ← Back to Home
-          </Link>
-          <span className="auth-footer-divider">|</span>
-          <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-            <span>Already have an account?</span>
-            <Link href="/login" style={{ color: '#059669', fontWeight: 600, textDecoration: 'none' }}>
-              Sign In
-            </Link>
+        {step === 3 && (
+          <div style={{ textAlign: 'center', padding: '20px 0' }}>
+            <div style={{
+              width: 80, height: 80, margin: '0 auto 24px',
+              background: '#22c55e', borderRadius: '50%',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              boxShadow: '0 0 30px rgba(34,197,94,0.4)',
+              animation: 'scaleIn 0.5s ease-out',
+            }}>
+              <CheckCircle size={40} color="#fff" />
+            </div>
+            <h2 style={{ color: '#f1f5f9', fontSize: 24, fontWeight: 700, marginBottom: 8 }}>Welcome, {name}!</h2>
+            <p style={{ color: '#94a3b8', fontSize: 16, margin: 0 }}>Your account is ready. Redirecting vous to dashboard...</p>
           </div>
-        </div>
+        )}
+
+        {step !== 3 && (
+          <div className="auth-footer-links">
+            <Link href="/" style={{ color: '#64748b', textDecoration: 'none' }}>
+              ← Back to Home
+            </Link>
+            <span className="auth-footer-divider">|</span>
+            <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+              <span>Already have an account?</span>
+              <Link href="/login" style={{ color: '#059669', fontWeight: 600, textDecoration: 'none' }}>
+                Sign In
+              </Link>
+            </div>
+          </div>
+        )}
       </div>
 
       <style jsx global>{`
         @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes scaleIn { 
+          0% { transform: scale(0.5); opacity: 0; } 
+          70% { transform: scale(1.1); }
+          100% { transform: scale(1); opacity: 1; } 
+        }
       `}</style>
     </div>
   );
