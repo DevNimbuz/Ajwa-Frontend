@@ -114,17 +114,23 @@ async function apiFetch(endpoint, options = {}) {
       removeSession();
       if (typeof window !== 'undefined') {
         const path = window.location.pathname;
-        // If user was on a protected customer page, go to customer login
-        if (path.startsWith('/dashboard') || path === '/profile' || path.startsWith('/booking') || path.startsWith('/package')) {
-          window.location.href = '/login';
-        }
-        // If user was on admin page, go to admin login
-        else if (path.includes('/admin')) {
-          window.location.href = '/admin/login';
-        }
-        // Default to customer login
-        else {
-          window.location.href = '/login';
+        
+        // CRITICAL: Don't redirect if we're already ON the login page or registering
+        // This prevents the "refresh instead of alert" bug.
+        const isAuthPage = path === '/login' || path === '/register' || path === '/admin/login' || path === '/otp-verify';
+        
+        if (!isAuthPage) {
+          // If user was on a protected customer page, go to customer login
+          if (path.startsWith('/dashboard') || path === '/profile' || path.startsWith('/booking') || path.startsWith('/package')) {
+            window.location.href = '/login';
+          }
+          // If user was on admin page, go to admin login
+          else if (path.includes('/admin')) {
+            window.location.href = '/admin/login';
+          }
+          else {
+            window.location.href = '/login';
+          }
         }
       }
       throw new Error(data.message || 'Session expired — please login again');

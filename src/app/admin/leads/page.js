@@ -186,7 +186,7 @@ export default function AdminLeads() {
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ background: '#0f172a' }}>
-              {['Name', 'Contact', 'Destination', 'Source', 'WhatsApp', 'Date'].map(h => (
+              {['Name', 'Contact', 'Destination', 'Assigned To', 'WhatsApp', 'Date'].map(h => (
                 <th key={h} style={{ textAlign: 'left', padding: '12px 16px', color: '#64748b', fontSize: 12, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>{h}</th>
               ))}
             </tr>
@@ -210,28 +210,26 @@ export default function AdminLeads() {
                   {lead.email && <div style={{ color: '#64748b', fontSize: 11 }}>{lead.email}</div>}
                 </td>
                 <td style={{ padding: '12px 16px', color: '#94a3b8', fontSize: 13 }}>{lead.destination || '—'}</td>
-                <td style={{ padding: '12px 16px', color: '#94a3b8', fontSize: 13, textTransform: 'capitalize' }}>{lead.source}</td>
                 <td style={{ padding: '12px 16px' }}>
-                  {lead.whatsappClicks && lead.whatsappClicks.length > 0 ? (
-                    <span style={{
-                      background: '#22c55e20',
-                      color: '#22c55e',
-                      padding: '3px 10px',
-                      borderRadius: 6,
-                      fontSize: 11,
-                      fontWeight: 600,
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 4,
-                    }}>
-                      ✈️ {lead.whatsappClicks.length}x
-                      <span style={{ color: '#64748b', fontWeight: 400 }}>
-                        {new Date(lead.whatsappClicks[lead.whatsappClicks.length - 1].clickedAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
-                      </span>
-                    </span>
+                  {lead.assignedTo ? (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'linear-gradient(135deg, #3b82f6, #2563eb)', color: '#fff', fontSize: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>
+                        {lead.assignedTo.name?.[0]}
+                      </div>
+                      <span style={{ color: '#e2e8f0', fontSize: 13 }}>{lead.assignedTo.name}</span>
+                    </div>
                   ) : (
-                    <span style={{ color: '#475569', fontSize: 12 }}>—</span>
+                    <span style={{ color: '#475569', fontSize: 12 }}>Unassigned</span>
                   )}
+                </td>
+                <td style={{ padding: '12px 16px' }}>
+                  <span style={{
+                    background: lead.whatsappStatus === 'SENT' ? '#3b82f620' : lead.whatsappStatus === 'QUALIFIED' ? '#22c55e20' : '#47556920',
+                    color: lead.whatsappStatus === 'SENT' ? '#3b82f6' : lead.whatsappStatus === 'QUALIFIED' ? '#22c55e' : '#64748b',
+                    padding: '3px 8px', borderRadius: 4, fontSize: 10, fontWeight: 700
+                  }}>
+                    {lead.whatsappStatus || 'NONE'}
+                  </span>
                 </td>
                 <td style={{ padding: '12px 16px', color: '#64748b', fontSize: 12 }}>
                   {new Date(lead.createdAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}
