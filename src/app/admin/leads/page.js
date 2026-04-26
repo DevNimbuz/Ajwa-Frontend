@@ -208,16 +208,16 @@ export default function AdminLeads() {
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ background: '#0f172a' }}>
-              {['Name', 'Contact', 'Destination', 'Assigned To', 'Priority', 'Date', ''].map(h => (
+              {['Name', 'Contact', 'Destination', 'Assigned To', 'Priority', 'Status', 'Date', ''].map(h => (
                 <th key={h} style={{ textAlign: 'left', padding: '12px 16px', color: '#64748b', fontSize: 12, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={7} style={{ padding: 40, textAlign: 'center', color: '#64748b' }}>Loading...</td></tr>
+              <tr><td colSpan={8} style={{ padding: 40, textAlign: 'center', color: '#64748b' }}>Loading...</td></tr>
             ) : leads.length === 0 ? (
-              <tr><td colSpan={7} style={{ padding: 40, textAlign: 'center', color: '#64748b' }}>No leads found</td></tr>
+              <tr><td colSpan={8} style={{ padding: 40, textAlign: 'center', color: '#64748b' }}>No leads found</td></tr>
             ) : leads.map(lead => (
               <tr
                 key={lead._id}
@@ -251,6 +251,15 @@ export default function AdminLeads() {
                     padding: '3px 8px', borderRadius: 4, fontSize: 10, fontWeight: 700
                   }}>
                     {lead.priority || 'NORMAL'}
+                  </span>
+                </td>
+                <td style={{ padding: '12px 16px' }}>
+                  <span style={{
+                    background: (statusColors[lead.status] || '#3b82f6') + '20',
+                    color: statusColors[lead.status] || '#3b82f6',
+                    padding: '3px 8px', borderRadius: 4, fontSize: 10, fontWeight: 700
+                  }}>
+                    {lead.status || 'NEW'}
                   </span>
                 </td>
                 <td style={{ padding: '12px 16px', color: '#64748b', fontSize: 12 }}>
