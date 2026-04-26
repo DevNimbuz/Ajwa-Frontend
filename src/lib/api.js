@@ -119,18 +119,16 @@ async function apiFetch(endpoint, options = {}) {
     if (response.status === 401) {
       removeSession();
       if (typeof window !== 'undefined') {
-        const path = window.location.pathname;
+        const path = window.location.pathname.replace(/\/$/, '') || '/';
         
-        // CRITICAL: Don't redirect if we're already ON the login page or registering
-        // This prevents the "refresh instead of alert" bug.
-        const isAuthPage = path === '/login' || path === '/register' || path === '/admin/login' || path === '/otp-verify';
+        // CRITICAL: Don't redirect if we're already ON the login/auth pages
+        const isAuthPage = ['/login', '/register', '/admin/login', '/otp-verify'].includes(path);
         
         if (!isAuthPage) {
           // If user was on a protected customer page, go to customer login
-          if (path.startsWith('/dashboard') || path === '/profile' || path.startsWith('/booking') || path.startsWith('/package')) {
+          if (path.startsWith('/dashboard') || path === '/profile' || path.startsWith('/booking')) {
             window.location.href = '/login';
           }
-          // If user was on admin page, go to admin login
           else if (path.includes('/admin')) {
             window.location.href = '/admin/login';
           }
@@ -167,7 +165,7 @@ export const authAPI = {
       body: { email, password },
     });
     if (data.success) {
-      setUser(data.user);
+      setUser(data.user, data.token);
     }
     return data;
   },
@@ -179,7 +177,7 @@ export const authAPI = {
       body: { name, email, phone, password },
     });
     if (data.success) {
-      setUser(data.user);
+      setUser(data.user, data.token);
     }
     return data;
   },
@@ -197,10 +195,10 @@ export const authAPI = {
   async verifyOTP(verifyToken, emailOTP) {
     const data = await apiFetch('/auth/verify-otp', {
       method: 'POST',
-      body: { verifyToken, emailOTP },
+      body: { verifyToken, emailOTP, phoneOTP: emailOTP },
     });
     if (data.success && data.user) {
-      setUser(data.user);
+      setUser(data.user, data.token);
     }
     return data;
   },
@@ -209,7 +207,7 @@ export const authAPI = {
   async resendOTP(verifyToken) {
     const data = await apiFetch('/auth/resend-otp', {
       method: 'POST',
-      body: { verifyToken },
+      body: { verifyToken, type: 'both' },
     });
     return data;
   },
@@ -218,7 +216,7 @@ export const authAPI = {
   async getMe() {
     const data = await apiFetch('/auth/me');
     if (data.success && data.user) {
-      setUser(data.user);
+      setUser(data.user, data.token);
     }
     return data;
   },
