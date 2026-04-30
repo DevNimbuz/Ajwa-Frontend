@@ -141,6 +141,11 @@ export default function AdminLoginPage() {
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
+            <div style={{ textAlign: 'right', marginTop: 8 }}>
+              <a href="/forgot-password" style={{ color: '#64748b', fontSize: 12, textDecoration: 'none', fontWeight: 500 }}>
+                Forgot password?
+              </a>
+            </div>
           </div>
 
           {/* Submit Button */}

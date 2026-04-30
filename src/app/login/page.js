@@ -24,11 +24,7 @@ export default function LoginPage() {
     try {
       const data = await authAPI.login(email, password);
       if (data.success) {
-        // Save token for persistent session (localStorage fallback)
-        if (data.token) {
-          localStorage.setItem('flyajwa_token', data.token);
-        }
-
+        // Auth is now cookie-only (H5)
         if (redirectPath) {
           router.push(redirectPath);
           return;
@@ -148,6 +144,11 @@ export default function LoginPage() {
               >
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
+            </div>
+            <div style={{ textAlign: 'right', marginTop: 8 }}>
+              <Link href="/forgot-password" style={{ color: '#64748b', fontSize: 12, textDecoration: 'none', fontWeight: 500 }}>
+                Forgot password?
+              </Link>
             </div>
           </div>
 

@@ -1,5 +1,5 @@
 "use client"
-import QuantityCounter from '@/uitils/QuantityCounter'
+import QuantityCounter from '@/utils/QuantityCounter'
 import React from 'react'
 import DestinationSearch from './DestinationSearch'
 import TourTypeDropdown from './TourTypeDropdown'

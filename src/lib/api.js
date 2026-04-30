@@ -6,8 +6,8 @@
  * Handles JWT token management, error handling, and auto-logout
  */
 
-// Backend API URL — set in .env.local or defaults to localhost
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://ajwa-backend-1.onrender.com/api';
+// Backend API URL — set in .env.local or defaults to localhost (MED-4 FIX)
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 const USER_STORAGE_KEY = 'flyajwa_user';
 const LEGACY_USER_STORAGE_KEY = 'flyajwa_user';
 const LEGACY_TOKEN_STORAGE_KEY = 'flyajwa_token';
@@ -15,17 +15,16 @@ const CSRF_STORAGE_KEY = 'flyajwa_csrf';
 
 function clearLegacyAuthStorage() {
   if (typeof window === 'undefined') return;
-  sessionStorage.removeItem(LEGACY_TOKEN_STORAGE_KEY);
-  localStorage.removeItem(LEGACY_TOKEN_STORAGE_KEY);
-  localStorage.removeItem(LEGACY_USER_STORAGE_KEY);
+  sessionStorage.removeItem(USER_STORAGE_KEY);
+  localStorage.removeItem(USER_STORAGE_KEY);
+  localStorage.removeItem('flyajwa_token');
 }
 
 /** Store user info for the active browser session */
-function setUser(user, token) {
+function setUser(user) {
   if (typeof window === 'undefined') return;
   clearLegacyAuthStorage();
   sessionStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
-  if (token) localStorage.setItem('flyajwa_token', token);
 }
 
 function setCSRFToken(token) {
@@ -38,13 +37,15 @@ function setCSRFToken(token) {
 }
 
 function getToken() {
-  if (typeof window === 'undefined') return null;
-  return localStorage.getItem('flyajwa_token');
+  // Token is now in HttpOnly cookie; cannot be accessed via JS (H5)
+  return null;
 }
 
 function getCSRFToken() {
   if (typeof window === 'undefined') return null;
-  return sessionStorage.getItem(CSRF_STORAGE_KEY);
+  // CRIT-2 FIX: Read from _csrf cookie (double-submit pattern)
+  const match = document.cookie.match(/(?:^|;\s*)_csrf=([^;]*)/);
+  return match ? decodeURIComponent(match[1]) : null;
 }
 
 /** Remove session data on logout */
@@ -52,7 +53,6 @@ function removeSession() {
   if (typeof window === 'undefined') return;
   sessionStorage.removeItem(USER_STORAGE_KEY);
   sessionStorage.removeItem(CSRF_STORAGE_KEY);
-  localStorage.removeItem('flyajwa_token');
   clearLegacyAuthStorage();
 }
 
@@ -83,14 +83,11 @@ async function apiFetch(endpoint, options = {}) {
   const method = (options.method || 'GET').toUpperCase();
   const csrfToken = getCSRFToken();
 
-  const backupToken = typeof window !== 'undefined' ? localStorage.getItem('flyajwa_token') : null;
-
   const config = {
     credentials: 'include',
     headers: {
       ...(!isFormData && { 'Content-Type': 'application/json' }),
       ...(['POST', 'PUT', 'PATCH', 'DELETE'].includes(method) && csrfToken ? { 'X-CSRF-Token': csrfToken } : {}),
-      ...(backupToken ? { 'Authorization': `Bearer ${backupToken}` } : {}),
       ...options.headers,
     },
     ...options,
@@ -165,22 +162,12 @@ export const authAPI = {
       body: { email, password },
     });
     if (data.success) {
-      setUser(data.user, data.token);
+      setUser(data.user);
     }
     return data;
   },
 
-  /** Register new customer account */
-  async register(name, email, phone, password) {
-    const data = await apiFetch('/auth/register', {
-      method: 'POST',
-      body: { name, email, phone, password },
-    });
-    if (data.success) {
-      setUser(data.user, data.token);
-    }
-    return data;
-  },
+  // Registration is handled via sendOTP → verifyOTP flow exclusively
 
   /** Send OTP for email/phone verification */
   async sendOTP(name, email, phone, password) {
@@ -198,7 +185,7 @@ export const authAPI = {
       body: { verifyToken, emailOTP, phoneOTP: emailOTP },
     });
     if (data.success && data.user) {
-      setUser(data.user, data.token);
+      setUser(data.user);
     }
     return data;
   },
@@ -216,7 +203,7 @@ export const authAPI = {
   async getMe() {
     const data = await apiFetch('/auth/me');
     if (data.success && data.user) {
-      setUser(data.user, data.token);
+      setUser(data.user);
     }
     return data;
   },
@@ -281,6 +268,16 @@ export const authAPI = {
   },
   async getCustomerTrips() { 
     return apiFetch('/auth/trips'); 
+  },
+
+  /** Request password reset email (H8) */
+  async forgotPassword(email) {
+    return apiFetch('/auth/forgot-password', { method: 'POST', body: { email } });
+  },
+
+  /** Complete password reset (H8) */
+  async resetPassword(token, password) {
+    return apiFetch(`/auth/reset-password/${token}`, { method: 'POST', body: { password } });
   },
 };
 

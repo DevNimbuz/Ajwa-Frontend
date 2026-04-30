@@ -140,13 +140,8 @@ export default function RegisterPage() {
       const data = await authAPI.verifyOTP(verifyToken, otpCode);
       
       if (data.success && data.user) {
-        // Save token for auto-login
-        if (data.token) {
-          localStorage.setItem('flyajwa_token', data.token);
-        }
-        
-        // Success state
-        setStep(3); // I'll add a success step
+        // Auth is cookie-only (H5) — no token to store
+        setStep(3);
         setTimeout(() => {
           router.push('/dashboard');
         }, 2000);
