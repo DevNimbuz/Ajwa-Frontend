@@ -48,7 +48,6 @@ export function NotificationProvider({ children }) {
 
     eventSource.onopen = () => {
       setConnected(true);
-      console.log('[Notifications] SSE connected');
     };
 
     eventSource.onmessage = (event) => {
@@ -71,7 +70,6 @@ export function NotificationProvider({ children }) {
 
     eventSource.onerror = () => {
       setConnected(false);
-      console.log('[Notifications] SSE disconnected, reconnecting...');
     };
 
     return () => {

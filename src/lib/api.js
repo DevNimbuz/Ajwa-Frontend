@@ -182,7 +182,7 @@ export const authAPI = {
   async verifyOTP(verifyToken, emailOTP) {
     const data = await apiFetch('/auth/verify-otp', {
       method: 'POST',
-      body: { verifyToken, emailOTP, phoneOTP: emailOTP },
+      body: { verifyToken, emailOTP },
     });
     if (data.success && data.user) {
       setUser(data.user);
@@ -194,7 +194,7 @@ export const authAPI = {
   async resendOTP(verifyToken) {
     const data = await apiFetch('/auth/resend-otp', {
       method: 'POST',
-      body: { verifyToken, type: 'both' },
+      body: { verifyToken },
     });
     return data;
   },
