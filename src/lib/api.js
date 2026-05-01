@@ -43,9 +43,12 @@ function getToken() {
 
 function getCSRFToken() {
   if (typeof window === 'undefined') return null;
-  // CRIT-2 FIX: Read from _csrf cookie (double-submit pattern)
+  // Try reading from cookie first (same-domain)
   const match = document.cookie.match(/(?:^|;\s*)_csrf=([^;]*)/);
-  return match ? decodeURIComponent(match[1]) : null;
+  if (match) return decodeURIComponent(match[1]);
+  
+  // Fallback to sessionStorage for cross-domain (Vercel -> Render)
+  return sessionStorage.getItem(CSRF_STORAGE_KEY) || null;
 }
 
 /** Remove session data on logout */
@@ -81,13 +84,25 @@ async function apiFetch(endpoint, options = {}) {
 
   const isFormData = options.body instanceof FormData;
   const method = (options.method || 'GET').toUpperCase();
-  const csrfToken = getCSRFToken();
+  let csrfToken = getCSRFToken();
+
+  // If this is a state-changing request and we don't have a CSRF token, fetch one first
+  const isStateChanging = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method);
+  if (isStateChanging && !csrfToken && endpoint !== '/auth/csrf') {
+    try {
+      const csrfResponse = await fetch(`${API_BASE}/auth/csrf`, { credentials: 'include' });
+      csrfToken = csrfResponse.headers.get('X-CSRF-Token') || csrfResponse.headers.get('x-csrf-token');
+      if (csrfToken) setCSRFToken(csrfToken);
+    } catch (e) {
+      console.warn('Failed to pre-fetch CSRF token:', e);
+    }
+  }
 
   const config = {
     credentials: 'include',
     headers: {
       ...(!isFormData && { 'Content-Type': 'application/json' }),
-      ...(['POST', 'PUT', 'PATCH', 'DELETE'].includes(method) && csrfToken ? { 'X-CSRF-Token': csrfToken } : {}),
+      ...(isStateChanging && csrfToken ? { 'X-CSRF-Token': csrfToken } : {}),
       ...options.headers,
     },
     ...options,
