@@ -69,22 +69,9 @@ export default async function PackagesPage() {
       <section style={{ padding: '0 0 var(--space-4xl)' }}>
         <div className="container">
           <AnimatedSection>
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              borderRadius: 'var(--radius-lg)',
-              overflow: 'hidden',
-              background: '#1e2a4a',
-              minHeight: 240,
-            }}>
+            <div className="group-booking-grid">
               {/* Left — Text Content */}
-              <div style={{
-                padding: 'var(--space-2xl) var(--space-3xl)',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                position: 'relative',
-              }}>
+              <div className="group-booking-content">
                 {/* Decorative dots */}
                 <div style={{
                   position: 'absolute',
@@ -148,10 +135,7 @@ export default async function PackagesPage() {
               </div>
 
               {/* Right — Image */}
-              <div style={{
-                position: 'relative',
-                overflow: 'hidden',
-              }}>
+              <div style={{ position: 'relative', overflow: 'hidden' }} className="group-booking-image">
                 <img
                   src="/assets/img/Ajwa/trek.webp"
                   alt="Group travel with FlyAjwa"
@@ -173,4 +157,3 @@ export default async function PackagesPage() {
     </>
   );
 }
-
