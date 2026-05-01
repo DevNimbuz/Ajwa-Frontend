@@ -93,7 +93,7 @@ const packagesData = {
     duration: '5 Days / 4 Nights',
     tourType: 'Private / Group Tour',
     description: 'Experience the world-famous land of smiles. From the vibrant nightlife of Pattaya to the cultural wonders of Bangkok and high-speed boat trips to Coral Island, our Thailand package offers a perfect mix of adventure, relaxation, and exploration.',
-    heroImg: '/assets/img/Ajwa/Thailand-ajwa.jpg',
+    heroImg: '/assets/img/Ajwa/Thailand/thailand-ajwa.jpg',
     gallery: [
       '/assets/img/Ajwa/Thailand/thailand1.webp',
       '/assets/img/Ajwa/Thailand/thailand2.webp',
@@ -367,7 +367,7 @@ const packagesData = {
     duration: '4 Days / 3 Nights',
     tourType: 'Private / Group Tour',
     description: 'Experience the soul of Vietnam in Ho Chi Minh City. Journey through the historic Cu Chi Tunnels and boat across the lush Mekong Delta. A perfect gateway to the rich heritage of Indochina.',
-    heroImg: '/assets/img/Ajwa/Thailand-ajwa3.jpg',
+    heroImg: '/assets/img/Ajwa/Vietnam/vietnam-ajwa.webp',
     gallery: [
       '/assets/img/Ajwa/Vietnam/vietnam1.jpg',
       '/assets/img/Ajwa/Vietnam/vietnam2.jpg',
@@ -427,10 +427,10 @@ const packagesData = {
 // Add other packages with standard fallback data
 const otherSlugs = [
   { slug: 'azerbaijan-package', name: 'Azerbaijan', price: '₹29,999', duration: '5 Days / 4 Nights', heroImg: '/assets/img/Ajwa/azerbaijan3-ajwa.webp' },
-  { slug: 'kashmir-package', name: 'Kashmir', price: '₹14,999', duration: '5 Days / 4 Nights', heroImg: '/assets/img/Ajwa/trek.webp' },
+  { slug: 'kashmir-package', name: 'Kashmir', price: '₹14,999', duration: '5 Days / 4 Nights', heroImg: '/assets/img/Ajwa/Kashmir/kashmir-ajwa.webp' },
   { slug: 'goa-package', name: 'Goa', price: '₹9,999', duration: '4 Days / 3 Nights', heroImg: '/assets/img/Ajwa/surfing-02.jpg' },
   { slug: 'manali-package', name: 'Manali', price: '₹12,999', duration: '5 Days / 4 Nights', heroImg: '/assets/img/Ajwa/ski-touring-02.jpg' },
-  { slug: 'agra-jaipur-package', name: 'Agra & Jaipur', price: '₹11,999', duration: '4 Days / 3 Nights', heroImg: '/assets/img/Ajwa/Rajasthan-ajwaCard.jpg' },
+  { slug: 'agra-jaipur-package', name: 'Agra & Jaipur', price: '₹11,999', duration: '4 Days / 3 Nights', heroImg: '/assets/img/Ajwa/Agra/agra-ajwa.webp' },
 ];
 
 const destinationGalleries = {

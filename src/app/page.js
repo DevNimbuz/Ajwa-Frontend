@@ -40,9 +40,9 @@ const heroSlides = [
 const destinations = [
   { name: 'Azerbaijan', img: '/assets/img/Ajwa/azerbaijan3-ajwa.webp', href: '/package/azerbaijan-package', tagline: 'Land of Fire' },
   { name: 'Maldives', img: '/assets/img/Ajwa/maldives-ajwa.webp', href: '/package/maldives-package', tagline: 'Paradise on Earth' },
-  { name: 'Thailand', img: '/assets/img/Ajwa/Thailand-ajwa2.webp', href: '/package/thailand-package', tagline: 'Land of Smiles' },
+  { name: 'Thailand', img: '/assets/img/Ajwa/Thailand/thailand-ajwa.webp', href: '/package/thailand-package', tagline: 'Land of Smiles' },
   { name: 'Malaysia', img: '/assets/img/Ajwa/Malaysia-ajwaCard.webp', href: '/package/malaysia-package', tagline: 'Truly Asia' },
-  { name: 'Kashmir', img: '/assets/img/Ajwa/trek.webp', href: '/package/kashmir-package', tagline: 'Heaven on Earth' },
+  { name: 'Kashmir', img: '/assets/img/Ajwa/Kashmir/kashmir-ajwa.webp', href: '/package/kashmir-package', tagline: 'Heaven on Earth' },
   { name: 'Dubai', img: '/assets/img/Ajwa/Uae-ajwaVisa.jpg', href: '/package/dubai-package', tagline: 'City of Gold' },
 ];
 
