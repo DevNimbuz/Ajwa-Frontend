@@ -28,7 +28,6 @@ export default function AdminLoginPage() {
     try {
       const data = await authAPI.login(email, password);
       if (data.success) {
-        console.log('[Login] Success! Navigating to /admin...');
         router.push('/admin');
       }
     } catch (err) {

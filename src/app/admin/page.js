@@ -153,7 +153,7 @@ export default function AdminDashboard() {
             <p style={{ color: '#64748b', fontSize: 14 }}>No lead data yet</p>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              {leadStats.topDestinations.map((dest, i) => (
+              {leadStats?.topDestinations?.map((dest, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 0', borderBottom: i < leadStats.topDestinations.length -1 ? '1px solid #334155' : 'none' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                     <span style={{ color: '#64748b', fontSize: 12, width: 20 }}>#{i + 1}</span>
@@ -199,7 +199,7 @@ export default function AdminDashboard() {
                 </tr>
               </thead>
               <tbody>
-                {leadStats.recentLeads.map((lead, i) => (
+                {leadStats?.recentLeads?.map((lead, i) => (
                   <tr key={i} style={{ borderBottom: '1px solid #1e293b' }}>
                     <td style={{ padding: '10px 0', color: '#e2e8f0', fontSize: 13 }}>{lead.name}</td>
                     <td style={{ padding: '10px 0', color: '#94a3b8', fontSize: 13 }}>{lead.destination || '—'}</td>

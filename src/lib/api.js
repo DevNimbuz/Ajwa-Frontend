@@ -103,10 +103,6 @@ async function apiFetch(endpoint, options = {}) {
     }
   }
 
-  if (isStateChanging) {
-    console.log(`[API] ${method} ${endpoint} | CSRF: ${csrfToken ? 'present' : 'missing'}`);
-  }
-
   const config = {
     credentials: 'include',
     headers: {
@@ -136,7 +132,7 @@ async function apiFetch(endpoint, options = {}) {
     }
 
     const data = await response.json();
-    console.log(`[API] Response from ${endpoint}:`, { status: response.status, success: data.success });
+
 
     // Handle auth errors — auto logout
     if (response.status === 401) {

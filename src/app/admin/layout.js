@@ -69,9 +69,7 @@ export default function AdminLayout({ children }) {
     }
 
     const checkAuth = () => {
-      console.log('[AdminLayout] Checking authentication...');
       if (!authAPI.isAuthenticated()) {
-        console.warn('[AdminLayout] Not authenticated. Redirecting to login.');
         router.push('/admin/login');
         return;
       }
@@ -82,9 +80,7 @@ export default function AdminLayout({ children }) {
       };
 
       if (stored) {
-        console.log('[AdminLayout] Found user in storage:', stored.email);
         if (!isAuthorizedAdmin(stored)) {
-          console.warn('[AdminLayout] Unauthorized role:', stored.role);
           authAPI.logout();
           router.push('/login');
           return;
@@ -92,7 +88,6 @@ export default function AdminLayout({ children }) {
         setUser(stored);
         setLoading(false);
       } else {
-        console.log('[AdminLayout] No user in storage. Fetching from server...');
         authAPI.getMe()
           .then(data => { 
             if (!isAuthorizedAdmin(data.user)) {
