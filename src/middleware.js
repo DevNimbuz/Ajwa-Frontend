@@ -11,6 +11,9 @@ export function middleware(request) {
   const token = request.cookies.get('token')?.value;
   
   // 2. Protected Admin Routes
+  // NOTE: In a cross-domain setup (Vercel/Render), the 'token' cookie set by Render
+  // is NOT sent to Vercel. We rely on client-side auth in AdminLayout for now.
+  /*
   if (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) {
     if (!token) {
       const url = request.nextUrl.clone();
@@ -18,11 +21,13 @@ export function middleware(request) {
       return NextResponse.redirect(url);
     }
   }
+  */
   
   // 3. Protected Customer Routes
   const protectedCustomerRoutes = ['/dashboard', '/profile', '/booking'];
   const isProtectedCustomer = protectedCustomerRoutes.some(route => pathname.startsWith(route));
   
+  /*
   if (isProtectedCustomer) {
     if (!token) {
       const url = request.nextUrl.clone();
@@ -30,6 +35,7 @@ export function middleware(request) {
       return NextResponse.redirect(url);
     }
   }
+  */
   
   return NextResponse.next();
 }

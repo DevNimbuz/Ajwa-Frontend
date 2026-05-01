@@ -9,6 +9,7 @@
 // Backend API URL — set in .env.local or defaults to localhost (MED-4 FIX)
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 const USER_STORAGE_KEY = 'flyajwa_user';
+const TOKEN_STORAGE_KEY = 'flyajwa_token';
 const LEGACY_USER_STORAGE_KEY = 'flyajwa_user';
 const LEGACY_TOKEN_STORAGE_KEY = 'flyajwa_token';
 const CSRF_STORAGE_KEY = 'flyajwa_csrf';
@@ -20,11 +21,14 @@ function clearLegacyAuthStorage() {
   localStorage.removeItem('flyajwa_token');
 }
 
-/** Store user info for the active browser session */
-function setUser(user) {
+/** Store user info and token for the active browser session */
+function setUser(user, token) {
   if (typeof window === 'undefined') return;
   clearLegacyAuthStorage();
   sessionStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
+  if (token) {
+    sessionStorage.setItem(TOKEN_STORAGE_KEY, token);
+  }
 }
 
 function setCSRFToken(token) {
@@ -37,8 +41,8 @@ function setCSRFToken(token) {
 }
 
 function getToken() {
-  // Token is now in HttpOnly cookie; cannot be accessed via JS (H5)
-  return null;
+  if (typeof window === 'undefined') return null;
+  return sessionStorage.getItem(TOKEN_STORAGE_KEY);
 }
 
 function getCSRFToken() {
@@ -55,6 +59,7 @@ function getCSRFToken() {
 function removeSession() {
   if (typeof window === 'undefined') return;
   sessionStorage.removeItem(USER_STORAGE_KEY);
+  sessionStorage.removeItem(TOKEN_STORAGE_KEY);
   sessionStorage.removeItem(CSRF_STORAGE_KEY);
   clearLegacyAuthStorage();
 }
@@ -107,6 +112,7 @@ async function apiFetch(endpoint, options = {}) {
     headers: {
       ...(!isFormData && { 'Content-Type': 'application/json' }),
       ...(isStateChanging && csrfToken ? { 'X-CSRF-Token': csrfToken } : {}),
+      ...(getToken() ? { 'Authorization': `Bearer ${getToken()}` } : {}),
       ...options.headers,
     },
     ...options,
@@ -130,6 +136,7 @@ async function apiFetch(endpoint, options = {}) {
     }
 
     const data = await response.json();
+    console.log(`[API] Response from ${endpoint}:`, { status: response.status, success: data.success });
 
     // Handle auth errors — auto logout
     if (response.status === 401) {
@@ -181,7 +188,7 @@ export const authAPI = {
       body: { email, password },
     });
     if (data.success) {
-      setUser(data.user);
+      setUser(data.user, data.token);
     }
     return data;
   },
@@ -204,7 +211,7 @@ export const authAPI = {
       body: { verifyToken, emailOTP },
     });
     if (data.success && data.user) {
-      setUser(data.user);
+      setUser(data.user, data.token);
     }
     return data;
   },
