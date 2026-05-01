@@ -98,6 +98,10 @@ async function apiFetch(endpoint, options = {}) {
     }
   }
 
+  if (isStateChanging) {
+    console.log(`[API] ${method} ${endpoint} | CSRF: ${csrfToken ? 'present' : 'missing'}`);
+  }
+
   const config = {
     credentials: 'include',
     headers: {
