@@ -18,11 +18,16 @@ export default function AdminTeam() {
   const [form, setForm] = useState({ name: '', email: '', password: '', phone: '', role: 'TEAM' });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [user, setUser] = useState(null);
 
   const fetchMembers = async () => {
     try {
       const data = await usersAPI.list();
       if (data.success) setMembers(data.data);
+      
+      // Also get current user for permission checks
+      const currentUser = authAPI.getUser();
+      setUser(currentUser);
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
   };
@@ -74,14 +79,16 @@ export default function AdminTeam() {
     <div>
       <div className="admin-card-header">
         <h1 style={{ color: '#f1f5f9', fontSize: 24, fontWeight: 700, margin: 0 }}>👥 Team</h1>
-        <button
-          onClick={() => { setShowForm(true); setEditing(null); setForm({ name: '', email: '', password: '', phone: '', role: 'TEAM' }); }}
-          style={{
-            display: 'flex', alignItems: 'center', gap: 6, padding: '10px 24px',
-            background: 'linear-gradient(135deg, #63ab45, #4d8a35)', border: 'none',
-            borderRadius: 9999, color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 700,
-            boxShadow: '0 4px 12px rgba(99, 171, 69, 0.2)'
-          }}><Plus size={16} /> Add Member</button>
+        {user?.role === 'SUPER_ADMIN' && (
+          <button
+            onClick={() => { setShowForm(true); setEditing(null); setForm({ name: '', email: '', password: '', phone: '', role: 'TEAM' }); }}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 6, padding: '10px 24px',
+              background: 'linear-gradient(135deg, #63ab45, #4d8a35)', border: 'none',
+              borderRadius: 9999, color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 700,
+              boxShadow: '0 4px 12px rgba(99, 171, 69, 0.2)'
+            }}><Plus size={16} /> Add Member</button>
+        )}
       </div>
 
       {/* Team List */}
@@ -107,9 +114,9 @@ export default function AdminTeam() {
             <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
               <span style={{
                 padding: '2px 8px', borderRadius: 4, fontSize: 10, fontWeight: 600,
-                background: m.role === 'SUPER_ADMIN' ? '#f59e0b20' : '#3b82f620',
-                color: m.role === 'SUPER_ADMIN' ? '#f59e0b' : '#3b82f6',
-              }}>{m.role === 'SUPER_ADMIN' ? 'SUPER ADMIN' : 'TEAM'}</span>
+                background: m.role === 'SUPER_ADMIN' ? '#f59e0b20' : m.role === 'ADMIN' ? '#10b98120' : '#3b82f620',
+                color: m.role === 'SUPER_ADMIN' ? '#f59e0b' : m.role === 'ADMIN' ? '#10b981' : '#3b82f6',
+              }}>{m.role === 'SUPER_ADMIN' ? 'SUPER ADMIN' : m.role === 'ADMIN' ? 'ADMIN' : 'TEAM'}</span>
               <span style={{
                 padding: '2px 8px', borderRadius: 4, fontSize: 10, fontWeight: 600,
                 background: m.isActive ? '#22c55e20' : '#ef444420',
@@ -119,22 +126,24 @@ export default function AdminTeam() {
 
             {m.phone && <div style={{ color: '#94a3b8', fontSize: 13, marginBottom: 12 }}>📞 {m.phone}</div>}
 
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              <button onClick={() => startEdit(m)} style={{
-                flex: 1, minWidth: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                padding: '8px 12px', background: '#0f172a', border: '1px solid #334155', borderRadius: 9999,
-                color: '#94a3b8', cursor: 'pointer', fontSize: 12, fontWeight: 600
-              }}><Edit size={14} /> Edit</button>
-              <button onClick={() => toggleActive(m)} style={{
-                padding: '8px 16px', background: '#0f172a', border: '1px solid #334155',
-                borderRadius: 9999, color: m.isActive ? '#ef4444' : '#22c55e', cursor: 'pointer', fontSize: 12, fontWeight: 600
-              }}>{m.isActive ? 'Deactivate' : 'Activate'}</button>
-              <button onClick={() => deleteMember(m)} style={{
-                width: 38, height: 38, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: '#dc262610', border: '1px solid #dc262630',
-                borderRadius: '50%', color: '#ef4444', cursor: 'pointer',
-              }}><Trash2 size={14} /></button>
-            </div>
+            {user?.role === 'SUPER_ADMIN' && (
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                <button onClick={() => startEdit(m)} style={{
+                  flex: 1, minWidth: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                  padding: '8px 12px', background: '#0f172a', border: '1px solid #334155', borderRadius: 9999,
+                  color: '#94a3b8', cursor: 'pointer', fontSize: 12, fontWeight: 600
+                }}><Edit size={14} /> Edit</button>
+                <button onClick={() => toggleActive(m)} style={{
+                  padding: '8px 16px', background: '#0f172a', border: '1px solid #334155',
+                  borderRadius: 9999, color: m.isActive ? '#ef4444' : '#22c55e', cursor: 'pointer', fontSize: 12, fontWeight: 600
+                }}>{m.isActive ? 'Deactivate' : 'Activate'}</button>
+                <button onClick={() => deleteMember(m)} style={{
+                  width: 38, height: 38, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  background: '#dc262610', border: '1px solid #dc262630',
+                  borderRadius: '50%', color: '#ef4444', cursor: 'pointer',
+                }}><Trash2 size={14} /></button>
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -196,6 +205,7 @@ export default function AdminTeam() {
                 <select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}
                   style={{ width: '100%', padding: '8px 12px', background: '#0f172a', border: '1px solid #334155', borderRadius: 6, color: '#e2e8f0', fontSize: 14, cursor: 'pointer' }}>
                   <option value="TEAM">Team Member</option>
+                  <option value="ADMIN">Admin (Manager)</option>
                   <option value="SUPER_ADMIN">Super Admin</option>
                 </select>
               </div>

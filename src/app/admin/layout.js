@@ -44,12 +44,12 @@ function ActivityWatchdog() {
 
 // ── Sidebar Navigation Items ──
 const navItems = [
-  { label: 'Dashboard', href: '/admin', icon: LayoutDashboard, roles: ['SUPER_ADMIN', 'TEAM'] },
-  { label: 'Packages', href: '/admin/packages', icon: Package, roles: ['SUPER_ADMIN', 'TEAM'] },
-  { label: 'Leads', href: '/admin/leads', icon: MessageSquare, roles: ['SUPER_ADMIN', 'TEAM'] },
-  { label: 'Testimonials', href: '/admin/testimonials', icon: Activity, roles: ['SUPER_ADMIN', 'TEAM'] },
-  { label: 'Gallery', href: '/admin/gallery', icon: LayoutDashboard, roles: ['SUPER_ADMIN', 'TEAM'] },
-  { label: 'Team', href: '/admin/team', icon: Users, roles: ['SUPER_ADMIN'] },
+  { label: 'Dashboard', href: '/admin', icon: LayoutDashboard, roles: ['SUPER_ADMIN', 'ADMIN', 'TEAM'] },
+  { label: 'Packages', href: '/admin/packages', icon: Package, roles: ['SUPER_ADMIN', 'ADMIN', 'TEAM'] },
+  { label: 'Leads', href: '/admin/leads', icon: MessageSquare, roles: ['SUPER_ADMIN', 'ADMIN', 'TEAM'] },
+  { label: 'Testimonials', href: '/admin/testimonials', icon: Activity, roles: ['SUPER_ADMIN', 'ADMIN', 'TEAM'] },
+  { label: 'Gallery', href: '/admin/gallery', icon: LayoutDashboard, roles: ['SUPER_ADMIN', 'ADMIN', 'TEAM'] },
+  { label: 'Team', href: '/admin/team', icon: Users, roles: ['SUPER_ADMIN', 'ADMIN'] },
   { label: 'Security', href: '/admin/security', icon: Shield, roles: ['SUPER_ADMIN'] },
   { label: 'Settings', href: '/admin/settings', icon: Settings, roles: ['SUPER_ADMIN'] },
 ];
@@ -76,7 +76,7 @@ export default function AdminLayout({ children }) {
       const stored = authAPI.getUser();
       
       const isAuthorizedAdmin = (userData) => {
-        return userData && (userData.role === 'SUPER_ADMIN' || userData.role === 'TEAM');
+        return userData && ['SUPER_ADMIN', 'ADMIN', 'TEAM'].includes(userData.role);
       };
 
       if (stored) {
@@ -213,7 +213,11 @@ export default function AdminLayout({ children }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
             <div style={{
               width: 36, height: 36, borderRadius: '50%',
-              background: user?.role === 'SUPER_ADMIN' ? 'linear-gradient(135deg, #f59e0b, #d97706)' : 'linear-gradient(135deg, #3b82f6, #2563eb)',
+              background: user?.role === 'SUPER_ADMIN' 
+                ? 'linear-gradient(135deg, #f59e0b, #d97706)' 
+                : user?.role === 'ADMIN'
+                  ? 'linear-gradient(135deg, #10b981, #059669)'
+                  : 'linear-gradient(135deg, #3b82f6, #2563eb)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               color: '#fff', fontWeight: 700, fontSize: 14,
             }}>
@@ -223,11 +227,19 @@ export default function AdminLayout({ children }) {
               <div style={{ color: '#e2e8f0', fontSize: 13, fontWeight: 600 }}>{user?.name}</div>
               <div style={{
                 fontSize: 10, padding: '1px 6px', borderRadius: 4,
-                background: user?.role === 'SUPER_ADMIN' ? '#f59e0b20' : '#3b82f620',
-                color: user?.role === 'SUPER_ADMIN' ? '#f59e0b' : '#3b82f6',
+                background: user?.role === 'SUPER_ADMIN' 
+                  ? '#f59e0b20' 
+                  : user?.role === 'ADMIN'
+                    ? '#10b98120'
+                    : '#3b82f620',
+                color: user?.role === 'SUPER_ADMIN' 
+                  ? '#f59e0b' 
+                  : user?.role === 'ADMIN'
+                    ? '#10b981'
+                    : '#3b82f6',
                 fontWeight: 600, letterSpacing: '0.05em',
               }}>
-                {user?.role === 'SUPER_ADMIN' ? 'SUPER ADMIN' : 'TEAM'}
+                {user?.role === 'SUPER_ADMIN' ? 'SUPER ADMIN' : user?.role === 'ADMIN' ? 'ADMIN' : 'TEAM'}
               </div>
             </div>
           </div>
