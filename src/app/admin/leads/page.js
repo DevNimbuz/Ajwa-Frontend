@@ -11,7 +11,7 @@ import { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import { leadsAPI, usersAPI, authAPI } from '@/lib/api';
 import {
-  Search, Filter, Download, ChevronLeft, ChevronRight,
+  Search, Filter, Download, ChevronLeft, ChevronRight, ChevronDown,
   MessageSquare, Phone, Mail, MapPin, Clock, X, Plus, Trash2, Calendar as CalendarIcon, Star,
   Receipt, Wallet, CreditCard, CheckSquare, XSquare, Loader2
 } from 'lucide-react';
@@ -223,31 +223,45 @@ export default function AdminLeads() {
             }}
           />
         </div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', flex: '1 1 auto' }}>
-          <select
-            value={filters.status}
-            onChange={(e) => setFilters(f => ({ ...f, status: e.target.value, page: 1 }))}
-            style={{ flex: 1, minWidth: 120, padding: '10px 14px', background: '#1e293b', border: '1px solid #334155', borderRadius: 9999, color: '#e2e8f0', fontSize: 13, cursor: 'pointer' }}
-          >
-            <option value="">Status</option>
-            {statuses.map(s => <option key={s} value={s}>{s}</option>)}
-          </select>
-          <select
-            value={filters.source}
-            onChange={(e) => setFilters(f => ({ ...f, source: e.target.value, page: 1 }))}
-            style={{ flex: 1, minWidth: 120, padding: '10px 14px', background: '#1e293b', border: '1px solid #334155', borderRadius: 9999, color: '#e2e8f0', fontSize: 13, cursor: 'pointer' }}
-          >
-            <option value="">Source</option>
-            {sources.map(s => <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
-          </select>
-          <select
-            value={filters.priority}
-            onChange={(e) => setFilters(f => ({ ...f, priority: e.target.value, page: 1 }))}
-            style={{ flex: 1, minWidth: 120, padding: '10px 14px', background: '#1e293b', border: '1px solid #334155', borderRadius: 9999, color: '#e2e8f0', fontSize: 13, cursor: 'pointer' }}
-          >
-            <option value="">Priority</option>
-            {priorities.map(p => <option key={p} value={p}>{p}</option>)}
-          </select>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          {[
+            { label: 'Status', value: filters.status, options: statuses, key: 'status' },
+            { label: 'Source', value: filters.source, options: sources, key: 'source', format: s => s.charAt(0).toUpperCase() + s.slice(1) },
+            { label: 'Priority', value: filters.priority, options: priorities, key: 'priority' }
+          ].map(filter => (
+            <div key={filter.key} style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+              <select
+                value={filter.value}
+                onChange={(e) => setFilters(f => ({ ...f, [filter.key]: e.target.value, page: 1 }))}
+                style={{
+                  padding: '10px 28px 10px 14px', 
+                  background: '#1e293b', 
+                  border: '1px solid #334155', 
+                  borderRadius: 9999, 
+                  color: '#e2e8f0', 
+                  fontSize: 13, 
+                  cursor: 'pointer',
+                  appearance: 'none',
+                  width: 'auto',
+                  minWidth: 'unset'
+                }}
+              >
+                <option value="">{filter.label}</option>
+                {filter.options.map(opt => (
+                  <option key={opt} value={opt}>{filter.format ? filter.format(opt) : opt}</option>
+                ))}
+              </select>
+              <ChevronDown 
+                size={14} 
+                style={{ 
+                  position: 'absolute', 
+                  right: 10, 
+                  pointerEvents: 'none', 
+                  color: '#64748b' 
+                }} 
+              />
+            </div>
+          ))}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#1e293b', border: '1px solid #334155', borderRadius: 9999, padding: '0 16px', height: 42 }}>
           <CalendarIcon size={14} style={{ color: '#64748b' }} />
@@ -546,26 +560,38 @@ export default function AdminLeads() {
 
                     <div style={{ marginBottom: 20 }}>
                       <label style={{ color: '#94a3b8', fontSize: 11, fontWeight: 600, marginBottom: 8, display: 'block' }}>PRIORITY LEVEL</label>
-                      <select
-                        value={selectedLead.priority || 'NORMAL'}
-                        onChange={(e) => updateLead(selectedLead._id, { priority: e.target.value })}
-                        style={{ padding: '10px 16px', background: '#0f172a', border: '1px solid #334155', borderRadius: 12, color: '#e2e8f0', fontSize: 13, cursor: 'pointer', width: '100%' }}
-                      >
-                        {priorities.map(p => <option key={p} value={p}>{p}</option>)}
-                      </select>
+                      <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                        <select
+                          value={selectedLead.priority || 'NORMAL'}
+                          onChange={(e) => updateLead(selectedLead._id, { priority: e.target.value })}
+                          style={{ 
+                            padding: '10px 36px 10px 16px', background: '#0f172a', border: '1px solid #334155', borderRadius: 12, color: '#e2e8f0', fontSize: 13, cursor: 'pointer', width: '100%',
+                            appearance: 'none'
+                          }}
+                        >
+                          {priorities.map(p => <option key={p} value={p}>{p}</option>)}
+                        </select>
+                        <ChevronDown size={16} style={{ position: 'absolute', right: 12, pointerEvents: 'none', color: '#64748b' }} />
+                      </div>
                     </div>
 
                     {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN') && teamMembers.length > 0 && (
-                      <div>
+                      <div style={{ marginBottom: 20 }}>
                         <label style={{ color: '#94a3b8', fontSize: 11, fontWeight: 600, marginBottom: 8, display: 'block' }}>ASSIGNED STAFF</label>
-                        <select
-                          value={selectedLead.assignedTo?._id || ''}
-                          onChange={(e) => updateLead(selectedLead._id, { assignedTo: e.target.value || null })}
-                          style={{ padding: '10px 16px', background: '#0f172a', border: '1px solid #334155', borderRadius: 12, color: '#e2e8f0', fontSize: 13, cursor: 'pointer', width: '100%' }}
-                        >
-                          <option value="">Unassigned</option>
-                          {teamMembers.map(m => <option key={m._id} value={m._id}>{m.name}</option>)}
-                        </select>
+                        <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                          <select
+                            value={selectedLead.assignedTo?._id || ''}
+                            onChange={(e) => updateLead(selectedLead._id, { assignedTo: e.target.value || null })}
+                            style={{ 
+                              padding: '10px 36px 10px 16px', background: '#0f172a', border: '1px solid #334155', borderRadius: 12, color: '#e2e8f0', fontSize: 13, cursor: 'pointer', width: '100%',
+                              appearance: 'none'
+                            }}
+                          >
+                            <option value="">Unassigned</option>
+                            {teamMembers.map(m => <option key={m._id} value={m._id}>{m.name}</option>)}
+                          </select>
+                          <ChevronDown size={16} style={{ position: 'absolute', right: 12, pointerEvents: 'none', color: '#64748b' }} />
+                        </div>
                       </div>
                     )}
                   </div>

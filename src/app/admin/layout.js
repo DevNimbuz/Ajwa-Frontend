@@ -133,7 +133,12 @@ export default function AdminLayout({ children }) {
         <ActivityWatchdog />
       
       {/* ── Sidebar ── */}
-      <aside className="admin-sidebar" style={{ zIndex: 1001 }}>
+      <aside className="admin-sidebar" style={{ 
+        zIndex: 1001, 
+        display: 'flex', 
+        flexDirection: 'column',
+        height: '100vh' 
+      }}>
         {/* Logo */}
         <div style={{ padding: '20px 16px', borderBottom: '1px solid #334155', display: 'flex', alignItems: 'center', gap: 12 }}>
           <div style={{ width: 36, height: 36, background: 'transparent', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
@@ -182,10 +187,29 @@ export default function AdminLayout({ children }) {
               </a>
             );
           })}
+
+          {/* Inline Logout for Mobile (Positioned under Settings) */}
+          <button
+            onClick={() => authAPI.logout()}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 12,
+              padding: '12px 16px', borderRadius: 8,
+              color: '#f87171',
+              background: 'transparent',
+              border: 'none', cursor: 'pointer', fontSize: 15, fontWeight: 500,
+              transition: 'all 0.2s',
+              marginTop: 4
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)'}
+            onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+          >
+            <LogOut size={20} />
+            <span>Logout</span>
+          </button>
         </nav>
 
-        {/* User Info + Logout */}
-        <div style={{ padding: '16px', borderTop: '1px solid #334155' }}>
+        {/* User Info (Desktop/Large Screen Footer) */}
+        <div style={{ padding: '16px', borderTop: '1px solid #334155', flexShrink: 0, display: sidebarOpen ? 'none' : 'block' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
             <div style={{
               width: 36, height: 36, borderRadius: '50%',
@@ -207,17 +231,6 @@ export default function AdminLayout({ children }) {
               </div>
             </div>
           </div>
-          <button
-            onClick={() => authAPI.logout()}
-            style={{
-              width: '100%', display: 'flex', alignItems: 'center', gap: 8,
-              padding: '8px 12px', borderRadius: 6,
-              background: '#dc262620', color: '#f87171', border: 'none',
-              cursor: 'pointer', fontSize: 13, fontWeight: 500,
-            }}
-          >
-            <LogOut size={16} /> Logout
-          </button>
         </div>
       </aside>
 
