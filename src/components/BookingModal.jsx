@@ -73,7 +73,6 @@ export default function BookingModal({ isOpen, onClose, packageData }) {
             <ShieldCheck className="text-gold" size={24} />
             <div>
               <h3>Secure Direct Booking</h3>
-              <p>Verified Reservation • 500 Ajwa Points</p>
             </div>
           </div>
           <button onClick={onClose} className="booking-modal-close">
@@ -249,10 +248,7 @@ export default function BookingModal({ isOpen, onClose, packageData }) {
                   />
                 </div>
 
-                <div className="points-award-teaser">
-                  <Zap size={18} className="text-gold" />
-                  <span>Pending Award: <strong>500 Ajwa Points</strong></span>
-                </div>
+
 
                 <div className="modal-actions">
                   <button className="btn btn-outline" onClick={() => setStep(2)}>Back</button>
@@ -275,7 +271,7 @@ export default function BookingModal({ isOpen, onClose, packageData }) {
                   <Check size={60} className="text-success" />
                 </div>
                 <h3>Booking Request Received!</h3>
-                <p>Your request for {packageData.packageName} has been prioritized. 500 Ajwa Points have been credited to your account (pending confirmation).</p>
+                <p>Your request for {packageData.packageName} has been prioritized. Our team will contact you shortly to finalize your reservation.</p>
                 <div className="success-actions">
                   <button className="btn-primary" onClick={onClose}>Done</button>
                 </div>
