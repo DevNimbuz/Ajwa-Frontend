@@ -38,10 +38,10 @@ export default function PricingCalculator({ packageSlug, packageName, basePrice 
 
   const whatsappMessage = `Hi! I'm interested in ${packageName || 'Tour Package'}
 
-📅 Duration: ${days === 'custom' ? `${customDays} Days` : `${days} Days`}
-✈️ Flight: ${withFlight ? 'Included' : 'Excluded'}
-🏨 Hotel: ${hotelStar} Star
-👥 Travelers: ${groupSize} person${groupSize > 1 ? 's' : ''}
+Duration: ${days === 'custom' ? `${customDays} Days` : `${days} Days`}
+Flight: ${withFlight ? 'Included' : 'Excluded'}
+Hotel: ${hotelStar} Star
+Travelers: ${groupSize} person${groupSize > 1 ? 's' : ''}
 
 Please share the details.`;
 
@@ -216,11 +216,11 @@ Please share the details.`;
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Send size={20} style={{ color: '#ffffff' }} /> 
-              <span style={{ fontWeight: 800, letterSpacing: '0.02em', textTransform: 'uppercase', fontSize: '14px' }}>Book & Earn up to 2000 Ajwa Points</span>
+              <span style={{ fontWeight: 800, letterSpacing: '0.02em', textTransform: 'uppercase', fontSize: '14px' }}>BOOK THROUGH WEBSITE</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
               <Star size={10} fill="#fbbf24" color="#fbbf24" />
-              <span style={{ fontSize: '10px', opacity: 1, fontWeight: 700, color: '#fbbf24' }}>★ +2000 AJWA POINTS</span>
+              <span style={{ fontSize: '10px', opacity: 1, fontWeight: 700, color: '#fbbf24' }}>EARN AJWA POINTS FOR EACH BOOKING</span>
             </div>
           </div>
         </button>
