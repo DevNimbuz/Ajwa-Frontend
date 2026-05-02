@@ -5374,7 +5374,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* -- Admin Layout System (Robust & Responsive) -- */
 :root {
-  --admin-sidebar-width: 260px;
+  --admin-sidebar-width: 280px; /* Increased from 260px */
 }
 
 .admin-layout-wrapper {
@@ -5382,6 +5382,7 @@ h1, h2, h3, h4, h5, h6 {
   min-height: 100vh;
   background: #0f172a;
   position: relative;
+  font-size: 15px; /* Base font size increased for better legibility */
 }
 
 .admin-sidebar {
@@ -5406,9 +5407,27 @@ h1, h2, h3, h4, h5, h6 {
   background: #0f172a;
 }
 
+.admin-content {
+  padding: 40px; /* Expansive padding for 'big' feel */
+  min-height: calc(100vh - 64px);
+  width: 100%;
+}
+
+@media (max-width: 1440px) {
+  .admin-content {
+    padding: 32px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .admin-content {
+    padding: 24px;
+  }
+}
+
 .admin-mobile-header {
   display: none;
-  padding: 12px 20px;
+  padding: 16px 24px;
   background: #1e293b;
   border-bottom: 1px solid #334155;
   align-items: center;
@@ -5429,6 +5448,7 @@ h1, h2, h3, h4, h5, h6 {
 
   .admin-main {
     margin-left: 0;
+    padding: 20px;
   }
 
   .admin-mobile-header {
@@ -5439,19 +5459,28 @@ h1, h2, h3, h4, h5, h6 {
 /* -- Admin Grid System -- */
 .admin-grid-2 {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* Increased min-width */
+  gap: 32px; /* Increased gap */
 }
 
 .admin-grid-1-2 {
   display: grid;
   grid-template-columns: 1fr 2fr;
-  gap: 24px;
+  gap: 32px;
 }
 
-@media (max-width: 992px) {
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.lead-detail-modal {
+  animation: modalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (max-width: 1024px) {
   .admin-grid-1-2 {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
   }
 }
 
@@ -5476,7 +5505,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .admin-table-wrapper table {
   width: 100%;
-  min-width: 800px;
+  min-width: 1000px; /* Increased from 800px for bigger feel */
   border-collapse: collapse;
 }
 

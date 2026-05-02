@@ -44,6 +44,7 @@ export default function AdminLeads() {
     page: 1 
   });
   const [selectedLead, setSelectedLead] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
   const [teamMembers, setTeamMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [noteText, setNoteText] = useState('');
@@ -111,17 +112,19 @@ export default function AdminLeads() {
     URGENT: '#ef4444',
   };
 
-  const handleDelete = async (e, id) => {
-    e.stopPropagation(); // Don't open the sidebar
-    if (!window.confirm('Are you sure you want to delete this lead?')) return;
-    
+  const handleDelete = async (id) => {
     try {
       const data = await leadsAPI.delete(id);
       if (data.success) {
         setLeads(prev => prev.filter(l => l._id !== id));
         if (selectedLead?._id === id) setSelectedLead(null);
+        setDeletingId(null);
+      } else {
+        console.error('[AdminLeads] Delete failed:', data.message);
+        alert(data.message || 'Delete failed');
       }
     } catch (err) {
+      console.error('[AdminLeads] Delete Error:', err);
       alert(err.message || 'Delete failed');
     }
   };
@@ -281,121 +284,128 @@ export default function AdminLeads() {
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={9} style={{ padding: 40, textAlign: 'center', color: '#64748b' }}>Loading...</td></tr>
+              <tr><td colSpan={9} style={{ padding: 60, textAlign: 'center', color: '#64748b', fontSize: 16 }}>Loading...</td></tr>
             ) : leads.length === 0 ? (
-              <tr><td colSpan={9} style={{ padding: 40, textAlign: 'center', color: '#64748b' }}>No leads found</td></tr>
+              <tr><td colSpan={9} style={{ padding: 60, textAlign: 'center', color: '#64748b', fontSize: 16 }}>No leads found</td></tr>
             ) : leads.map(lead => (
               <tr
                 key={lead._id}
                 onClick={() => handleSelectLead(lead)}
-                style={{ borderBottom: '1px solid #334155', cursor: 'pointer', transition: 'background 0.2s' }}
-                onMouseEnter={(e) => e.currentTarget.style.background = '#0f172a'}
+                style={{ borderBottom: '1px solid #334155', cursor: 'pointer', transition: 'all 0.2s' }}
+                onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(99, 171, 69, 0.05)'}
                 onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
               >
-                <td style={{ padding: '12px 16px', color: '#e2e8f0', fontSize: 14, fontWeight: 500 }}>{lead.name}</td>
-                <td style={{ padding: '12px 16px' }}>
-                  <div style={{ color: '#94a3b8', fontSize: 13 }}>{lead.phone}</div>
-                  {lead.email && <div style={{ color: '#64748b', fontSize: 11 }}>{lead.email}</div>}
-                </td>
-                <td style={{ padding: '12px 16px' }}>
-                  <div style={{ color: '#e2e8f0', fontSize: 13, fontWeight: 600 }}>{lead.destination || 'Inquiry'}</div>
-                  <div style={{ color: lead.bookingType === 'DIRECT_BOOKING' ? '#22c55e' : '#64748b', fontSize: 10, fontWeight: 600, textTransform: 'uppercase', marginTop: 2 }}>
-                    {lead.bookingType === 'DIRECT_BOOKING' ? '⚡ Direct Booking' : 'Inquiry'}
-                  </div>
-                </td>
-                <td style={{ padding: '12px 16px' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 4 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{
-                        background: (priorityColors[lead.priority] || '#3b82f6') + '20',
-                        color: priorityColors[lead.priority] || '#3b82f6',
-                        padding: '3px 8px', borderRadius: 4, fontSize: 10, fontWeight: 700
-                      }}>
-                        {lead.priority || 'NORMAL'}
-                      </span>
-                      {lead.priorityScore > 80 && <span title="High Priority Score" style={{ fontSize: 12 }}>🔥</span>}
+                <td style={{ padding: '24px 16px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <div style={{ 
+                      width: 44, height: 44, borderRadius: 12, 
+                      background: 'linear-gradient(135deg, #1e293b, #0f172a)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                      color: '#63ab45', fontWeight: 800, fontSize: 18,
+                      border: '1px solid #334155'
+                    }}>
+                      {lead.name?.[0]?.toUpperCase()}
                     </div>
-                    {lead.priorityScore !== undefined && (
-                      <span style={{ color: '#94a3b8', fontSize: 11, fontWeight: 600, marginLeft: 2 }}>
-                        Score: {lead.priorityScore}
-                      </span>
-                    )}
+                    <div>
+                      <div style={{ color: '#f1f5f9', fontWeight: 700, fontSize: 16 }}>{lead.name}</div>
+                      <div style={{ color: '#64748b', fontSize: 12 }}>Lead ID: {lead._id.slice(-6).toUpperCase()}</div>
+                    </div>
                   </div>
                 </td>
-                <td style={{ padding: '12px 16px' }}>
-                  <div style={{ color: '#e2e8f0', fontSize: 13, fontWeight: 700 }}>
+                <td style={{ padding: '24px 16px' }}>
+                  <div style={{ color: '#f1f5f9', fontSize: 14, fontWeight: 600 }}>{lead.phone}</div>
+                  {lead.email && <div style={{ color: '#64748b', fontSize: 12, marginTop: 2 }}>{lead.email}</div>}
+                </td>
+                <td style={{ padding: '24px 16px' }}>
+                  <div style={{ color: '#e2e8f0', fontSize: 14, fontWeight: 600 }}>{lead.destination || 'Inquiry'}</div>
+                  <div style={{ 
+                    color: lead.bookingType === 'DIRECT_BOOKING' ? '#22c55e' : '#3b82f6', 
+                    fontSize: 10, fontWeight: 800, textTransform: 'uppercase', marginTop: 4,
+                    display: 'flex', alignItems: 'center', gap: 4
+                  }}>
+                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'currentColor' }} />
+                    {lead.bookingType === 'DIRECT_BOOKING' ? 'Direct Booking' : 'General Inquiry'}
+                  </div>
+                </td>
+                <td style={{ padding: '24px 16px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{
+                      background: (priorityColors[lead.priority] || '#3b82f6') + '15',
+                      color: priorityColors[lead.priority] || '#3b82f6',
+                      padding: '4px 10px', borderRadius: 8, fontSize: 11, fontWeight: 800,
+                      border: `1px solid ${priorityColors[lead.priority] || '#3b82f6'}30`
+                    }}>
+                      {lead.priority || 'NORMAL'}
+                    </span>
+                    {lead.priorityScore > 80 && <span title="High Score">🔥</span>}
+                  </div>
+                </td>
+                <td style={{ padding: '24px 16px' }}>
+                  <div style={{ color: '#63ab45', fontSize: 15, fontWeight: 800 }}>
                     {lead.quotedPrice ? `₹${lead.quotedPrice.toLocaleString()}` : '—'}
                   </div>
                   {lead.ajwaPointsAwarded && (
-                    <div style={{ color: '#f59e0b', fontSize: 10, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
-                      <Star size={10} fill="#f59e0b" /> Points Paid
-                    </div>
+                    <div style={{ color: '#f59e0b', fontSize: 10, fontWeight: 700, marginTop: 2 }}>POINTS AWARDED</div>
                   )}
                 </td>
-                <td style={{ padding: '12px 16px' }}>
+                <td style={{ padding: '24px 16px' }}>
                   {lead.assignedTo ? (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'linear-gradient(135deg, #3b82f6, #2563eb)', color: '#fff', fontSize: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#3b82f6', color: '#fff', fontSize: 11, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>
                         {lead.assignedTo.name?.[0]}
                       </div>
-                      <span style={{ color: '#e2e8f0', fontSize: 13 }}>{lead.assignedTo.name}</span>
+                      <span style={{ color: '#e2e8f0', fontSize: 14, fontWeight: 500 }}>{lead.assignedTo.name}</span>
                     </div>
                   ) : (
-                    <span style={{ color: '#475569', fontSize: 12 }}>Unassigned</span>
+                    <span style={{ color: '#475569', fontSize: 13, fontStyle: 'italic' }}>Unassigned</span>
                   )}
                 </td>
-                <td style={{ padding: '12px 16px' }}>
+                <td style={{ padding: '20px 16px' }}>
                   <span style={{
                     background: (statusColors[lead.status] || '#3b82f6') + '20',
                     color: statusColors[lead.status] || '#3b82f6',
-                    padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 700,
+                    padding: '6px 12px', borderRadius: 8, fontSize: 12, fontWeight: 700,
                     border: `1px solid ${statusColors[lead.status]}40`,
-                    display: 'inline-block', minWidth: 80, textAlign: 'center'
+                    display: 'inline-block', minWidth: 100, textAlign: 'center',
+                    textTransform: 'uppercase'
                   }}>
-                    {lead.status || 'NEW'}
+                    {lead.status?.replace('_', ' ') || 'NEW'}
                   </span>
                 </td>
-                <td style={{ padding: '12px 16px' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    <div style={{ color: '#94a3b8', fontSize: 12 }}>
-                      Created: {new Date(lead.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                <td style={{ padding: '20px 16px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    <div style={{ color: '#f1f5f9', fontSize: 13, fontWeight: 600 }}>
+                      {new Date(lead.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </div>
                     {lead.travelDate && (
-                      <div style={{ color: '#22c55e', fontSize: 11, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 4 }}>
-                        <CalendarIcon size={12} /> {new Date(lead.travelDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                      <div style={{ color: '#22c55e', fontSize: 12, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <CalendarIcon size={14} /> {new Date(lead.travelDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
                       </div>
                     )}
                   </div>
                 </td>
-                {(user?.role === 'SUPER_ADMIN' || user?.role === 'TEAM') && (
-                  <td style={{ padding: '12px 16px', textAlign: 'right' }}>
-                    <button 
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        handleDelete(e, lead._id);
-                      }}
-                      style={{
-                        background: 'transparent', 
-                        border: 'none', 
-                        color: '#475569', 
-                        cursor: 'pointer',
-                        width: 32,
-                        height: 32,
-                        borderRadius: '50%',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        transition: 'all 0.2s',
-                      }}
-                      onMouseEnter={(e) => e.currentTarget.style.color = '#ef4444'}
-                      onMouseLeave={(e) => e.currentTarget.style.color = '#475569'}
-                      title="Delete Lead"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </td>
-                )}
+                <td style={{ padding: '24px 16px', textAlign: 'right' }}>
+                   {(user?.role === 'SUPER_ADMIN' || user?.role === 'TEAM') && (
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                      {deletingId === lead._id ? (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#ef444415', padding: '6px 12px', borderRadius: 12, border: '1px solid #ef444430' }}>
+                          <span style={{ fontSize: 11, color: '#ef4444', fontWeight: 800 }}>DELETE?</span>
+                          <button onClick={(e) => { e.stopPropagation(); handleDelete(lead._id); }} style={{ background: '#ef4444', color: '#fff', border: 'none', borderRadius: 8, padding: '4px 8px', fontSize: 10, fontWeight: 700, cursor: 'pointer' }}>YES</button>
+                          <button onClick={(e) => { e.stopPropagation(); setDeletingId(null); }} style={{ background: '#334155', color: '#fff', border: 'none', borderRadius: 8, padding: '4px 8px', fontSize: 10, fontWeight: 700, cursor: 'pointer' }}>NO</button>
+                        </div>
+                      ) : (
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); setDeletingId(lead._id); }}
+                          style={{ background: 'transparent', border: 'none', color: '#475569', cursor: 'pointer', width: 36, height: 36, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
+                          onMouseEnter={(e) => { e.currentTarget.style.background = '#ef444410'; e.currentTarget.style.color = '#ef4444'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#475569'; }}
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      )}
+                    </div>
+                   )}
+                </td>
               </tr>
             ))}
           </tbody>
@@ -421,325 +431,313 @@ export default function AdminLeads() {
         )}
       </div>
 
-      {/* ── Lead Detail Sidebar ── */}
+      {/* ── Lead Detail Modal (Premium Overlay) ── */}
       {selectedLead && (
-        <div className="lead-detail-sidebar" style={{ 
-          position: 'fixed', top: 0, right: 0, bottom: 0, 
-          width: 'min(420px, 100%)', background: '#1e293b', borderLeft: '1px solid #334155',
-          zIndex: 2000, overflowY: 'auto', boxShadow: '-4px 0 24px rgba(0,0,0,0.4)', padding: 24 
+        <div style={{ 
+          position: 'fixed', inset: 0, zIndex: 3000, 
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: 20, animation: 'fadeIn 0.2s ease'
         }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-            <h2 style={{ color: '#f1f5f9', fontSize: 18, fontWeight: 600, margin: 0 }}>{selectedLead.name}</h2>
-            <button 
-              onClick={() => setSelectedLead(null)} 
-              aria-label="Close Lead Details"
-              style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer' }}
-            >
-              <X size={20} />
-            </button>
-          </div>
+          {/* Backdrop */}
+          <div 
+            onClick={() => setSelectedLead(null)}
+            style={{ position: 'absolute', inset: 0, background: 'rgba(2, 6, 23, 0.85)', backdropFilter: 'blur(8px)' }} 
+          />
 
-          {/* Contact Info */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 20 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#94a3b8', fontSize: 13 }}>
-              <Phone size={14} /> <a href={`tel:${selectedLead.phone}`} style={{ color: '#3b82f6', textDecoration: 'none' }}>{selectedLead.phone}</a>
-            </div>
-            {selectedLead.email && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#94a3b8', fontSize: 13 }}>
-                <Mail size={14} /> <a href={`mailto:${selectedLead.email}`} style={{ color: '#3b82f6', textDecoration: 'none' }}>{selectedLead.email}</a>
-              </div>
-            )}
-            {selectedLead.destination && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#94a3b8', fontSize: 13 }}>
-                <MapPin size={14} /> {selectedLead.destination}
-              </div>
-            )}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#64748b', fontSize: 12 }}>
-              <Clock size={14} /> Created: {new Date(selectedLead.createdAt).toLocaleString('en-IN')}
-            </div>
-            {selectedLead.travelDate && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#22c55e', fontSize: 13, fontWeight: 600, marginTop: 4 }}>
-                <CalendarIcon size={14} /> TRAVEL DATE: {new Date(selectedLead.travelDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
-              </div>
-            )}
-          </div>
-
-          {/* Message */}
-          {selectedLead.message && (
-            <div style={{ background: '#0f172a', borderRadius: 8, padding: 14, marginBottom: 20 }}>
-              <div style={{ color: '#64748b', fontSize: 11, fontWeight: 600, marginBottom: 6 }}>MESSAGE</div>
-              <p style={{ color: '#e2e8f0', fontSize: 13, margin: 0, lineHeight: 1.6 }}>{selectedLead.message}</p>
-            </div>
-          )}
-
-          {/* Trip Specifications (Enhanced Details) */}
-          {(selectedLead.selectedGroupSize || selectedLead.selectedDays || selectedLead.selectedHotelStar) && (
-            <div style={{ background: '#0f172a', borderRadius: 10, padding: 16, marginBottom: 20, border: '1px solid #334155' }}>
-              <div style={{ color: '#63ab45', fontSize: 11, fontWeight: 700, marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Trip Specifications</div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: 10, color: '#64748b', marginBottom: 2 }}>TRAVELERS</label>
-                  <span style={{ fontSize: 13, color: '#f1f5f9', fontWeight: 600 }}>
-                    {selectedLead.adults || selectedLead.selectedGroupSize || 1} A
-                    {selectedLead.children > 0 && `, ${selectedLead.children} C`}
-                    {selectedLead.infants > 0 && `, ${selectedLead.infants} I`}
-                  </span>
+          {/* Modal Content */}
+          <div className="lead-detail-modal" style={{ 
+            position: 'relative', width: '100%', maxWidth: 1100, maxHeight: '90vh',
+            background: '#1e293b', borderRadius: 24, border: '1px solid #475569',
+            boxShadow: '0 25px 80px -12px rgba(0, 0, 0, 0.6)',
+            display: 'flex', flexDirection: 'column', overflow: 'hidden'
+          }}>
+            {/* Modal Header */}
+            <div style={{ 
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
+              padding: '24px 32px', borderBottom: '1px solid #334155', background: '#1e293b'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                <div style={{
+                  width: 48, height: 48, borderRadius: '50%',
+                  background: 'linear-gradient(135deg, #63ab45, #4d8a35)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: '#fff', fontSize: 20, fontWeight: 700
+                }}>
+                  {selectedLead.name?.[0]?.toUpperCase() || 'L'}
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: 10, color: '#64748b', marginBottom: 2 }}>DURATION</label>
-                  <span style={{ fontSize: 13, color: '#f1f5f9', fontWeight: 600 }}>{selectedLead.selectedDays || 'N/A'} Days</span>
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: 10, color: '#64748b', marginBottom: 2 }}>HOTEL</label>
-                  <span style={{ fontSize: 13, color: '#f1f5f9', fontWeight: 600 }}>{selectedLead.selectedHotelStar ? `${selectedLead.selectedHotelStar} Star` : 'Any'}</span>
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: 10, color: '#64748b', marginBottom: 2 }}>ROOM TYPE</label>
-                  <span style={{ fontSize: 13, color: '#f1f5f9', fontWeight: 600 }}>{selectedLead.selectedRoomType || 'Standard'}</span>
-                </div>
-              </div>
-              <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid #1e293b' }}>
-                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <div style={{ 
-                      padding: '3px 8px', borderRadius: 4, fontSize: 10, fontWeight: 700,
-                      background: selectedLead.bookingType === 'DIRECT_BOOKING' ? '#22c55e20' : '#3b82f620',
-                      color: selectedLead.bookingType === 'DIRECT_BOOKING' ? '#22c55e' : '#3b82f6'
-                    }}>
-                      {selectedLead.bookingType === 'DIRECT_BOOKING' ? 'DIRECT BOOKING' : 'GENERAL INQUIRY'}
-                    </div>
-                    {selectedLead.packageSlug && (
-                      <span style={{ fontSize: 11, color: '#94a3b8' }}>Pkg: {selectedLead.packageSlug}</span>
-                    )}
-                 </div>
-              </div>
-            </div>
-          )}
-
-          {/* WhatsApp Clicks */}
-          {selectedLead.whatsappClicks && selectedLead.whatsappClicks.length > 0 && (
-            <div style={{ background: '#22c55e10', borderRadius: 8, padding: 14, marginBottom: 20, border: '1px solid #22c55e30' }}>
-              <div style={{ color: '#22c55e', fontSize: 11, fontWeight: 600, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
-                ✈️ WhatsApp Clicked {selectedLead.whatsappClicks.length} Time{selectedLead.whatsappClicks.length > 1 ? 's' : ''}
-              </div>
-              {selectedLead.whatsappClicks.slice().reverse().map((click, i) => (
-                <div key={i} style={{ marginBottom: i < selectedLead.whatsappClicks.length - 1 ? 8 : 0 }}>
-                  <div style={{ color: '#64748b', fontSize: 11 }}>
-                    {new Date(click.clickedAt).toLocaleString('en-IN')}
+                  <h2 style={{ color: '#f1f5f9', fontSize: 22, fontWeight: 600, margin: 0 }}>{selectedLead.name}</h2>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 4 }}>
+                    <span style={{ fontSize: 13, color: '#94a3b8' }}>Lead #{selectedLead._id.slice(-6).toUpperCase()}</span>
+                    <span style={{ width: 4, height: 4, borderRadius: '50%', background: '#475569' }} />
+                    <span style={{ fontSize: 13, color: '#63ab45', fontWeight: 600 }}>{selectedLead.source}</span>
                   </div>
-                  {click.selectedOptions && (
-                    <div style={{ color: '#94a3b8', fontSize: 12, marginTop: 4 }}>
-                      {click.selectedOptions.days}D • {click.selectedOptions.flight ? 'With Flight' : 'No Flight'} • {click.selectedOptions.hotelStar}★ • {click.selectedOptions.groupSize} pax
+                </div>
+              </div>
+              <button 
+                onClick={() => setSelectedLead(null)} 
+                aria-label="Close Lead Details"
+                style={{ background: '#334155', border: 'none', color: '#94a3b8', cursor: 'pointer', width: 40, height: 40, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div style={{ padding: '32px', overflowY: 'auto', flex: 1, background: '#0f172a' }}>
+              <div className="admin-grid-1-2" style={{ gridTemplateColumns: '1fr 1.6fr', gap: 48, alignItems: 'start' }}>
+                
+                {/* ── LEFT COLUMN: Basic Info & Admin Controls ── */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
+                  
+                  {/* Contact Details Card */}
+                  <div style={{ background: '#1e293b', borderRadius: 20, padding: 24, border: '1px solid #334155' }}>
+                    <h3 style={{ color: '#63ab45', fontSize: 11, fontWeight: 700, marginBottom: 20, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Contact Details</h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 12, color: '#f1f5f9', fontSize: 15 }}>
+                        <div style={{ width: 32, height: 32, borderRadius: 8, background: '#334155', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8' }}>
+                          <Phone size={16} />
+                        </div>
+                        <a href={`tel:${selectedLead.phone}`} style={{ color: '#3b82f6', textDecoration: 'none', fontWeight: 600 }}>{selectedLead.phone}</a>
+                      </div>
+                      {selectedLead.email && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12, color: '#f1f5f9', fontSize: 15 }}>
+                          <div style={{ width: 32, height: 32, borderRadius: 8, background: '#334155', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8' }}>
+                            <Mail size={16} />
+                          </div>
+                          <a href={`mailto:${selectedLead.email}`} style={{ color: '#3b82f6', textDecoration: 'none', fontWeight: 600 }}>{selectedLead.email}</a>
+                        </div>
+                      )}
+                      {selectedLead.destination && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12, color: '#f1f5f9', fontSize: 15 }}>
+                          <div style={{ width: 32, height: 32, borderRadius: 8, background: '#334155', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8' }}>
+                            <MapPin size={16} />
+                          </div>
+                          <span style={{ fontWeight: 600 }}>{selectedLead.destination}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Status & Priority Card */}
+                  <div style={{ background: '#1e293b', borderRadius: 20, padding: 24, border: '1px solid #334155' }}>
+                    <h3 style={{ color: '#63ab45', fontSize: 11, fontWeight: 700, marginBottom: 20, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Lifecycle Controls</h3>
+                    
+                    <div style={{ marginBottom: 20 }}>
+                      <label style={{ color: '#94a3b8', fontSize: 11, fontWeight: 600, marginBottom: 8, display: 'block' }}>CURRENT STATUS</label>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                        {statuses.map(s => (
+                          <button
+                            key={s}
+                            onClick={() => updateLead(selectedLead._id, { status: s })}
+                            style={{
+                              padding: '6px 12px', borderRadius: 9999, fontSize: 11, fontWeight: 700,
+                              cursor: 'pointer', transition: 'all 0.2s',
+                              background: selectedLead.status === s ? statusColors[s] : '#334155',
+                              color: selectedLead.status === s ? '#fff' : '#94a3b8',
+                              border: 'none',
+                            }}
+                          >
+                            {s.replace('_', ' ')}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div style={{ marginBottom: 20 }}>
+                      <label style={{ color: '#94a3b8', fontSize: 11, fontWeight: 600, marginBottom: 8, display: 'block' }}>PRIORITY LEVEL</label>
+                      <select
+                        value={selectedLead.priority || 'NORMAL'}
+                        onChange={(e) => updateLead(selectedLead._id, { priority: e.target.value })}
+                        style={{ padding: '10px 16px', background: '#0f172a', border: '1px solid #334155', borderRadius: 12, color: '#e2e8f0', fontSize: 13, cursor: 'pointer', width: '100%' }}
+                      >
+                        {priorities.map(p => <option key={p} value={p}>{p}</option>)}
+                      </select>
+                    </div>
+
+                    {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN') && teamMembers.length > 0 && (
+                      <div>
+                        <label style={{ color: '#94a3b8', fontSize: 11, fontWeight: 600, marginBottom: 8, display: 'block' }}>ASSIGNED STAFF</label>
+                        <select
+                          value={selectedLead.assignedTo?._id || ''}
+                          onChange={(e) => updateLead(selectedLead._id, { assignedTo: e.target.value || null })}
+                          style={{ padding: '10px 16px', background: '#0f172a', border: '1px solid #334155', borderRadius: 12, color: '#e2e8f0', fontSize: 13, cursor: 'pointer', width: '100%' }}
+                        >
+                          <option value="">Unassigned</option>
+                          {teamMembers.map(m => <option key={m._id} value={m._id}>{m.name}</option>)}
+                        </select>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Financial Controls */}
+                  <div style={{ background: '#1e293b', borderRadius: 20, padding: 24, border: '1px solid #334155' }}>
+                    <h3 style={{ color: '#63ab45', fontSize: 11, fontWeight: 700, marginBottom: 20, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Financials</h3>
+                    
+                    <div style={{ marginBottom: 24 }}>
+                      <button onClick={() => setShowInvoiceModal(true)} style={{ 
+                        width: '100%', padding: '12px', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: 12, 
+                        cursor: 'pointer', fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 
+                      }}>
+                        <Receipt size={16} /> {selectedLead.invoice ? 'Manage Invoice' : 'Generate Invoice'}
+                      </button>
+                    </div>
+
+                    {selectedLead.customer && (
+                      <div>
+                        <label style={{ color: '#94a3b8', fontSize: 11, fontWeight: 600, marginBottom: 12, display: 'block' }}>CREDIT AJWA POINTS</label>
+                        <div style={{ display: 'flex', gap: 10 }}>
+                          <input 
+                            type="number" 
+                            placeholder="Points" 
+                            value={pointsToCredit} 
+                            onChange={(e) => setPointsToCredit(e.target.value)}
+                            style={{ flex: 1, padding: '10px 14px', background: '#0f172a', border: '1px solid #334155', borderRadius: 12, color: '#e2e8f0', fontSize: 13 }} 
+                          />
+                          <button onClick={creditPoints} style={{ 
+                            padding: '10px 20px', background: '#f59e0b', color: '#fff', border: 'none', borderRadius: 12, 
+                            cursor: 'pointer', fontSize: 12, fontWeight: 700
+                          }}>
+                            Credit
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Right Column: Specifications & Message */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+                  {/* Trip Specifications (MUCH LARGER) */}
+                  {(selectedLead.selectedGroupSize || selectedLead.selectedDays || selectedLead.selectedHotelStar || selectedLead.travelDate) && (
+                    <div style={{ background: '#0f172a', borderRadius: 20, padding: 24, border: '1px solid #334155', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.2)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+                        <h3 style={{ color: '#63ab45', fontSize: 12, fontWeight: 700, margin: 0, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Trip Specifications</h3>
+                        {selectedLead.travelDate && (
+                          <div style={{ background: '#22c55e20', color: '#22c55e', padding: '6px 12px', borderRadius: 9999, fontSize: 12, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <CalendarIcon size={14} /> {new Date(selectedLead.travelDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
+                          </div>
+                        )}
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 20 }}>
+                        <div style={{ background: '#1e293b', padding: 16, borderRadius: 12, border: '1px solid #334155' }}>
+                          <label style={{ display: 'block', fontSize: 11, color: '#64748b', marginBottom: 4, fontWeight: 600 }}>TRAVELERS</label>
+                          <div style={{ fontSize: 18, color: '#f1f5f9', fontWeight: 700 }}>
+                            {selectedLead.adults || selectedLead.selectedGroupSize || 1} <span style={{ fontSize: 13, color: '#94a3b8' }}>Adults</span>
+                            {selectedLead.children > 0 && <span style={{ fontSize: 14, color: '#94a3b8' }}>, {selectedLead.children} Child</span>}
+                          </div>
+                        </div>
+                        <div style={{ background: '#1e293b', padding: 16, borderRadius: 12, border: '1px solid #334155' }}>
+                          <label style={{ display: 'block', fontSize: 11, color: '#64748b', marginBottom: 4, fontWeight: 600 }}>DURATION</label>
+                          <div style={{ fontSize: 18, color: '#f1f5f9', fontWeight: 700 }}>
+                            {selectedLead.selectedDays || 'N/A'} <span style={{ fontSize: 13, color: '#94a3b8' }}>Days</span>
+                          </div>
+                        </div>
+                        <div style={{ background: '#1e293b', padding: 16, borderRadius: 12, border: '1px solid #334155' }}>
+                          <label style={{ display: 'block', fontSize: 11, color: '#64748b', marginBottom: 4, fontWeight: 600 }}>HOTEL CLASS</label>
+                          <div style={{ fontSize: 18, color: '#f1f5f9', fontWeight: 700 }}>
+                            {selectedLead.selectedHotelStar ? `${selectedLead.selectedHotelStar} Star` : 'Any Class'}
+                          </div>
+                        </div>
+                        <div style={{ background: '#1e293b', padding: 16, borderRadius: 12, border: '1px solid #334155' }}>
+                          <label style={{ display: 'block', fontSize: 11, color: '#64748b', marginBottom: 4, fontWeight: 600 }}>ACCOMMODATION</label>
+                          <div style={{ fontSize: 18, color: '#f1f5f9', fontWeight: 700 }}>
+                            {selectedLead.selectedRoomType || 'Standard'}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div style={{ marginTop: 20, paddingTop: 20, borderTop: '1px solid #334155', display: 'flex', alignItems: 'center', gap: 12 }}>
+                        <div style={{ 
+                          padding: '6px 12px', borderRadius: 9999, fontSize: 11, fontWeight: 700,
+                          background: selectedLead.bookingType === 'DIRECT_BOOKING' ? '#22c55e20' : '#3b82f620',
+                          color: selectedLead.bookingType === 'DIRECT_BOOKING' ? '#22c55e' : '#3b82f6'
+                        }}>
+                          {selectedLead.bookingType === 'DIRECT_BOOKING' ? 'DIRECT BOOKING' : 'GENERAL INQUIRY'}
+                        </div>
+                        {selectedLead.packageSlug && (
+                          <div style={{ background: '#334155', color: '#94a3b8', padding: '6px 12px', borderRadius: 9999, fontSize: 11, fontWeight: 600 }}>
+                            Package: {selectedLead.packageSlug}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Message Section */}
+                  {selectedLead.message && (
+                    <div style={{ background: '#1e293b', borderRadius: 20, padding: 24, border: '1px solid #334155' }}>
+                      <h3 style={{ color: '#63ab45', fontSize: 11, fontWeight: 700, marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Customer Message</h3>
+                      
+                      {selectedLead.message.includes('Room:') || selectedLead.message.includes('Special Requests:') ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                          {selectedLead.message.split(/(?=Room:|Special Requests:)/).map((part, i) => {
+                            const [label, ...val] = part.split(':');
+                            const value = val.join(':').trim();
+                            const cleanLabel = label.trim().replace('Direct Booking Request', '').trim();
+                            
+                            if (i === 0 && part.includes('Direct Booking Request')) {
+                              return (
+                                <div key={i} style={{ padding: '12px 16px', background: '#3b82f610', borderRadius: 12, border: '1px solid #3b82f620' }}>
+                                  <div style={{ color: '#3b82f6', fontSize: 11, fontWeight: 800, marginBottom: 4, textTransform: 'uppercase' }}>INTENT</div>
+                                  <div style={{ color: '#f1f5f9', fontSize: 15, fontWeight: 600 }}>Direct Booking Request</div>
+                                </div>
+                              );
+                            }
+
+                            if (!value) return null;
+
+                            return (
+                              <div key={i} style={{ borderLeft: '2px solid #334155', paddingLeft: 16 }}>
+                                <div style={{ color: '#64748b', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', marginBottom: 4 }}>{label.trim()}</div>
+                                <div style={{ color: '#f1f5f9', fontSize: 15, fontWeight: 500, lineHeight: 1.5 }}>{value}</div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <p style={{ color: '#f1f5f9', fontSize: 16, margin: 0, lineHeight: 1.6, fontStyle: selectedLead.message.length > 50 ? 'normal' : 'italic' }}>
+                          "{selectedLead.message}"
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* WhatsApp History */}
+                  {selectedLead.whatsappClicks && selectedLead.whatsappClicks.length > 0 && (
+                    <div style={{ background: '#22c55e05', borderRadius: 20, padding: 24, border: '1px solid #22c55e20' }}>
+                      <h3 style={{ color: '#22c55e', fontSize: 12, fontWeight: 700, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <MessageSquare size={16} /> WhatsApp Interaction History ({selectedLead.whatsappClicks.length})
+                      </h3>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                        {selectedLead.whatsappClicks.slice().reverse().map((click, i) => (
+                          <div key={i} style={{ background: '#1e293b', padding: 12, borderRadius: 12, border: '1px solid #334155' }}>
+                            <div style={{ color: '#64748b', fontSize: 11, fontWeight: 600 }}>
+                              {new Date(click.clickedAt).toLocaleString('en-IN')}
+                            </div>
+                            {click.selectedOptions && (
+                              <div style={{ color: '#94a3b8', fontSize: 13, marginTop: 4 }}>
+                                {click.selectedOptions.days} Days • {click.selectedOptions.hotelStar}★ • {click.selectedOptions.groupSize} Pax
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
-              ))}
+              </div>
             </div>
-          )}
 
-          {/* Status Update */}
-          <div style={{ marginBottom: 16 }}>
-            <label style={{ color: '#94a3b8', fontSize: 12, fontWeight: 600, marginBottom: 6, display: 'block' }}>STATUS</label>
-            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-              {statuses.map(s => (
-                <button
-                  key={s}
-                  onClick={() => updateLead(selectedLead._id, { status: s })}
-                  style={{
-                    padding: '4px 10px', borderRadius: 6, border: 'none', cursor: 'pointer', fontSize: 11, fontWeight: 600,
-                    background: selectedLead.status === s ? statusColors[s] : statusColors[s] + '20',
-                    color: selectedLead.status === s ? '#fff' : statusColors[s],
-                  }}
-                >{s}</button>
-              ))}
+            {/* Modal Footer: Dangerous Actions */}
+            <div style={{ padding: '24px 32px', background: '#0f172a', borderTop: '1px solid #334155', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 20 }}>
+              <div style={{ marginRight: 'auto', color: '#64748b', fontSize: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <Clock size={14} /> Recorded on {new Date(selectedLead.createdAt).toLocaleString('en-IN')}
+              </div>
+
             </div>
           </div>
-
-          {/* Priority */}
-          <div style={{ marginBottom: 16 }}>
-            <label style={{ color: '#94a3b8', fontSize: 12, fontWeight: 600, marginBottom: 6, display: 'block' }}>PRIORITY</label>
-            <select
-              value={selectedLead.priority}
-              onChange={(e) => updateLead(selectedLead._id, { priority: e.target.value })}
-              style={{ padding: '6px 12px', background: '#0f172a', border: '1px solid #334155', borderRadius: 6, color: '#e2e8f0', fontSize: 13, cursor: 'pointer', width: '100%' }}
-            >
-              {priorities.map(p => <option key={p} value={p}>{p}</option>)}
-            </select>
-          </div>
-
-          {/* Quoted Price */}
-          <div style={{ marginBottom: 16 }}>
-            <label style={{ color: '#94a3b8', fontSize: 12, fontWeight: 600, marginBottom: 6, display: 'block' }}>QUOTED PRICE (INR)</label>
-            <div style={{ display: 'flex', gap: 8 }}>
-              <input
-                type="number"
-                value={selectedLead.quotedPrice || ''}
-                placeholder="e.g., 50000"
-                onChange={(e) => setSelectedLead({ ...selectedLead, quotedPrice: Number(e.target.value) })}
-                style={{ flex: 1, padding: '8px 16px', background: '#0f172a', border: '1px solid #334155', borderRadius: 9999, color: '#e2e8f0', fontSize: 13, outline: 'none' }}
-              />
-              <button 
-                onClick={() => updateLead(selectedLead._id, { quotedPrice: selectedLead.quotedPrice })}
-                style={{ padding: '0 20px', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: 9999, fontSize: 11, fontWeight: 700, cursor: 'pointer' }}
-              >
-                SAVE QUOTE
-              </button>
-            </div>
-          </div>
-
-          {/* ── Payment Proof ── */}
-          {selectedLead.paymentProof?.status === 'PENDING' && (
-            <div style={{ background: '#3b82f615', borderRadius: 12, padding: 16, marginBottom: 20, border: '1px solid #3b82f640' }}>
-              <div style={{ color: '#3b82f6', fontSize: 11, fontWeight: 700, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
-                <CreditCard size={14} /> PAYMENT PROOF SUBMITTED
-              </div>
-              <a href={selectedLead.paymentProof.screenshot} target="_blank" rel="noreferrer">
-                <img src={selectedLead.paymentProof.screenshot} alt="Payment Proof" style={{ width: '100%', borderRadius: 8, marginBottom: 12, border: '1px solid #334155' }} />
-              </a>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button onClick={() => verifyPayment(true)} style={{ 
-                  flex: 1, padding: '10px', background: '#22c55e', color: '#fff', border: 'none', borderRadius: 9999, 
-                  cursor: 'pointer', fontSize: 12, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 
-                }}>
-                  <CheckSquare size={14} /> Verify
-                </button>
-                <button onClick={() => {
-                  const reason = prompt('Reason for rejection?');
-                  if (reason) verifyPayment(false, reason);
-                }} style={{ 
-                  flex: 1, padding: '10px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: 9999, 
-                  cursor: 'pointer', fontSize: 12, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 
-                }}>
-                  <XSquare size={14} /> Reject
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* ── Invoicing ── */}
-          <div style={{ background: '#0f172a', borderRadius: 12, padding: 16, marginBottom: 20, border: '1px solid #334155' }}>
-            <div style={{ color: '#94a3b8', fontSize: 11, fontWeight: 700, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
-              <Receipt size={14} /> INVOICE MANAGEMENT
-            </div>
-            
-            <button onClick={() => setShowInvoiceModal(true)} style={{ 
-              width: '100%', padding: '12px', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: 9999, 
-              cursor: 'pointer', fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 
-            }}>
-              <Receipt size={16} /> {selectedLead.invoice ? 'Manage Invoice' : 'Create Invoice'}
-            </button>
-            
-            {selectedLead.invoice && (
-              <div style={{ marginTop: 12, padding: 10, background: '#1e293b', borderRadius: 8, fontSize: 11 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8' }}>
-                  <span>Invoice ID:</span> <span style={{ color: '#f1f5f9' }}>{selectedLead.invoice.invoiceId}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8', marginTop: 4 }}>
-                  <span>Final Total:</span> <span style={{ color: '#63ab45', fontWeight: 700 }}>₹{selectedLead.invoice.total?.toLocaleString()}</span>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* ── Loyalty Adjustment ── */}
-          {selectedLead.customer && (
-            <div style={{ background: '#f59e0b10', borderRadius: 12, padding: 16, marginBottom: 20, border: '1px solid #f59e0b30' }}>
-              <div style={{ color: '#f59e0b', fontSize: 11, fontWeight: 700, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
-                <Wallet size={14} /> LOYALTY CONTROLS
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 12 }}>
-                <input 
-                  type="number" 
-                  placeholder="Points" 
-                  value={pointsToCredit} 
-                  onChange={(e) => setPointsToCredit(e.target.value)}
-                  style={{ width: '100%', padding: '10px 14px', background: '#1e293b', border: '1px solid #334155', borderRadius: 9999, color: '#e2e8f0', fontSize: 13 }} 
-                />
-                <input 
-                  placeholder="Reason (e.g. Compensation)" 
-                  value={creditReason} 
-                  onChange={(e) => setCreditReason(e.target.value)}
-                  style={{ width: '100%', padding: '10px 14px', background: '#1e293b', border: '1px solid #334155', borderRadius: 9999, color: '#e2e8f0', fontSize: 13 }} 
-                />
-              </div>
-              <button onClick={creditPoints} style={{ 
-                width: 'fit-content', padding: '10px 24px', background: '#f59e0b', color: '#fff', border: 'none', borderRadius: 9999, 
-                cursor: 'pointer', fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                margin: '0 0 0 auto', boxShadow: '0 4px 12px rgba(245, 158, 11, 0.2)'
-              }}>
-                <Plus size={16} /> Credit Ajwa Points
-              </button>
-            </div>
-          )}
-
-          {/* Assign */}
-          {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN') && teamMembers.length > 0 && (
-            <div style={{ marginBottom: 16 }}>
-              <label style={{ color: '#94a3b8', fontSize: 12, fontWeight: 600, marginBottom: 6, display: 'block' }}>ASSIGN TO</label>
-              <select
-                value={selectedLead.assignedTo?._id || ''}
-                onChange={(e) => updateLead(selectedLead._id, { assignedTo: e.target.value || null })}
-                style={{ padding: '6px 12px', background: '#0f172a', border: '1px solid #334155', borderRadius: 6, color: '#e2e8f0', fontSize: 13, cursor: 'pointer', width: '100%' }}
-              >
-                <option value="">Unassigned</option>
-                {teamMembers.map(m => <option key={m._id} value={m._id}>{m.name}</option>)}
-              </select>
-            </div>
-          )}
-
-          {/* Notes */}
-          <div style={{ marginBottom: 32 }}>
-            <label style={{ color: '#94a3b8', fontSize: 12, fontWeight: 600, marginBottom: 12, display: 'block' }}>NOTES</label>
-            <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-              <input
-                value={noteText}
-                onChange={(e) => setNoteText(e.target.value)}
-                placeholder="Add a note..."
-                onKeyDown={(e) => e.key === 'Enter' && addNote()}
-                style={{
-                  flex: 1, padding: '10px 16px', background: '#0f172a', border: '1px solid #334155',
-                  borderRadius: 9999, color: '#e2e8f0', fontSize: 13, outline: 'none',
-                }}
-              />
-              <button onClick={addNote} style={{
-                width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: '#63ab45', border: 'none', borderRadius: '50%',
-                color: '#fff', cursor: 'pointer', fontSize: 13,
-              }}><Plus size={18} /></button>
-            </div>
-            {(selectedLead.notes || []).map((note, i) => (
-              <div key={i} style={{ background: '#0f172a', borderRadius: 10, padding: 12, marginBottom: 8, border: '1px solid #1e293b' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                  <span style={{ color: '#63ab45', fontSize: 11, fontWeight: 600 }}>{note.by}</span>
-                  <span style={{ color: '#475569', fontSize: 10 }}>{new Date(note.at).toLocaleString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
-                </div>
-                <p style={{ color: '#94a3b8', fontSize: 13, margin: 0, lineHeight: 1.5 }}>{note.text}</p>
-              </div>
-            ))}
-          </div>
-
-          {/* Dangerous Zone */}
-          {(user?.role === 'SUPER_ADMIN' || user?.role === 'TEAM') && (
-            <div style={{ borderTop: '1px solid #334155', paddingTop: 20, marginTop: 40 }}>
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleDelete(e, selectedLead._id);
-                }}
-                style={{
-                  width: '100%', padding: '12px', background: 'rgba(239, 68, 68, 0.1)',
-                  border: '1px solid rgba(239, 68, 68, 0.4)', borderRadius: 9999,
-                  color: '#ef4444', fontSize: 13, fontWeight: 700, cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                  transition: 'all 0.2s',
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)'}
-                onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)'}
-              >
-                <Trash2 size={16} /> Delete Lead Permanently
-              </button>
-            </div>
-          )}
         </div>
       )}
 

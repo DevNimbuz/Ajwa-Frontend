@@ -160,11 +160,13 @@ async function apiFetch(endpoint, options = {}) {
     }
 
     if (!response.ok) {
+      console.error(`[API] ${method} ${url} Error:`, data);
       throw new Error(data.message || `API Error: ${response.status}`);
     }
 
     return data;
   } catch (error) {
+    console.error(`[API] ${method} ${url} Exception:`, error);
     if (error.name === 'TypeError' && error.message.includes('fetch')) {
       throw new Error('Cannot connect to server. Please check if the backend is running.');
     }

@@ -85,7 +85,11 @@ export default function AdminLayout({ children }) {
           router.push('/login');
           return;
         }
-        setUser(stored);
+        // Only update if data actually changed to avoid re-render loops (M5)
+        setUser(prev => {
+          if (prev && prev.id === stored.id && prev.role === stored.role) return prev;
+          return stored;
+        });
         setLoading(false);
       } else {
         authAPI.getMe()
@@ -146,7 +150,15 @@ export default function AdminLayout({ children }) {
         </div>
 
         {/* Navigation */}
-        <nav style={{ flex: 1, padding: '12px 8px', display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <nav style={{ 
+          flex: 1, 
+          padding: '12px 8px', 
+          display: 'flex', 
+          flexDirection: 'column', 
+          gap: 2,
+          overflowY: 'auto',
+          scrollbarWidth: 'none'
+        }}>
           {filteredNav.map(item => {
             const isActive = pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href));
             const Icon = item.icon;
@@ -157,16 +169,16 @@ export default function AdminLayout({ children }) {
                 onClick={(e) => { e.preventDefault(); router.push(item.href); setSidebarOpen(false); }}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 12,
-                  padding: '10px 12px', borderRadius: 8,
+                  padding: '12px 16px', borderRadius: 8,
                   color: isActive ? '#fff' : '#94a3b8',
                   background: isActive ? 'linear-gradient(135deg, #63ab45, #4d8a35)' : 'transparent',
-                  textDecoration: 'none', fontSize: 14, fontWeight: isActive ? 600 : 400,
+                  textDecoration: 'none', fontSize: 15, fontWeight: isActive ? 600 : 500,
                   transition: 'all 0.2s',
                 }}
               >
-                <Icon size={18} />
+                <Icon size={20} />
                 <span>{item.label}</span>
-                {isActive && <ChevronRight size={14} style={{ marginLeft: 'auto' }} />}
+                {isActive && <ChevronRight size={16} style={{ marginLeft: 'auto' }} />}
               </a>
             );
           })}
@@ -232,7 +244,7 @@ export default function AdminLayout({ children }) {
         </header>
 
         {/* Page Content */}
-        <main style={{ padding: 24, minHeight: 'calc(100vh - 56px)' }}>
+        <main className="admin-content">
           {children}
         </main>
       </div>
