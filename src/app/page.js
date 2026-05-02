@@ -98,7 +98,7 @@ export default async function HomePage() {
           "description": "Premium travel agency in Kerala providing curated holiday packages to Maldives, Thailand, Azerbaijan and more.",
           "address": {
             "@type": "PostalAddress",
-            "streetAddress": "FlyAjwa Hub",
+            "streetAddress": "Flyajwa Hub",
             "addressLocality": "Calicut",
             "addressRegion": "KL",
             "addressCountry": "IN"

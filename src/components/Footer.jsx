@@ -9,8 +9,8 @@ export default function Footer() {
         <div className="footer-top">
           {/* Brand Column */}
           <div className="footer-brand">
-            <Link href="/" className="footer-logo" aria-label="FlyAjwa Home">
-              <img src={siteConfig.logo} alt="FlyAjwa Travels Logo" />
+            <Link href="/" className="footer-logo" aria-label="Flyajwa Home">
+              <img src={siteConfig.logo} alt="Flyajwa Travels Logo" />
             </Link>
             <p>
               Crafting remarkable journeys, one destination at a time. Your

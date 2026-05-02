@@ -16,7 +16,7 @@ export async function generateMetadata({ params }) {
     
     if (!pkg) return {};
 
-    const title = `${pkg.name} | Premium ${pkg.duration || 'Tour'} Package | FlyAjwa`;
+    const title = `${pkg.name} | Premium ${pkg.duration || 'Tour'} Package | Flyajwa`;
     const description = (pkg.description || '').slice(0, 160);
     const image = pkg.heroImg || (pkg.gallery?.[0]) || '/assets/img/Ajwa/trek.webp';
 
@@ -38,7 +38,7 @@ export async function generateMetadata({ params }) {
       },
     };
   } catch (error) {
-    return { title: 'Package Details | FlyAjwa' };
+    return { title: 'Package Details | Flyajwa' };
   }
 }
 

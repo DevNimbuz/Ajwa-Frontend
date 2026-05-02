@@ -94,10 +94,10 @@ export default function Header() {
         id="site-header"
       >
         <div className="header-inner">
-          <Link href="/" className="header-logo" aria-label="FlyAjwa Home">
+          <Link href="/" className="header-logo" aria-label="Flyajwa Home">
             <img
               src={siteConfig.logo}
-              alt="FlyAjwa"
+              alt="Flyajwa"
               fetchPriority="high"
               loading="eager"
             />
@@ -261,7 +261,7 @@ export default function Header() {
       <div className={`mobile-drawer ${mobileOpen ? 'open' : ''}`}>
         <div style={{ padding: '0 24px 20px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
           <Link href="/" className="mobile-drawer-logo">
-            <img src={siteConfig.logo} alt="FlyAjwa" />
+            <img src={siteConfig.logo} alt="Flyajwa" />
           </Link>
           <button 
             className="mobile-drawer-close" 

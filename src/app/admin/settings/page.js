@@ -1,7 +1,7 @@
 'use client';
 /**
  * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- * FlyAjwa — Admin Settings
+ * Flyajwa — Admin Settings
  * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  * Super Admin only: edit contact info, social links,
  * announcements, and site-wide configuration.

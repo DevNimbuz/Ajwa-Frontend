@@ -318,7 +318,7 @@ export default function ContactPage() {
               allowFullScreen
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              title="FlyAjwa Office Location"
+              title="Flyajwa Office Location"
             />
           </div>
         </div>

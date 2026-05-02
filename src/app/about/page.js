@@ -33,7 +33,7 @@ const coreValues = [
 
 
 const milestones = [
-  { year: '2019', title: 'Founded', desc: 'Fly Ajwa Travels & Holidays was born in Edappal, Kerala with a dream to make travel accessible.' },
+  { year: '2019', title: 'Founded', desc: 'Flyajwa Travels & Holidays was born in Edappal, Kerala with a dream to make travel accessible.' },
   { year: '2021', title: 'Expanded Operations', desc: 'Expanded to 5 office locations across Kerala and began international tour operations.' },
   { year: '2023', title: 'Going Global', desc: 'Launched offices in UAE, Maldives, and KSA — taking our services international.' },
   { year: '2025', title: '9 Locations', desc: 'Now serving from 9 locations with 100+ happy customers and 20+ destinations worldwide.' },
@@ -69,7 +69,7 @@ export default function AboutPage() {
               <div className="about-img-wrap about-image-wrapper">
                 <Image
                   src="/assets/img/Ajwa/about-img-ajwa.png"
-                  alt="FlyAjwa Professional Travel Team"
+                  alt="Flyajwa Professional Travel Team"
                   fill
                   sizes="(max-width: 900px) 100vw, 50vw"
                   style={{ borderRadius: 'var(--radius-lg)', objectFit: 'cover' }}
@@ -113,8 +113,8 @@ export default function AboutPage() {
                   className="about-description"
                 >
                   {aboutTab === 'mission'
-                    ? 'At Fly Ajwa Travels & Holidays, our mission is to provide exceptional travel experiences that blend comfort, affordability, and personalized service. We aim to make every journey seamless, enriching, and memorable by offering well-curated travel packages, seamless booking services, and expert guidance. Our commitment is to deliver high-quality travel solutions while ensuring customer satisfaction, safety, and hassle-free adventures.'
-                    : 'Our vision is to become a trusted and leading travel company known for its excellence in customer service, innovative travel experiences, and commitment to sustainable tourism. We aspire to connect travelers with the world\'s most breathtaking destinations while promoting responsible and ethical tourism. Through continuous innovation and dedication, we envision Fly Ajwa as a global name in the travel industry, inspiring wanderlust and creating unforgettable journeys for all.'}
+                    ? 'At Flyajwa Travels & Holidays, our mission is to provide exceptional travel experiences that blend comfort, affordability, and personalized service. We aim to make every journey seamless, enriching, and memorable by offering well-curated travel packages, seamless booking services, and expert guidance. Our commitment is to deliver high-quality travel solutions while ensuring customer satisfaction, safety, and hassle-free adventures.'
+                    : 'Our vision is to become a trusted and leading travel company known for its excellence in customer service, innovative travel experiences, and commitment to sustainable tourism. We aspire to connect travelers with the world\'s most breathtaking destinations while promoting responsible and ethical tourism. Through continuous innovation and dedication, we envision Flyajwa as a global name in the travel industry, inspiring wanderlust and creating unforgettable journeys for all.'}
                 </p>
 
                 <div className="about-stats-row">
@@ -209,7 +209,7 @@ export default function AboutPage() {
         <div className="container">
           <AnimatedSection>
             <div className="section-header">
-              <span className="subtitle">Why FlyAjwa</span>
+              <span className="subtitle">Why Flyajwa</span>
               <h2 className="heading-2">Why Travelers Choose Us</h2>
               <p>We go the extra mile to make every trip extraordinary — here&apos;s what sets us apart.</p>
             </div>
@@ -240,7 +240,7 @@ export default function AboutPage() {
                   Passionate People Behind Your Perfect Trips
                 </h2>
                 <p className="about-description">
-                  Behind every seamless trip is a team of dedicated travel experts who live and breathe travel. From our seasoned consultants who handpick the best hotels to our operations team ensuring smooth transfers — every member of the Fly Ajwa family is committed to making your journey unforgettable.
+                  Behind every seamless trip is a team of dedicated travel experts who live and breathe travel. From our seasoned consultants who handpick the best hotels to our operations team ensuring smooth transfers — every member of the Flyajwa family is committed to making your journey unforgettable.
                 </p>
                 <p className="about-description">
                   Our team includes experienced professionals in tourism management, visa processing specialists, and destination experts who have personally visited the places they recommend. We pride ourselves on being approachable, responsive, and always willing to go the extra mile.
@@ -260,7 +260,7 @@ export default function AboutPage() {
               <div className="about-img-wrap about-image-wrapper">
                 <Image
                   src="/assets/img/Ajwa/Home-image-collage.png"
-                  alt="FlyAjwa Worldwide Team Collaboration"
+                  alt="Flyajwa Worldwide Team Collaboration"
                   fill
                   sizes="(max-width: 900px) 100vw, 50vw"
                   style={{ borderRadius: 'var(--radius-lg)', objectFit: 'cover' }}

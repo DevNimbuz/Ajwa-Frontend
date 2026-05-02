@@ -12,13 +12,13 @@ import CookieBanner from '@/components/CookieBanner';
 
 export const metadata = {
   title: {
-    default: 'FlyAjwa — Travels & Holidays | Best Travel Agency in Kerala',
-    template: '%s | FlyAjwa Travels & Holidays',
+    default: 'Flyajwa — Travels & Holidays | Best Travel Agency in Kerala',
+    template: '%s | Flyajwa Travels & Holidays',
   },
   description:
-    'FlyAjwa (Ajwa Travels & Holidays) — Kerala\'s trusted travel agency. Book affordable tour packages to Maldives, Thailand, Dubai, Azerbaijan, Kashmir & more. Visa services, Umrah packages, study abroad & overseas recruitment. Call +91 98466 17000.',
+    'Flyajwa (Ajwa Travels & Holidays) — Kerala\'s trusted travel agency. Book affordable tour packages to Maldives, Thailand, Dubai, Azerbaijan, Kashmir & more. Visa services, Umrah packages, study abroad & overseas recruitment. Call +91 98466 17000.',
   keywords: [
-    'FlyAjwa', 'Fly Ajwa', 'Ajwa Travels', 'Ajwa Holidays',
+    'Flyajwa', 'Flyajwa', 'Ajwa Travels', 'Ajwa Holidays',
     'travel agency Kerala', 'tour packages Kerala', 'holiday packages India',
     'Maldives packages from Kerala', 'Thailand tour package',
     'Dubai trip package', 'Azerbaijan tour from India',
@@ -33,9 +33,9 @@ export const metadata = {
     'document attestation Kerala', 'e-visa processing India',
     'Saudi Arabia visa', 'UAE visa', 'Malaysia visa',
   ],
-  authors: [{ name: 'Fly Ajwa Travels & Holidays' }],
-  creator: 'FlyAjwa',
-  publisher: 'Fly Ajwa Travels & Holidays',
+  authors: [{ name: 'Flyajwa Travels & Holidays' }],
+  creator: 'Flyajwa',
+  publisher: 'Flyajwa Travels & Holidays',
   formatDetection: {
     email: true,
     address: true,
@@ -45,16 +45,16 @@ export const metadata = {
     canonical: 'https://www.flyajwa.com',
   },
   openGraph: {
-    title: 'FlyAjwa | Best Travel Agency in Kerala — Tours, Visa & Holidays',
+    title: 'Flyajwa | Best Travel Agency in Kerala — Tours, Visa & Holidays',
     description: 'Book affordable tour packages to Maldives, Thailand, Dubai, Azerbaijan & more. Trusted by 100+ happy travelers. Visa services, Umrah, study abroad & recruitment.',
     url: 'https://www.flyajwa.com',
-    siteName: 'FlyAjwa — Ajwa Travels & Holidays',
+    siteName: 'Flyajwa — Ajwa Travels & Holidays',
     images: [
       {
         url: '/assets/img/Ajwa/banner.jpg',
         width: 1200,
         height: 630,
-        alt: 'FlyAjwa — Explore the World with Ajwa Travels & Holidays',
+        alt: 'Flyajwa — Explore the world with Ajwa Travels & Holidays',
       },
     ],
     locale: 'en_IN',
@@ -62,7 +62,7 @@ export const metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'FlyAjwa — Best Travel Agency in Kerala',
+    title: 'Flyajwa — Best Travel Agency in Kerala',
     description: 'Book affordable tour packages. Maldives, Thailand, Dubai, Azerbaijan & more. Call +91 98466 17000.',
     images: ['/assets/img/Ajwa/banner.jpg'],
   },
@@ -94,8 +94,8 @@ export const metadata = {
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': ['TravelAgency', 'LocalBusiness'],
-  name: 'Fly Ajwa Travels & Holidays',
-  alternateName: 'FlyAjwa',
+  name: 'Flyajwa Travels & Holidays',
+  alternateName: 'Flyajwa',
   url: 'https://www.flyajwa.com',
   logo: 'https://www.flyajwa.com/assets/img/Ajwa/logo-ajwa.png',
   image: 'https://www.flyajwa.com/assets/img/Ajwa/banner.jpg',

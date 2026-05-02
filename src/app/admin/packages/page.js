@@ -1,7 +1,7 @@
 'use client';
 /**
  * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- * FlyAjwa — Admin Package Manager
+ * Flyajwa — Admin Package Manager
  * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  * View all packages, toggle active state, edit pricing
  * Super Admin: full CRUD | Team: view + pricing only

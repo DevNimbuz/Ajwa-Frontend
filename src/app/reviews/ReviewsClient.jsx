@@ -230,7 +230,7 @@ export default function ReviewsClient() {
                   <div className="gallery-item" onClick={() => openLightbox(i)} style={{ cursor: 'pointer' }}>
                     <Image
                       src={getImageUrl(img.url)}
-                      alt={img.alt || 'FlyAjwa Gallery Image'}
+                      alt={img.alt || 'Flyajwa Gallery Image'}
                       fill
                       loading="lazy"
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
@@ -270,7 +270,7 @@ export default function ReviewsClient() {
           <div className="review-modal-content" onClick={e => e.stopPropagation()}>
             <button onClick={() => setModalOpen(false)} style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'none', border: 'none', cursor: 'pointer', color: '#64748b' }}><X size={24} /></button>
             <h3 style={{ fontSize: '1.5rem', marginBottom: '0.5rem', fontFamily: 'var(--font-heading)' }}>Write a Review</h3>
-            <p style={{ color: 'var(--color-text-secondary)', marginBottom: '1.5rem', fontSize: '0.875rem' }}>Share your FlyAjwa experience with the world!</p>
+            <p style={{ color: 'var(--color-text-secondary)', marginBottom: '1.5rem', fontSize: '0.875rem' }}>Share your Flyajwa experience with the world!</p>
 
             {success ? (
               <div className="review-modal-success">

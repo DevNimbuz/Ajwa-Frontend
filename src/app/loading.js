@@ -3,7 +3,7 @@ export default function Loading() {
     <div className="loading-screen">
       <img
         src="/assets/img/Ajwa/logo-ajwa.png"
-        alt="FlyAjwa"
+        alt="Flyajwa"
         style={{
           height: 60,
           width: 'auto',

@@ -144,12 +144,12 @@ export default function AdminLayout({ children }) {
           <div style={{ width: 36, height: 36, background: 'transparent', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
             <img 
               src="/assets/img/icon-flyajwa.png" 
-              alt="FlyAjwa Logo" 
+              alt="Flyajwa Logo" 
               style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
             />
           </div>
           <div>
-            <div style={{ color: '#f1f5f9', fontWeight: 700, fontSize: 16 }}>FlyAjwa</div>
+            <div style={{ color: '#f1f5f9', fontWeight: 700, fontSize: 16 }}>Flyajwa</div>
             <div style={{ color: '#64748b', fontSize: 11, letterSpacing: '0.05em' }}>ADMIN PANEL</div>
           </div>
         </div>

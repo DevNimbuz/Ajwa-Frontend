@@ -1,6 +1,6 @@
 /**
  * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- * FlyAjwa — Frontend API Client
+ * Flyajwa — Frontend API Client
  * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  * Centralized API client for communicating with the Express backend
  * Handles JWT token management, error handling, and auto-logout

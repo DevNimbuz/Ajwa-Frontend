@@ -114,14 +114,14 @@ const About1 = () => {
                     id="mission"
                     role="tabpanel"
                   >
-                    At Fly Ajwa Travels &amp; Holidays, our mission is to provide exceptional travel experiences that blend comfort, affordability, and personalized service. We aim to make every journey seamless, enriching, and memorable by offering well-curated travel packages, seamless booking services, and expert guidance. Our commitment is to deliver high-quality travel solutions while ensuring customer satisfaction, safety, and hassle-free adventures.
+                    At Flyajwa Travels &amp; Holidays, our mission is to provide exceptional travel experiences that blend comfort, affordability, and personalized service. We aim to make every journey seamless, enriching, and memorable by offering well-curated travel packages, seamless booking services, and expert guidance. Our commitment is to deliver high-quality travel solutions while ensuring customer satisfaction, safety, and hassle-free adventures.
                   </div>
                   <div
                     className="tab-pane fade"
                     id="focus-customer"
                     role="tabpanel"
                   >
-                    Our vision is to become a trusted and leading travel company known for its excellence in customer service, innovative travel experiences, and commitment to sustainable tourism. We aspire to connect travelers with the world's most breathtaking destinations while promoting responsible and ethical tourism. Through continuous innovation and dedication, we envision Fly Ajwa as a global name in the travel industry, inspiring wanderlust and creating unforgettable journeys for all.
+                    Our vision is to become a trusted and leading travel company known for its excellence in customer service, innovative travel experiences, and commitment to sustainable tourism. We aspire to connect travelers with the world's most breathtaking destinations while promoting responsible and ethical tourism. Through continuous innovation and dedication, we envision Flyajwa as a global name in the travel industry, inspiring wanderlust and creating unforgettable journeys for all.
                   </div>
                 </div>
                 <div className="about-content-bottom">

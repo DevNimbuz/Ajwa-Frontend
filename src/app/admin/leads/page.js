@@ -1,7 +1,7 @@
 'use client';
 /**
  * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- * FlyAjwa — Admin Lead CRM
+ * Flyajwa — Admin Lead CRM
  * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  * Filterable lead table with status updates, notes,
  * assignment, search, and CSV export.

@@ -107,7 +107,7 @@ export default function PackageClient({ pkg, clientSnapshots, siteConfig }) {
           "image": pkg.gallery?.[0],
           "brand": {
             "@type": "Brand",
-            "name": "FlyAjwa"
+            "name": "Flyajwa"
           },
           "offers": {
             "@type": "Offer",
@@ -512,7 +512,7 @@ export default function PackageClient({ pkg, clientSnapshots, siteConfig }) {
               <div className="trust-image-wrapper">
                 <Image
                   src="/assets/img/Ajwa/trek.webp"
-                  alt="Group trekking with FlyAjwa"
+                  alt="Group trekking with Flyajwa"
                   fill
                   sizes="(max-width: 768px) 100vw, 40vw"
                   style={{ objectFit: 'cover' }}

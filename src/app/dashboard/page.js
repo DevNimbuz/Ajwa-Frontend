@@ -267,7 +267,7 @@ export default function DashboardPage() {
         <div className="grid grid-4-responsive" style={{ marginBottom: 40, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 20 }}>
           <StatCard label="Active Trips" value={trips.booked.length} icon={Plane} color="#059669" />
           <StatCard label="My Inquiries" value={trips.all.length} icon={MessageSquare} color="#3b82f6" />
-          <StatCard label="Ajwa Points" value={user.ajwaPoints || 0} icon={Star} color="#f59e0b" isPoints />
+          <StatCard label="Flyajwa Points" value={user.ajwaPoints || 0} icon={Star} color="#f59e0b" isPoints />
           <StatCard label="Saved" value={wishlist.length} icon={Heart} color="#ef4444" />
         </div>
 

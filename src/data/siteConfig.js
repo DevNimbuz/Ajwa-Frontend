@@ -1,8 +1,8 @@
 const siteConfig = {
-  name: 'FlyAjwa',
-  fullName: 'Fly Ajwa Travels & Holidays',
+  name: 'Flyajwa',
+  fullName: 'Flyajwa Travels & Holidays',
   tagline: 'Crafting Remarkable Journeys',
-  description: 'Book unforgettable tours and travel packages with FlyAjwa.',
+  description: 'Book unforgettable tours and travel packages with Flyajwa.',
   url: 'https://www.flyajwa.com',
   logo: '/assets/img/Ajwa/logo-ajwa.png',
   icon: '/assets/img/icon-flyajwa.png',

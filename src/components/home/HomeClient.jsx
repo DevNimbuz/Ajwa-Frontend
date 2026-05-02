@@ -235,8 +235,8 @@ export default function HomeClient({ initialPackages, initialTestimonials, heroS
                   className="home-description"
                 >
                   {aboutTab === 'mission'
-                    ? 'At Fly Ajwa Travels & Holidays, our mission is to provide exceptional travel experiences that blend comfort, affordability, and personalized service. We aim to make every journey seamless, enriching, and memorable by offering well-curated travel packages, seamless booking services, and expert guidance. Our commitment is to deliver high-quality travel solutions while ensuring customer satisfaction, safety, and hassle-free adventures.'
-                    : 'Our vision is to become a trusted and leading travel company known for its excellence in customer service, innovative travel experiences, and commitment to sustainable tourism. We aspire to connect travelers with the world\'s most breathtaking destinations while promoting responsible and ethical tourism. Through continuous innovation and dedication, we envision Fly Ajwa as a global name in the travel industry, inspiring wanderlust and creating unforgettable journeys for all.'}
+                    ? 'At Flyajwa Travels & Holidays, our mission is to provide exceptional travel experiences that blend comfort, affordability, and personalized service. We aim to make every journey seamless, enriching, and memorable by offering well-curated travel packages, seamless booking services, and expert guidance. Our commitment is to deliver high-quality travel solutions while ensuring customer satisfaction, safety, and hassle-free adventures.'
+                    : 'Our vision is to become a trusted and leading travel company known for its excellence in customer service, innovative travel experiences, and commitment to sustainable tourism. We aspire to connect travelers with the world\'s most breathtaking destinations while promoting responsible and ethical tourism. Through continuous innovation and dedication, we envision Flyajwa as a global name in the travel industry, inspiring wanderlust and creating unforgettable journeys for all.'}
                 </p>
 
                 <div className="about-stats-row">
@@ -258,7 +258,7 @@ export default function HomeClient({ initialPackages, initialTestimonials, heroS
               <div className="about-img-wrap">
                 <Image
                   src="/assets/img/Ajwa/Home-image-collage.png"
-                  alt="FlyAjwa Travel Moments"
+                  alt="Flyajwa Travel Moments"
                   width={600}
                   height={600}
                   priority={true}

@@ -9,7 +9,7 @@ const JsonLd = ({ type = 'Organization', data = {} }) => {
   const baseData = {
     "@context": "https://schema.org",
     "@type": type,
-    "name": "FlyAjwa Travel & Tourism",
+    "name": "Flyajwa Travel & Tourism",
     "url": "https://flyajwa.com",
     "logo": "https://flyajwa.com/logo.png",
     "sameAs": [

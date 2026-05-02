@@ -1,7 +1,7 @@
 'use client';
 /**
  * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- * FlyAjwa — Visitor Tracker Component
+ * Flyajwa — Visitor Tracker Component
  * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  * Invisible component that logs page views to the backend
  * Privacy-preserving: IPs are hashed server-side

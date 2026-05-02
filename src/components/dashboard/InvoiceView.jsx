@@ -62,8 +62,8 @@ export default function InvoiceView({ trip, trips, onUpdate }) {
       <div style={{ background: 'linear-gradient(135deg, #63ab45, #4d8a35)', padding: '24px 32px', color: '#fff' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
-            <img src="/logo-white.png" alt="FlyAjwa" style={{ height: 32, marginBottom: 8 }} onError={(e) => e.target.src = 'https://flyajwa.com/logo.png'} />
-            <div style={{ fontSize: 12, opacity: 0.8 }}>FlyAjwa Travels & Holidays</div>
+            <img src="/logo-white.png" alt="Flyajwa" style={{ height: 32, marginBottom: 8 }} onError={(e) => e.target.src = 'https://flyajwa.com/logo.png'} />
+            <div style={{ fontSize: 12, opacity: 0.8 }}>Flyajwa Travels & Holidays</div>
           </div>
           <div style={{ textAlign: 'right' }}>
             <h3 style={{ margin: 0, fontSize: 24, fontWeight: 800 }}>INVOICE</h3>

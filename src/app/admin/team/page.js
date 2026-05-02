@@ -1,7 +1,7 @@
 'use client';
 /**
  * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- * FlyAjwa — Admin Team Management
+ * Flyajwa — Admin Team Management
  * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  * Super Admin only: add, edit, deactivate team members
  */

@@ -200,7 +200,7 @@ export default function RegisterPage() {
             <Plane size={32} color="#fff" />
           </div>
           <h1 style={{ color: '#f1f5f9', fontSize: 24, fontWeight: 700, margin: '0 0 4px' }}>
-            {step === 1 ? 'Join FlyAjwa' : 'Verify Your Email'}
+            {step === 1 ? 'Join Flyajwa' : 'Verify Your Email'}
           </h1>
           <p style={{ color: '#94a3b8', fontSize: 14, margin: 0 }}>
             {step === 1 ? 'Create your traveler account' : 'Enter the code sent to your email'}

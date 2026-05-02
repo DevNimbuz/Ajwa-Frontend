@@ -170,7 +170,7 @@ export default function LoginPage() {
         </form>
 
         <p style={{ textAlign: 'center', color: '#94a3b8', fontSize: 14, marginTop: 24, marginBottom: 0 }}>
-          New to FlyAjwa?{' '}
+          New to Flyajwa?{' '}
           <Link href="/register" style={{ color: '#059669', fontWeight: 600, textDecoration: 'none' }}>
             Create Account
           </Link>

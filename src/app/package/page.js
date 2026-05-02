@@ -22,10 +22,10 @@ async function getPackages() {
 
 export const metadata = {
   title: 'Tour Packages',
-  description: 'Explore FlyAjwa\'s popular tour packages including Maldives, Thailand, Dubai, and more. Handpicked destinations for unforgettable experiences.',
+  description: 'Explore Flyajwa\'s popular tour packages including Maldives, Thailand, Dubai, and more. Handpicked destinations for unforgettable experiences.',
   openGraph: {
-    title: 'Tour Packages | FlyAjwa — Travels & Holidays',
-    description: 'Explore FlyAjwa\'s popular tour packages including Maldives, Thailand, Dubai, and more. Handpicked destinations for unforgettable experiences.',
+    title: 'Tour Packages | Flyajwa — Travels & Holidays',
+    description: 'Explore Flyajwa\'s popular tour packages including Maldives, Thailand, Dubai, and more. Handpicked destinations for unforgettable experiences.',
     url: 'https://www.flyajwa.com/package',
   }
 };
@@ -138,7 +138,7 @@ export default async function PackagesPage() {
               <div style={{ position: 'relative', overflow: 'hidden' }} className="group-booking-image">
                 <img
                   src="/assets/img/Ajwa/trek.webp"
-                  alt="Group travel with FlyAjwa"
+                  alt="Group travel with Flyajwa"
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />
                 <div style={{

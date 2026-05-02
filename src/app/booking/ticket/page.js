@@ -246,7 +246,7 @@ export default function TicketBookingPage() {
           {/* Info Section */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
             <div className="glass-card" style={{ padding: 32, background: 'var(--gradient-gold)', color: '#fff' }}>
-               <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 16 }}>Why Book with FlyAjwa?</h3>
+               <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 16 }}>Why Book with Flyajwa?</h3>
                <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: 16 }}>
                  <li style={{ display: 'flex', gap: 12, fontSize: 14 }}>
                    <div style={{ flexShrink: 0 }}><CheckCircle size={18} /></div>

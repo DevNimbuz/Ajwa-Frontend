@@ -1,7 +1,7 @@
 'use client';
 /**
  * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- * FlyAjwa — Admin Dashboard
+ * Flyajwa — Admin Dashboard
  * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  * Overview with lead stats, conversion funnel, top destinations,
  * recent leads, and visitor traffic.
@@ -97,7 +97,7 @@ export default function AdminDashboard() {
           <div style={{ width: 48, height: 48, background: 'transparent', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
             <img 
               src="/assets/img/icon-flyajwa.png" 
-              alt="FlyAjwa Icon" 
+              alt="Flyajwa Icon" 
               style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
             />
           </div>

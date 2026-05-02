@@ -1,7 +1,7 @@
 'use client';
 /**
  * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- * FlyAjwa — Admin Login Page
+ * Flyajwa — Admin Login Page
  * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  * Clean, dark-themed login page with email/password
  * Rate limited to 5 attempts per 15 minutes
@@ -66,7 +66,7 @@ export default function AdminLoginPage() {
           }}>
             <Shield size={28} color="#fff" />
           </div>
-          <h1 style={{ color: '#f1f5f9', fontSize: 22, fontWeight: 700, margin: '0 0 4px' }}>FlyAjwa Admin</h1>
+          <h1 style={{ color: '#f1f5f9', fontSize: 22, fontWeight: 700, margin: '0 0 4px' }}>Flyajwa Admin</h1>
           <p style={{ color: '#64748b', fontSize: 14, margin: 0 }}>Sign in to manage your travel business</p>
         </div>
 
@@ -168,7 +168,7 @@ export default function AdminLoginPage() {
 
         {/* Footer */}
         <p style={{ textAlign: 'center', color: '#475569', fontSize: 12, marginTop: 24, marginBottom: 0 }}>
-          Secure admin access • FlyAjwa Travels & Holidays
+          Secure admin access • Flyajwa Travels & Holidays
         </p>
       </div>
 
