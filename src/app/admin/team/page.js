@@ -7,7 +7,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { usersAPI } from '@/lib/api';
+import { usersAPI, authAPI } from '@/lib/api';
 import { Users, Plus, Edit, Trash2, Shield, X, Eye, EyeOff } from 'lucide-react';
 
 export default function AdminTeam() {
