@@ -1,8 +1,9 @@
 'use client';
 import { X, Calendar, MapPin, Users, Plane, Star, CreditCard, Clock, FileText, CheckCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import InvoiceView from './InvoiceView';
 
-export default function BookingDetailModal({ trip, onClose }) {
+export default function BookingDetailModal({ trip, trips, onUpdate, onClose }) {
   const getStatusInfo = (status) => {
     switch (status) {
       case 'BOOKED': return { label: 'Trip Confirmed', color: '#059669', desc: 'Your booking is finalized. Documents are available in the vault.' };
@@ -91,22 +92,28 @@ export default function BookingDetailModal({ trip, onClose }) {
             </div>
           </div>
 
-          {/* Pricing Section */}
-          <div style={{ background: '#f8fafc', borderRadius: 20, padding: 24, marginBottom: 32 }}>
-            <h4 style={{ margin: '0 0 16px', fontSize: 14, fontWeight: 700, color: '#1e293b', display: 'flex', alignItems: 'center', gap: 8 }}>
-              <CreditCard size={18} /> Financial Summary
-            </h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
-                <span style={{ color: '#64748b' }}>Quoted Package Price</span>
-                <span style={{ fontWeight: 600, color: '#1e293b' }}>₹{trip.quotedPrice?.toLocaleString() || '---'}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, paddingTop: 12, borderTop: '1px solid #e2e8f0' }}>
-                <span style={{ fontWeight: 700, color: '#1e293b' }}>Total Amount</span>
-                <span style={{ fontWeight: 800, color: '#63ab45', fontSize: 18 }}>₹{trip.quotedPrice?.toLocaleString() || '---'}</span>
+          {/* Pricing & Invoice Section */}
+          {trip.invoice ? (
+            <div style={{ marginBottom: 32 }}>
+              <InvoiceView trip={trip} trips={trips} onUpdate={onUpdate} />
+            </div>
+          ) : (
+            <div style={{ background: '#f8fafc', borderRadius: 20, padding: 24, marginBottom: 32 }}>
+              <h4 style={{ margin: '0 0 16px', fontSize: 14, fontWeight: 700, color: '#1e293b', display: 'flex', alignItems: 'center', gap: 8 }}>
+                <CreditCard size={18} /> Financial Summary
+              </h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
+                  <span style={{ color: '#64748b' }}>Quoted Package Price</span>
+                  <span style={{ fontWeight: 600, color: '#1e293b' }}>₹{trip.quotedPrice?.toLocaleString() || '---'}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, paddingTop: 12, borderTop: '1px solid #e2e8f0' }}>
+                  <span style={{ fontWeight: 700, color: '#1e293b' }}>Total Amount</span>
+                  <span style={{ fontWeight: 800, color: '#63ab45', fontSize: 18 }}>₹{trip.quotedPrice?.toLocaleString() || '---'}</span>
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Additional Info */}
           {trip.message && (

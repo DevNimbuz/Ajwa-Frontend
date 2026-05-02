@@ -200,14 +200,14 @@ export default function AdminPackages() {
                 >
                   <IndianRupee size={13} /> Edit Pricing
                 </button>
+                <button onClick={() => openDetailsEditor(pkg)} style={{
+                  padding: '7px', background: '#0f172a', border: '1px solid #334155',
+                  borderRadius: 6, color: '#94a3b8', cursor: 'pointer',
+                }} title="Edit Name/Image">
+                  <Edit size={14} />
+                </button>
                 {isSuperAdmin && (
                   <>
-                    <button onClick={() => openDetailsEditor(pkg)} style={{
-                      padding: '7px', background: '#0f172a', border: '1px solid #334155',
-                      borderRadius: 6, color: '#94a3b8', cursor: 'pointer',
-                    }} title="Edit Name/Image">
-                      <Edit size={14} />
-                    </button>
                     <button onClick={() => toggleActive(pkg)} style={{
                       padding: '7px', background: '#0f172a', border: '1px solid #334155',
                       borderRadius: 6, color: pkg.isActive ? '#22c55e' : '#ef4444', cursor: 'pointer',

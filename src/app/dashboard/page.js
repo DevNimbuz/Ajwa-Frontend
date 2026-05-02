@@ -58,7 +58,9 @@ export default function DashboardPage() {
         authAPI.getWishlist().catch(() => ({ success: true, data: [] })),
       ]);
 
-      setTrips(tripsData.data || { all: [], booked: [], active: [] });
+      const tripsResult = tripsData.data || { all: [], booked: [], active: [] };
+      tripsResult.pointsBalance = userData.user.ajwaPoints || 0;
+      setTrips(tripsResult);
       setWishlist(wishlistData.data || []);
       
       // Mock notifications for status updates
@@ -89,7 +91,7 @@ export default function DashboardPage() {
   const renderTabContent = () => {
     switch (currentTab) {
       case 'bookings':
-        return <BookingList trips={trips} />;
+        return <BookingList trips={trips} onRefresh={loadData} />;
       case 'wishlist':
         return <WishlistGrid wishlist={wishlist} />;
       case 'documents':

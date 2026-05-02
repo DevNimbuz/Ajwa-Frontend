@@ -375,6 +375,21 @@ export const leadsAPI = {
 
   /** Delete lead (super admin) */
   async delete(id) { return apiFetch(`/leads/${id}`, { method: 'DELETE' }); },
+
+  /** Submit/Update invoice (staff) */
+  async submitInvoice(id, data) { return apiFetch(`/leads/${id}/invoice`, { method: 'POST', body: data }); },
+
+  /** Redeem points on invoice (customer) */
+  async redeemPoints(id, points) { return apiFetch(`/leads/${id}/redeem`, { method: 'POST', body: { points } }); },
+
+  /** Upload payment proof (customer) */
+  async submitPayment(id, screenshot) { return apiFetch(`/leads/${id}/pay`, { method: 'POST', body: { screenshot } }); },
+
+  /** Verify/Reject payment (staff) */
+  async verifyPayment(id, data) { return apiFetch(`/leads/${id}/verify-payment`, { method: 'POST', body: data }); },
+
+  /** Credit points manually (staff) */
+  async creditPoints(id, data) { return apiFetch(`/leads/${id}/credit-points`, { method: 'POST', body: data }); },
 };
 
 // ══════════════════════════════════════════════

@@ -12,7 +12,8 @@ import DatePicker from 'react-datepicker';
 import { leadsAPI, usersAPI, authAPI } from '@/lib/api';
 import {
   Search, Filter, Download, ChevronLeft, ChevronRight,
-  MessageSquare, Phone, Mail, MapPin, Clock, X, Plus, Trash2, Calendar as CalendarIcon
+  MessageSquare, Phone, Mail, MapPin, Clock, X, Plus, Trash2, Calendar as CalendarIcon, Star,
+  Receipt, Wallet, CreditCard, CheckSquare, XSquare, Loader2
 } from 'lucide-react';
 
 const statusColors = {
@@ -137,6 +138,61 @@ export default function AdminLeads() {
     } catch (err) { alert('Export failed'); }
   };
 
+  // ── Invoice & Point Functions ──
+  const [invoiceItems, setInvoiceItems] = useState([{ description: '', amount: '' }]);
+  const [discount, setDiscount] = useState(0);
+  const [pointsToCredit, setPointsToCredit] = useState('');
+  const [creditReason, setCreditReason] = useState('');
+  const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+
+  const handleSelectLead = (lead) => {
+    setSelectedLead(lead);
+    if (lead.invoice && lead.invoice.items?.length > 0) {
+      setInvoiceItems(lead.invoice.items);
+      setDiscount(lead.invoice.discount || 0);
+    } else {
+      setInvoiceItems([{ description: 'Package Booking', amount: lead.quotedPrice || '' }]);
+      setDiscount(0);
+    }
+    setPointsToCredit('');
+    setCreditReason('');
+  };
+
+  const addInvoiceItem = () => setInvoiceItems([...invoiceItems, { description: '', amount: '' }]);
+  const updateInvoiceItem = (i, field, val) => {
+    const updated = [...invoiceItems];
+    updated[i][field] = val;
+    setInvoiceItems(updated);
+  };
+
+  const generateInvoice = async () => {
+    try {
+      const { data } = await leadsAPI.submitInvoice(selectedLead._id, { items: invoiceItems, discount });
+      setSelectedLead(data.data);
+      alert('Invoice sent to customer dashboard!');
+      setShowInvoiceModal(false);
+    } catch (err) { alert(err.message); }
+  };
+
+  const creditPoints = async () => {
+    if (!pointsToCredit) return;
+    try {
+      await leadsAPI.creditPoints(selectedLead._id, { points: pointsToCredit, reason: creditReason });
+      alert(`Successfully credited ${pointsToCredit} points!`);
+      setPointsToCredit(''); setCreditReason('');
+      fetchLeads(); // Refresh to show new notes
+    } catch (err) { alert(err.message); }
+  };
+
+  const verifyPayment = async (verified, notes = '') => {
+    try {
+      const { data } = await leadsAPI.verifyPayment(selectedLead._id, { verified, notes });
+      setSelectedLead(data.data);
+      fetchLeads();
+      alert(verified ? 'Payment confirmed!' : 'Payment rejected.');
+    } catch (err) { alert(err.message); }
+  };
+
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
@@ -215,20 +271,20 @@ export default function AdminLeads() {
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ background: '#0f172a' }}>
-              {['Name', 'Contact', 'Intent', 'Priority', 'Assigned To', 'Status', 'Date', ''].map(h => (
+              {['Name', 'Contact', 'Intent', 'Priority', 'Value', 'Assigned To', 'Status', 'Timeline', ''].map(h => (
                 <th key={h} style={{ textAlign: 'left', padding: '12px 16px', color: '#64748b', fontSize: 12, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={8} style={{ padding: 40, textAlign: 'center', color: '#64748b' }}>Loading...</td></tr>
+              <tr><td colSpan={9} style={{ padding: 40, textAlign: 'center', color: '#64748b' }}>Loading...</td></tr>
             ) : leads.length === 0 ? (
-              <tr><td colSpan={8} style={{ padding: 40, textAlign: 'center', color: '#64748b' }}>No leads found</td></tr>
+              <tr><td colSpan={9} style={{ padding: 40, textAlign: 'center', color: '#64748b' }}>No leads found</td></tr>
             ) : leads.map(lead => (
               <tr
                 key={lead._id}
-                onClick={() => setSelectedLead(lead)}
+                onClick={() => handleSelectLead(lead)}
                 style={{ borderBottom: '1px solid #334155', cursor: 'pointer', transition: 'background 0.2s' }}
                 onMouseEnter={(e) => e.currentTarget.style.background = '#0f172a'}
                 onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
@@ -264,6 +320,16 @@ export default function AdminLeads() {
                   </div>
                 </td>
                 <td style={{ padding: '12px 16px' }}>
+                  <div style={{ color: '#e2e8f0', fontSize: 13, fontWeight: 700 }}>
+                    {lead.quotedPrice ? `₹${lead.quotedPrice.toLocaleString()}` : '—'}
+                  </div>
+                  {lead.ajwaPointsAwarded && (
+                    <div style={{ color: '#f59e0b', fontSize: 10, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
+                      <Star size={10} fill="#f59e0b" /> Points Paid
+                    </div>
+                  )}
+                </td>
+                <td style={{ padding: '12px 16px' }}>
                   {lead.assignedTo ? (
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                       <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'linear-gradient(135deg, #3b82f6, #2563eb)', color: '#fff', fontSize: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>
@@ -279,27 +345,40 @@ export default function AdminLeads() {
                   <span style={{
                     background: (statusColors[lead.status] || '#3b82f6') + '20',
                     color: statusColors[lead.status] || '#3b82f6',
-                    padding: '3px 8px', borderRadius: 4, fontSize: 10, fontWeight: 700
+                    padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 700,
+                    border: `1px solid ${statusColors[lead.status]}40`,
+                    display: 'inline-block', minWidth: 80, textAlign: 'center'
                   }}>
                     {lead.status || 'NEW'}
                   </span>
                 </td>
-                <td style={{ padding: '12px 16px', color: '#64748b', fontSize: 12 }}>
-                  {new Date(lead.createdAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}
+                <td style={{ padding: '12px 16px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <div style={{ color: '#94a3b8', fontSize: 12 }}>
+                      Created: {new Date(lead.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                    </div>
+                    {lead.travelDate && (
+                      <div style={{ color: '#22c55e', fontSize: 11, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <CalendarIcon size={12} /> {new Date(lead.travelDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                      </div>
+                    )}
+                  </div>
                 </td>
-                <td style={{ padding: '12px 16px', textAlign: 'right' }}>
-                  <button 
-                    onClick={(e) => handleDelete(e, lead._id)}
-                    style={{
-                      background: 'none', border: 'none', color: '#475569', cursor: 'pointer',
-                      padding: 6, borderRadius: 6, transition: 'all 0.2s',
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.color = '#ef4444'}
-                    onMouseLeave={(e) => e.currentTarget.style.color = '#475569'}
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </td>
+                {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN') && (
+                  <td style={{ padding: '12px 16px', textAlign: 'right' }}>
+                    <button 
+                      onClick={(e) => handleDelete(e, lead._id)}
+                      style={{
+                        background: 'none', border: 'none', color: '#475569', cursor: 'pointer',
+                        padding: 6, borderRadius: 6, transition: 'all 0.2s',
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.color = '#ef4444'}
+                      onMouseLeave={(e) => e.currentTarget.style.color = '#475569'}
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>
@@ -373,6 +452,49 @@ export default function AdminLeads() {
             </div>
           )}
 
+          {/* Trip Specifications (Enhanced Details) */}
+          {(selectedLead.selectedGroupSize || selectedLead.selectedDays || selectedLead.selectedHotelStar) && (
+            <div style={{ background: '#0f172a', borderRadius: 10, padding: 16, marginBottom: 20, border: '1px solid #334155' }}>
+              <div style={{ color: '#63ab45', fontSize: 11, fontWeight: 700, marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Trip Specifications</div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 10, color: '#64748b', marginBottom: 2 }}>TRAVELERS</label>
+                  <span style={{ fontSize: 13, color: '#f1f5f9', fontWeight: 600 }}>
+                    {selectedLead.adults || selectedLead.selectedGroupSize || 1} A
+                    {selectedLead.children > 0 && `, ${selectedLead.children} C`}
+                    {selectedLead.infants > 0 && `, ${selectedLead.infants} I`}
+                  </span>
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 10, color: '#64748b', marginBottom: 2 }}>DURATION</label>
+                  <span style={{ fontSize: 13, color: '#f1f5f9', fontWeight: 600 }}>{selectedLead.selectedDays || 'N/A'} Days</span>
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 10, color: '#64748b', marginBottom: 2 }}>HOTEL</label>
+                  <span style={{ fontSize: 13, color: '#f1f5f9', fontWeight: 600 }}>{selectedLead.selectedHotelStar ? `${selectedLead.selectedHotelStar} Star` : 'Any'}</span>
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 10, color: '#64748b', marginBottom: 2 }}>ROOM TYPE</label>
+                  <span style={{ fontSize: 13, color: '#f1f5f9', fontWeight: 600 }}>{selectedLead.selectedRoomType || 'Standard'}</span>
+                </div>
+              </div>
+              <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid #1e293b' }}>
+                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <div style={{ 
+                      padding: '3px 8px', borderRadius: 4, fontSize: 10, fontWeight: 700,
+                      background: selectedLead.bookingType === 'DIRECT_BOOKING' ? '#22c55e20' : '#3b82f620',
+                      color: selectedLead.bookingType === 'DIRECT_BOOKING' ? '#22c55e' : '#3b82f6'
+                    }}>
+                      {selectedLead.bookingType === 'DIRECT_BOOKING' ? 'DIRECT BOOKING' : 'GENERAL INQUIRY'}
+                    </div>
+                    {selectedLead.packageSlug && (
+                      <span style={{ fontSize: 11, color: '#94a3b8' }}>Pkg: {selectedLead.packageSlug}</span>
+                    )}
+                 </div>
+              </div>
+            </div>
+          )}
+
           {/* WhatsApp Clicks */}
           {selectedLead.whatsappClicks && selectedLead.whatsappClicks.length > 0 && (
             <div style={{ background: '#22c55e10', borderRadius: 8, padding: 14, marginBottom: 20, border: '1px solid #22c55e30' }}>
@@ -427,14 +549,106 @@ export default function AdminLeads() {
           {/* Quoted Price */}
           <div style={{ marginBottom: 16 }}>
             <label style={{ color: '#94a3b8', fontSize: 12, fontWeight: 600, marginBottom: 6, display: 'block' }}>QUOTED PRICE (INR)</label>
-            <input
-              type="number"
-              value={selectedLead.quotedPrice || ''}
-              placeholder="e.g., 50000"
-              onChange={(e) => updateLead(selectedLead._id, { quotedPrice: Number(e.target.value) })}
-              style={{ width: '100%', padding: '8px 12px', background: '#0f172a', border: '1px solid #334155', borderRadius: 8, color: '#e2e8f0', fontSize: 13, outline: 'none' }}
-            />
+            <div style={{ display: 'flex', gap: 8 }}>
+              <input
+                type="number"
+                value={selectedLead.quotedPrice || ''}
+                placeholder="e.g., 50000"
+                onChange={(e) => setSelectedLead({ ...selectedLead, quotedPrice: Number(e.target.value) })}
+                style={{ flex: 1, padding: '8px 12px', background: '#0f172a', border: '1px solid #334155', borderRadius: 8, color: '#e2e8f0', fontSize: 13, outline: 'none' }}
+              />
+              <button 
+                onClick={() => updateLead(selectedLead._id, { quotedPrice: selectedLead.quotedPrice })}
+                style={{ padding: '0 12px', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: 8, fontSize: 11, fontWeight: 700, cursor: 'pointer' }}
+              >
+                SAVE QUOTE
+              </button>
+            </div>
           </div>
+
+          {/* ── Payment Proof ── */}
+          {selectedLead.paymentProof?.status === 'PENDING' && (
+            <div style={{ background: '#3b82f615', borderRadius: 12, padding: 16, marginBottom: 20, border: '1px solid #3b82f640' }}>
+              <div style={{ color: '#3b82f6', fontSize: 11, fontWeight: 700, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <CreditCard size={14} /> PAYMENT PROOF SUBMITTED
+              </div>
+              <a href={selectedLead.paymentProof.screenshot} target="_blank" rel="noreferrer">
+                <img src={selectedLead.paymentProof.screenshot} alt="Payment Proof" style={{ width: '100%', borderRadius: 8, marginBottom: 12, border: '1px solid #334155' }} />
+              </a>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button onClick={() => verifyPayment(true)} style={{ 
+                  flex: 1, padding: '8px', background: '#22c55e', color: '#fff', border: 'none', borderRadius: 6, 
+                  cursor: 'pointer', fontSize: 12, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 
+                }}>
+                  <CheckSquare size={14} /> Verify
+                </button>
+                <button onClick={() => {
+                  const reason = prompt('Reason for rejection?');
+                  if (reason) verifyPayment(false, reason);
+                }} style={{ 
+                  flex: 1, padding: '8px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: 6, 
+                  cursor: 'pointer', fontSize: 12, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 
+                }}>
+                  <XSquare size={14} /> Reject
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* ── Invoicing ── */}
+          <div style={{ background: '#0f172a', borderRadius: 12, padding: 16, marginBottom: 20, border: '1px solid #334155' }}>
+            <div style={{ color: '#94a3b8', fontSize: 11, fontWeight: 700, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+              <Receipt size={14} /> INVOICE MANAGEMENT
+            </div>
+            
+            <button onClick={() => setShowInvoiceModal(true)} style={{ 
+              width: '100%', padding: '10px', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: 8, 
+              cursor: 'pointer', fontSize: 13, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 
+            }}>
+              <Receipt size={16} /> {selectedLead.invoice ? 'Manage Invoice' : 'Create Invoice'}
+            </button>
+            
+            {selectedLead.invoice && (
+              <div style={{ marginTop: 12, padding: 10, background: '#1e293b', borderRadius: 8, fontSize: 11 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8' }}>
+                  <span>Invoice ID:</span> <span style={{ color: '#f1f5f9' }}>{selectedLead.invoice.invoiceId}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8', marginTop: 4 }}>
+                  <span>Final Total:</span> <span style={{ color: '#63ab45', fontWeight: 700 }}>₹{selectedLead.invoice.total?.toLocaleString()}</span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* ── Loyalty Adjustment ── */}
+          {selectedLead.customer && (
+            <div style={{ background: '#f59e0b10', borderRadius: 12, padding: 16, marginBottom: 20, border: '1px solid #f59e0b30' }}>
+              <div style={{ color: '#f59e0b', fontSize: 11, fontWeight: 700, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <Wallet size={14} /> LOYALTY CONTROLS
+              </div>
+              <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+                <input 
+                  type="number" 
+                  placeholder="Points" 
+                  value={pointsToCredit} 
+                  onChange={(e) => setPointsToCredit(e.target.value)}
+                  style={{ flex: 1, padding: '6px 10px', background: '#1e293b', border: '1px solid #334155', borderRadius: 6, color: '#e2e8f0', fontSize: 12 }} 
+                />
+                <input 
+                  placeholder="Reason (e.g. Compensation)" 
+                  value={creditReason} 
+                  onChange={(e) => setCreditReason(e.target.value)}
+                  style={{ flex: 2, padding: '6px 10px', background: '#1e293b', border: '1px solid #334155', borderRadius: 6, color: '#e2e8f0', fontSize: 12 }} 
+                />
+              </div>
+              <button onClick={creditPoints} style={{ 
+                width: '100%', padding: '8px', background: '#f59e0b', color: '#fff', border: 'none', borderRadius: 6, 
+                cursor: 'pointer', fontSize: 12, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 
+              }}>
+                <Plus size={14} /> Credit Ajwa Points
+              </button>
+            </div>
+          )}
 
           {/* Assign */}
           {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN') && teamMembers.length > 0 && (
@@ -443,7 +657,7 @@ export default function AdminLeads() {
               <select
                 value={selectedLead.assignedTo?._id || ''}
                 onChange={(e) => updateLead(selectedLead._id, { assignedTo: e.target.value || null })}
-                style={{ padding: '6px 12px', background: '#0f172a', border: '1px solid #334155', borderRadius: 6, color: '#e2e8f0', fontSize: 13, cursor: 'pointer' }}
+                style={{ padding: '6px 12px', background: '#0f172a', border: '1px solid #334155', borderRadius: 6, color: '#e2e8f0', fontSize: 13, cursor: 'pointer', width: '100%' }}
               >
                 <option value="">Unassigned</option>
                 {teamMembers.map(m => <option key={m._id} value={m._id}>{m.name}</option>)}
@@ -482,21 +696,112 @@ export default function AdminLeads() {
           </div>
 
           {/* Dangerous Zone */}
-          <div style={{ borderTop: '1px solid #334155', paddingTop: 20, marginTop: 40 }}>
-            <button
-              onClick={(e) => handleDelete(e, selectedLead._id)}
-              style={{
-                width: '100%', padding: '12px', background: 'rgba(239, 68, 68, 0.1)',
-                border: '1px solid rgba(239, 68, 68, 0.4)', borderRadius: 10,
-                color: '#ef4444', fontSize: 13, fontWeight: 600, cursor: 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                transition: 'all 0.2s',
-              }}
-              onMouseEnter={(e) => e.target.style.background = 'rgba(239, 68, 68, 0.2)'}
-              onMouseLeave={(e) => e.target.style.background = 'rgba(239, 68, 68, 0.1)'}
-            >
-              <Trash2 size={16} /> Delete Lead Permanentally
-            </button>
+          {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN') && (
+            <div style={{ borderTop: '1px solid #334155', paddingTop: 20, marginTop: 40 }}>
+              <button
+                onClick={(e) => handleDelete(e, selectedLead._id)}
+                style={{
+                  width: '100%', padding: '12px', background: 'rgba(239, 68, 68, 0.1)',
+                  border: '1px solid rgba(239, 68, 68, 0.4)', borderRadius: 10,
+                  color: '#ef4444', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                  transition: 'all 0.2s',
+                }}
+                onMouseEnter={(e) => e.target.style.background = 'rgba(239, 68, 68, 0.2)'}
+                onMouseLeave={(e) => e.target.style.background = 'rgba(239, 68, 68, 0.1)'}
+              >
+                <Trash2 size={16} /> Delete Lead Permanentally
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── Invoice Builder Modal ── */}
+      {showInvoiceModal && selectedLead && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 10001, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+          <div onClick={() => setShowInvoiceModal(false)} style={{ position: 'absolute', inset: 0, background: 'rgba(15, 23, 42, 0.7)', backdropFilter: 'blur(4px)' }} />
+          
+          <div style={{ position: 'relative', width: '100%', maxWidth: 500, background: '#0f172a', borderRadius: 16, overflow: 'hidden', border: '1px solid #334155', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)' }}>
+            <div style={{ padding: '20px 24px', borderBottom: '1px solid #1e293b', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ width: 36, height: 36, borderRadius: 10, background: '#3b82f620', color: '#3b82f6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Receipt size={18} />
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: '#f8fafc' }}>Invoice Builder</h3>
+                  <div style={{ fontSize: 12, color: '#94a3b8', marginTop: 2 }}>For: {selectedLead.name}</div>
+                </div>
+              </div>
+              <button onClick={() => setShowInvoiceModal(false)} style={{ background: '#1e293b', border: 'none', width: 32, height: 32, borderRadius: '50%', color: '#94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                <X size={16} />
+              </button>
+            </div>
+            
+            <div style={{ padding: '24px', maxHeight: '60vh', overflowY: 'auto' }}>
+              <label style={{ display: 'block', color: '#94a3b8', fontSize: 12, fontWeight: 600, marginBottom: 12 }}>ITEMIZED CHARGES</label>
+              
+              {invoiceItems.map((item, idx) => (
+                <div key={idx} style={{ display: 'flex', gap: 12, marginBottom: 12 }}>
+                  <input 
+                    placeholder="E.g., 5-Night Hotel Stay" 
+                    value={item.description} 
+                    onChange={(e) => updateInvoiceItem(idx, 'description', e.target.value)}
+                    style={{ flex: 2, padding: '10px 12px', background: '#1e293b', border: '1px solid #334155', borderRadius: 8, color: '#e2e8f0', fontSize: 13, outline: 'none' }} 
+                  />
+                  <div style={{ position: 'relative', flex: 1 }}>
+                    <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#64748b', fontSize: 13 }}>₹</span>
+                    <input 
+                      type="number" 
+                      placeholder="0" 
+                      value={item.amount} 
+                      onChange={(e) => updateInvoiceItem(idx, 'amount', e.target.value)}
+                      style={{ width: '100%', boxSizing: 'border-box', padding: '10px 12px 10px 24px', background: '#1e293b', border: '1px solid #334155', borderRadius: 8, color: '#e2e8f0', fontSize: 13, outline: 'none' }} 
+                    />
+                  </div>
+                  {invoiceItems.length > 1 && (
+                    <button 
+                      onClick={() => setInvoiceItems(invoiceItems.filter((_, i) => i !== idx))}
+                      style={{ background: '#ef444420', color: '#ef4444', border: 'none', width: 40, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  )}
+                </div>
+              ))}
+              
+              <button onClick={addInvoiceItem} style={{ background: '#3b82f615', border: '1px dashed #3b82f650', color: '#3b82f6', width: '100%', padding: '10px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginBottom: 24 }}>
+                <Plus size={16} /> Add Another Item
+              </button>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', color: '#94a3b8', fontSize: 12, fontWeight: 600, marginBottom: 8 }}>EXTRA DISCOUNT</label>
+                  <div style={{ position: 'relative' }}>
+                    <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#64748b', fontSize: 13 }}>₹</span>
+                    <input 
+                      type="number" 
+                      value={discount} 
+                      onChange={(e) => setDiscount(Number(e.target.value))} 
+                      style={{ width: '100%', boxSizing: 'border-box', padding: '10px 12px 10px 24px', background: '#1e293b', border: '1px solid #334155', borderRadius: 8, color: '#e2e8f0', fontSize: 13, outline: 'none' }} 
+                    />
+                  </div>
+                </div>
+                <div style={{ background: '#1e293b', borderRadius: 8, padding: 12, border: '1px solid #334155', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                  <div style={{ fontSize: 11, color: '#94a3b8', marginBottom: 4 }}>CALCULATED TOTAL</div>
+                  <div style={{ fontSize: 18, color: '#22c55e', fontWeight: 800 }}>
+                    ₹{Math.max(0, invoiceItems.reduce((acc, item) => acc + (Number(item.amount) || 0), 0) - discount).toLocaleString()}
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div style={{ padding: '16px 24px', background: '#1e293b', borderTop: '1px solid #334155', display: 'flex', gap: 12 }}>
+              <button onClick={() => setShowInvoiceModal(false)} style={{ flex: 1, padding: '12px', background: 'transparent', color: '#94a3b8', border: '1px solid #334155', borderRadius: 8, cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>Cancel</button>
+              <button onClick={generateInvoice} style={{ flex: 2, padding: '12px', background: '#63ab45', color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer', fontSize: 13, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                <Receipt size={16} /> {selectedLead.invoice ? 'Update & Send to Customer' : 'Send Invoice to Customer'}
+              </button>
+            </div>
           </div>
         </div>
       )}

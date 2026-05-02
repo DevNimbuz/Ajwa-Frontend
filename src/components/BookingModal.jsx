@@ -39,8 +39,12 @@ export default function BookingModal({ isOpen, onClose, packageData }) {
         selectedFlight: packageData.withFlight,
         selectedHotelStar: packageData.hotelStar,
         selectedGroupSize: bookingData.adults + bookingData.children,
+        adults: bookingData.adults,
+        children: bookingData.children,
+        infants: bookingData.infants,
+        selectedRoomType: bookingData.roomType,
         message: `Direct Booking Request\nRoom: ${bookingData.roomType}\nSpecial Requests: ${bookingData.specialRequests}`,
-        source: 'website_booking',
+        source: 'website',
       };
 
       const res = await leadsAPI.submit(payload);

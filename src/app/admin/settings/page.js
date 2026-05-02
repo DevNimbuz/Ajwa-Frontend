@@ -123,6 +123,27 @@ export default function AdminSettings() {
         </div>
       </div>
 
+      {/* ── Financial & Payment ── */}
+      <div style={{ background: '#1e293b', borderRadius: 12, padding: 24, border: '1px solid #334155', marginBottom: 20 }}>
+        <h2 style={{ color: '#f1f5f9', fontSize: 16, fontWeight: 600, margin: '0 0 16px' }}>Financial & Payment</h2>
+        
+        <div style={{ marginBottom: 14 }}>
+          <label style={{ display: 'block', color: '#94a3b8', fontSize: 12, fontWeight: 500, marginBottom: 4 }}>Payment QR Code URL (UPI/Bank)</label>
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+            <input 
+              value={settings.payment_qr_code || ''} 
+              onChange={(e) => updateSetting('payment_qr_code', e.target.value)} 
+              style={inputStyle} 
+              placeholder="https://cloudinary.com/qr.png" 
+            />
+            {settings.payment_qr_code && (
+              <img src={settings.payment_qr_code} alt="QR" style={{ width: 40, height: 40, borderRadius: 4, border: '1px solid #334155' }} />
+            )}
+          </div>
+          <p style={{ color: '#64748b', fontSize: 11, marginTop: 4 }}>This QR code will be displayed on customer invoices for payments.</p>
+        </div>
+      </div>
+
       {/* Save Button */}
       <button onClick={handleSave} disabled={saving} style={{
         display: 'flex', alignItems: 'center', gap: 8, padding: '10px 24px',

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Plane, Calendar, MapPin, ChevronRight, Clock, AlertCircle, CheckCircle, CreditCard, Loader2 } from 'lucide-react';
 import BookingDetailModal from './BookingDetailModal';
 
-export default function BookingList({ trips }) {
+export default function BookingList({ trips, onRefresh }) {
   const [selectedTrip, setSelectedTrip] = useState(null);
   if (!trips || trips.all.length === 0) {
     return (
@@ -155,7 +155,7 @@ export default function BookingList({ trips }) {
 
       {/* Detail Modal */}
       {selectedTrip && (
-        <BookingDetailModal trip={selectedTrip} onClose={() => setSelectedTrip(null)} />
+        <BookingDetailModal trip={selectedTrip} trips={trips} onUpdate={onRefresh} onClose={() => setSelectedTrip(null)} />
       )}
     </div>
   );
