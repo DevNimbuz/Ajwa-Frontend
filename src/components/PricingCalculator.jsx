@@ -216,11 +216,11 @@ Please share the details.`;
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Send size={20} style={{ color: '#ffffff' }} /> 
-              <span style={{ fontWeight: 800, letterSpacing: '0.02em', textTransform: 'uppercase', fontSize: '14px' }}>Book & Earn Points</span>
+              <span style={{ fontWeight: 800, letterSpacing: '0.02em', textTransform: 'uppercase', fontSize: '14px' }}>Book & Earn up to 2000 Ajwa Points</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
               <Star size={10} fill="#fbbf24" color="#fbbf24" />
-              <span style={{ fontSize: '10px', opacity: 1, fontWeight: 700, color: '#fbbf24' }}>+500 AJWA POINTS</span>
+              <span style={{ fontSize: '10px', opacity: 1, fontWeight: 700, color: '#fbbf24' }}>★ +2000 AJWA POINTS</span>
             </div>
           </div>
         </button>

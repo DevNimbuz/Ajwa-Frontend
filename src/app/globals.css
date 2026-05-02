@@ -3240,11 +3240,15 @@ h1, h2, h3, h4, h5, h6 {
 .react-datepicker__day--selected, 
 .react-datepicker__day--keyboard-selected,
 .react-datepicker__day--selected:hover,
-.react-datepicker__day--selected:active,
-.react-datepicker__day--selected * {
-  background: linear-gradient(135deg, #63ab45, #4d8a35) !important;
+.react-datepicker__day--selected:active {
+  background: #63ab45 !important;
   color: #ffffff !important;
   box-shadow: 0 4px 10px rgba(99, 171, 69, 0.3) !important;
+}
+
+.react-datepicker__day--selected *,
+.react-datepicker__day--keyboard-selected * {
+  color: #ffffff !important;
 }
 
 .react-datepicker__day--today {

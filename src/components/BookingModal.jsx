@@ -128,9 +128,9 @@ export default function BookingModal({ isOpen, onClose, packageData }) {
                 </div>
 
                 <div className="modal-actions">
-                  <button className="btn-outline" onClick={onClose}>Cancel</button>
+                  <button className="btn btn-outline" onClick={onClose}>Cancel</button>
                   <button 
-                    className="btn-primary" 
+                    className="btn btn-primary" 
                     disabled={!bookingData.travelDate}
                     onClick={() => setStep(2)}
                   >
@@ -204,8 +204,8 @@ export default function BookingModal({ isOpen, onClose, packageData }) {
                 </div>
 
                 <div className="modal-actions">
-                  <button className="btn-outline" onClick={() => setStep(1)}>Back</button>
-                  <button className="btn-primary" onClick={() => setStep(3)}>
+                  <button className="btn btn-outline" onClick={() => setStep(1)}>Back</button>
+                  <button className="btn btn-primary" onClick={() => setStep(3)}>
                     Final Step <ArrowRight size={18} />
                   </button>
                 </div>
@@ -255,8 +255,8 @@ export default function BookingModal({ isOpen, onClose, packageData }) {
                 </div>
 
                 <div className="modal-actions">
-                  <button className="btn-outline" onClick={() => setStep(2)}>Back</button>
-                  <button className="btn-primary" onClick={handleSubmit} disabled={loading}>
+                  <button className="btn btn-outline" onClick={() => setStep(2)}>Back</button>
+                  <button className="btn btn-primary" onClick={handleSubmit} disabled={loading}>
                     {loading ? 'Processing...' : 'Confirm Booking Request'}
                   </button>
                 </div>
