@@ -72,7 +72,7 @@ export default function HomeClient({ initialPackages, initialTestimonials, heroS
 
     // Refresh Packages if needed
     if (!initialPackages || initialPackages.length === 0) {
-      fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/packages?limit=6`)
+      fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/packages?limit=12`)
         .then(res => res.json())
         .then(data => { 
           if (data.success && data.data.length > 0) {

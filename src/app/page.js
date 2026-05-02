@@ -72,8 +72,8 @@ export default async function HomePage() {
   
   // Parallel fetch for speed
   const [packagesRes, testimonialsRes] = await Promise.all([
-    fetch(`${apiUrl}/packages?limit=6`, { next: { revalidate: 3600 } }).catch(() => null),
-    fetch(`${apiUrl}/testimonials/public?limit=10`, { next: { revalidate: 3600 } }).catch(() => null)
+    fetch(`${apiUrl}/packages?limit=12`, { next: { revalidate: 60 } }).catch(() => null),
+    fetch(`${apiUrl}/testimonials/public?limit=10`, { next: { revalidate: 60 } }).catch(() => null)
   ]);
 
   const rawPackages = packagesRes ? await packagesRes.json().catch(() => null) : null;

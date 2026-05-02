@@ -168,20 +168,21 @@ export default function PackageClient({ pkg, clientSnapshots, siteConfig }) {
       {/* Top Row: Gallery + Pricing Card */}
       <section className="section">
         <div className="container">
-          <div className="package-hero-layout">
+          <div className="package-hero-layout-full">
             {/* Left: Gallery */}
             <div className="package-gallery-grid">
               {/* Main Hero Image */}
               <div 
                 onClick={() => setLightbox({ open: true, index: 0 })}
                 className="package-gallery-main-img img-wrapper"
-                style={{ position: 'relative', minHeight: '450px', borderRadius: '24px', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.08)', cursor: 'pointer' }}
+                style={{ position: 'relative', borderRadius: '24px', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.08)', cursor: 'pointer' }}
               >
                 <Image 
                   src={pkg.gallery?.[0] || '/assets/img/Ajwa/trek.webp'} 
                   alt={`${pkg.name} Hero View`} 
                   fill 
-                  sizes="(max-width: 768px) 100vw, 60vw"
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 75vw"
                   style={{ objectFit: 'cover', transition: 'transform 0.5s ease' }} 
                   className="hover-zoom"
                 />
@@ -222,41 +223,6 @@ export default function PackageClient({ pkg, clientSnapshots, siteConfig }) {
                 ))}
               </div>
             </div>
-
-            {/* Right: High-Impact Pricing Card (Aligned Gallery Height) */}
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <AnimatedSection style={{ height: '100%' }}>
-                <div className="package-pricing-card">
-                  <div className="package-pricing-accent" />
-                  <div className="package-pricing-content">
-                    <span className="package-pricing-badge">Best Price Guaranteed</span>
-                    <h5 className="package-pricing-label">Starting From</h5>
-                    <div className="package-pricing-amount">
-                      <span className="price">
-                        ₹{(pkg.startingPrice || 0).toLocaleString('en-IN')}
-                      </span>
-                      <span className="per">/person</span>
-                    </div>
-
-                    <ul className="package-pricing-features">
-                      <li className="package-pricing-feature">
-                        <Check size={18} color="var(--color-gold)" /> Personally vetted premium stays
-                      </li>
-                      <li className="package-pricing-feature">
-                        <Check size={18} color="var(--color-gold)" /> Dedicated local guide support
-                      </li>
-                      <li className="package-pricing-feature">
-                        <Check size={18} color="var(--color-gold)" /> 100% Secure &amp; Easy bookings
-                      </li>
-                    </ul>
-                    
-                    <a href={`tel:${siteConfig.contact.phone[0]}`} className="package-pricing-cta">
-                      <Phone size={18} /> Consult Travel Expert
-                    </a>
-                  </div>
-                </div>
-              </AnimatedSection>
-            </div>
           </div>
         </div>
       </section>
@@ -291,9 +257,9 @@ export default function PackageClient({ pkg, clientSnapshots, siteConfig }) {
       {/* Bottom Row: Details & Additional Sidebar */}
       <section className="section">
         <div className="container">
-          <div className="package-details-grid">
+          <div className="package-details-grid-with-sidebar">
             {/* Details Content */}
-            <div>
+            <div className="package-details-main">
               <div className="package-tabs" role="tablist">
                 <button 
                   className={`package-tab ${activeTab === 'itinerary' ? 'active' : ''}`}
@@ -331,7 +297,7 @@ export default function PackageClient({ pkg, clientSnapshots, siteConfig }) {
                       {displayItinerary.map((item, i) => (
                         <div key={i} className="itinerary-timeline-item">
                           <div className="itinerary-timeline-marker">
-                            {item.day.match(/\d+/)?.[0] || (i + 1)}
+                            {item.day?.match(/\d+/)?.[0] || (i + 1)}
                           </div>
                           
                           <div className="itinerary-timeline-card hover-lift">
@@ -340,27 +306,31 @@ export default function PackageClient({ pkg, clientSnapshots, siteConfig }) {
                                 {item.title}
                               </h4>
                               <span className="itinerary-timeline-day-label">
-                                Day {item.day.match(/\d+/)?.[0] || (i + 1)}
+                                Day {item.day?.match(/\d+/)?.[0] || (i + 1)}
                               </span>
                             </div>
 
                             <p className="itinerary-timeline-desc">
-                              {item.desc}
+                              {item.description || item.desc}
                             </p>
                             
-                            {item.activities && item.activities.length > 0 && (
-                              <div className="itinerary-timeline-activities">
-                                <span className="itinerary-timeline-activities-label">Highlights of the day:</span>
-                                <div className="itinerary-timeline-activity-tags">
-                                  {item.activities.map((act, j) => (
-                                    <div key={j} className="itinerary-timeline-activity-tag">
-                                      <div className="itinerary-timeline-activity-tag-dot" />
-                                      {act}
-                                    </div>
-                                  ))}
+                            {(() => {
+                              const activeHighlights = (item.highlights && item.highlights.length > 0) ? item.highlights : (item.activities || []);
+                              if (!activeHighlights || activeHighlights.length === 0) return null;
+                              return (
+                                <div className="itinerary-timeline-activities">
+                                  <span className="itinerary-timeline-activities-label">Highlights of the day:</span>
+                                  <div className="itinerary-timeline-activity-tags">
+                                    {activeHighlights.map((act, j) => (
+                                      <div key={j} className="itinerary-timeline-activity-tag">
+                                        <div className="itinerary-timeline-activity-tag-dot" />
+                                        {act}
+                                      </div>
+                                    ))}
+                                  </div>
                                 </div>
-                              </div>
-                            )}
+                              );
+                            })()}
                           </div>
                         </div>
                       ))}
@@ -471,6 +441,41 @@ export default function PackageClient({ pkg, clientSnapshots, siteConfig }) {
                   </div>
                 )}
               </div>
+            </div>
+
+            {/* Sticky Sidebar Pricing Card */}
+            <div className="package-details-sidebar">
+              <AnimatedSection style={{ position: 'sticky', top: 'calc(var(--header-height) + 20px)' }}>
+                <div className="package-pricing-card">
+                  <div className="package-pricing-accent" />
+                  <div className="package-pricing-content">
+                    <span className="package-pricing-badge">Best Price Guaranteed</span>
+                    <h5 className="package-pricing-label">Starting From</h5>
+                    <div className="package-pricing-amount">
+                      <span className="price">
+                        ₹{(pkg.startingPrice || 0).toLocaleString('en-IN')}
+                      </span>
+                      <span className="per">/person</span>
+                    </div>
+
+                    <ul className="package-pricing-features">
+                      <li className="package-pricing-feature">
+                        <Check size={18} color="var(--color-gold)" /> Personally vetted premium stays
+                      </li>
+                      <li className="package-pricing-feature">
+                        <Check size={18} color="var(--color-gold)" /> Dedicated local guide support
+                      </li>
+                      <li className="package-pricing-feature">
+                        <Check size={18} color="var(--color-gold)" /> 100% Secure &amp; Easy bookings
+                      </li>
+                    </ul>
+                    
+                    <a href={`tel:${siteConfig.contact.phone[0]}`} className="package-pricing-cta">
+                      <Phone size={18} /> Consult Travel Expert
+                    </a>
+                  </div>
+                </div>
+              </AnimatedSection>
             </div>
           </div>
         </div>

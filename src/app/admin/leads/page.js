@@ -12,14 +12,21 @@ import DatePicker from 'react-datepicker';
 import { leadsAPI, usersAPI, authAPI } from '@/lib/api';
 import {
   Search, Filter, Download, ChevronLeft, ChevronRight,
-  MessageSquare, Phone, Mail, MapPin, Clock, X, Plus, Trash2
+  MessageSquare, Phone, Mail, MapPin, Clock, X, Plus, Trash2, Calendar as CalendarIcon
 } from 'lucide-react';
 
 const statusColors = {
-  NEW: '#3b82f6', CONTACTED: '#f59e0b', INTERESTED: '#8b5cf6',
-  QUOTED: '#06b6d4', BOOKED: '#22c55e', LOST: '#ef4444',
+  NEW: '#3b82f6', 
+  CONTACTED: '#f59e0b', 
+  INTERESTED: '#8b5cf6',
+  QUOTED: '#06b6d4', 
+  UNDER_REVIEW: '#6366f1',
+  PROCESSING: '#ec4899',
+  PAYMENT_ACCEPTED: '#10b981',
+  BOOKED: '#22c55e', 
+  LOST: '#ef4444',
 };
-const statuses = ['NEW', 'CONTACTED', 'INTERESTED', 'QUOTED', 'BOOKED', 'LOST'];
+const statuses = ['NEW', 'CONTACTED', 'INTERESTED', 'QUOTED', 'UNDER_REVIEW', 'PROCESSING', 'PAYMENT_ACCEPTED', 'BOOKED', 'LOST'];
 const priorities = ['LOW', 'NORMAL', 'HIGH', 'URGENT'];
 const sources = ['website', 'whatsapp', 'phone', 'social', 'referral', 'other'];
 
@@ -208,7 +215,7 @@ export default function AdminLeads() {
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ background: '#0f172a' }}>
-              {['Name', 'Contact', 'Destination', 'Assigned To', 'Priority', 'Status', 'Date', ''].map(h => (
+              {['Name', 'Contact', 'Intent', 'Priority', 'Assigned To', 'Status', 'Date', ''].map(h => (
                 <th key={h} style={{ textAlign: 'left', padding: '12px 16px', color: '#64748b', fontSize: 12, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>{h}</th>
               ))}
             </tr>
@@ -231,7 +238,31 @@ export default function AdminLeads() {
                   <div style={{ color: '#94a3b8', fontSize: 13 }}>{lead.phone}</div>
                   {lead.email && <div style={{ color: '#64748b', fontSize: 11 }}>{lead.email}</div>}
                 </td>
-                <td style={{ padding: '12px 16px', color: '#94a3b8', fontSize: 13 }}>{lead.destination || '—'}</td>
+                <td style={{ padding: '12px 16px' }}>
+                  <div style={{ color: '#e2e8f0', fontSize: 13, fontWeight: 600 }}>{lead.destination || 'Inquiry'}</div>
+                  <div style={{ color: lead.bookingType === 'DIRECT_BOOKING' ? '#22c55e' : '#64748b', fontSize: 10, fontWeight: 600, textTransform: 'uppercase', marginTop: 2 }}>
+                    {lead.bookingType === 'DIRECT_BOOKING' ? '⚡ Direct Booking' : 'Inquiry'}
+                  </div>
+                </td>
+                <td style={{ padding: '12px 16px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 4 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{
+                        background: (priorityColors[lead.priority] || '#3b82f6') + '20',
+                        color: priorityColors[lead.priority] || '#3b82f6',
+                        padding: '3px 8px', borderRadius: 4, fontSize: 10, fontWeight: 700
+                      }}>
+                        {lead.priority || 'NORMAL'}
+                      </span>
+                      {lead.priorityScore > 80 && <span title="High Priority Score" style={{ fontSize: 12 }}>🔥</span>}
+                    </div>
+                    {lead.priorityScore !== undefined && (
+                      <span style={{ color: '#94a3b8', fontSize: 11, fontWeight: 600, marginLeft: 2 }}>
+                        Score: {lead.priorityScore}
+                      </span>
+                    )}
+                  </div>
+                </td>
                 <td style={{ padding: '12px 16px' }}>
                   {lead.assignedTo ? (
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -243,15 +274,6 @@ export default function AdminLeads() {
                   ) : (
                     <span style={{ color: '#475569', fontSize: 12 }}>Unassigned</span>
                   )}
-                </td>
-                <td style={{ padding: '12px 16px' }}>
-                  <span style={{
-                    background: (priorityColors[lead.priority] || '#3b82f6') + '20',
-                    color: priorityColors[lead.priority] || '#3b82f6',
-                    padding: '3px 8px', borderRadius: 4, fontSize: 10, fontWeight: 700
-                  }}>
-                    {lead.priority || 'NORMAL'}
-                  </span>
                 </td>
                 <td style={{ padding: '12px 16px' }}>
                   <span style={{
@@ -334,8 +356,13 @@ export default function AdminLeads() {
               </div>
             )}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#64748b', fontSize: 12 }}>
-              <Clock size={14} /> {new Date(selectedLead.createdAt).toLocaleString('en-IN')}
+              <Clock size={14} /> Created: {new Date(selectedLead.createdAt).toLocaleString('en-IN')}
             </div>
+            {selectedLead.travelDate && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#22c55e', fontSize: 13, fontWeight: 600, marginTop: 4 }}>
+                <CalendarIcon size={14} /> TRAVEL DATE: {new Date(selectedLead.travelDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
+              </div>
+            )}
           </div>
 
           {/* Message */}
@@ -391,14 +418,26 @@ export default function AdminLeads() {
             <select
               value={selectedLead.priority}
               onChange={(e) => updateLead(selectedLead._id, { priority: e.target.value })}
-              style={{ padding: '6px 12px', background: '#0f172a', border: '1px solid #334155', borderRadius: 6, color: '#e2e8f0', fontSize: 13, cursor: 'pointer' }}
+              style={{ padding: '6px 12px', background: '#0f172a', border: '1px solid #334155', borderRadius: 6, color: '#e2e8f0', fontSize: 13, cursor: 'pointer', width: '100%' }}
             >
               {priorities.map(p => <option key={p} value={p}>{p}</option>)}
             </select>
           </div>
 
+          {/* Quoted Price */}
+          <div style={{ marginBottom: 16 }}>
+            <label style={{ color: '#94a3b8', fontSize: 12, fontWeight: 600, marginBottom: 6, display: 'block' }}>QUOTED PRICE (INR)</label>
+            <input
+              type="number"
+              value={selectedLead.quotedPrice || ''}
+              placeholder="e.g., 50000"
+              onChange={(e) => updateLead(selectedLead._id, { quotedPrice: Number(e.target.value) })}
+              style={{ width: '100%', padding: '8px 12px', background: '#0f172a', border: '1px solid #334155', borderRadius: 8, color: '#e2e8f0', fontSize: 13, outline: 'none' }}
+            />
+          </div>
+
           {/* Assign */}
-          {user?.role === 'SUPER_ADMIN' && teamMembers.length > 0 && (
+          {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN') && teamMembers.length > 0 && (
             <div style={{ marginBottom: 16 }}>
               <label style={{ color: '#94a3b8', fontSize: 12, fontWeight: 600, marginBottom: 6, display: 'block' }}>ASSIGN TO</label>
               <select

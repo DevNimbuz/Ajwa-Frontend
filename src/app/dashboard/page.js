@@ -13,7 +13,7 @@ import DocumentVaultView from '@/components/dashboard/DocumentVaultView';
 import { 
   Plane, Heart, User, LogOut, Loader2, 
   MapPin, Calendar, ChevronRight, MessageSquare, 
-  Menu, Bell, Plus, ArrowRight, ExternalLink, LayoutDashboard, FileText, Globe
+  Menu, Bell, Plus, ArrowRight, ExternalLink, LayoutDashboard, FileText, Globe, Star, ShieldCheck
 } from 'lucide-react';
 
 function LoadingState() {
@@ -213,8 +213,9 @@ export default function DashboardPage() {
       <main className="dashboard-main animate-fade-in">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 32, flexWrap: 'wrap', gap: 20 }}>
           <div style={{ flex: '1 1 300px' }}>
-            <h1 className="heading-1" style={{ marginBottom: 8, color: '#1e293b' }}>
+            <h1 className="heading-1" style={{ marginBottom: 8, color: '#1e293b', display: 'flex', alignItems: 'center', gap: 12 }}>
               {currentTab === 'overview' ? `Marhaba, ${user.name?.split(' ')[0]}! 👋` : currentTab.charAt(0).toUpperCase() + currentTab.slice(1)}
+              {user.role === 'CUSTOMER' && <ShieldCheck size={24} className="text-gold" title="Verified Traveler" />}
             </h1>
             <p style={{ color: '#64748b', fontSize: 16 }}>
               {currentTab === 'overview' ? (
@@ -261,10 +262,11 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="grid grid-3" style={{ marginBottom: 40 }}>
+        <div className="grid grid-4-responsive" style={{ marginBottom: 40, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 20 }}>
           <StatCard label="Active Trips" value={trips.booked.length} icon={Plane} color="#059669" />
           <StatCard label="My Inquiries" value={trips.all.length} icon={MessageSquare} color="#3b82f6" />
-          <StatCard label="Saved Destinations" value={wishlist.length} icon={Heart} color="#ef4444" />
+          <StatCard label="Ajwa Points" value={user.ajwaPoints || 0} icon={Star} color="#f59e0b" isPoints />
+          <StatCard label="Saved" value={wishlist.length} icon={Heart} color="#ef4444" />
         </div>
 
         <div style={{ minHeight: '60vh' }}>

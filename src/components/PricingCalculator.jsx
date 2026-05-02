@@ -1,10 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { leadsAPI } from '@/lib/api';
-import { Plane, Building2, Users, Calendar, Calculator, MessageCircle, Send, CheckCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { leadsAPI, authAPI } from '@/lib/api';
+import { Plane, Building2, Users, Calendar, Calculator, MessageCircle, Send, CheckCircle, Star } from 'lucide-react';
+import BookingModal from './BookingModal';
 
 export default function PricingCalculator({ packageSlug, packageName, basePrice = 25000, baseDays = 3, variants = [] }) {
+  const router = useRouter();
+
   // ── Fixed Options ──
   const durationOptions = [
     { value: 3, label: '3D' },
@@ -28,6 +32,7 @@ export default function PricingCalculator({ packageSlug, packageName, basePrice 
   const [submitted, setSubmitted] = useState(false);
   const [formError, setFormError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
 
   const actualDays = days === 'custom' ? (parseInt(customDays) || 0) : days;
 
@@ -42,7 +47,6 @@ Please share the details.`;
 
   const whatsappUrl = `https://wa.me/919846617000?text=${encodeURIComponent(whatsappMessage)}`;
 
-  // Track WhatsApp click
   const handleWhatsAppClick = () => {
     leadsAPI.trackWhatsAppClick({
       destination: packageName,
@@ -55,6 +59,14 @@ Please share the details.`;
         groupSize,
       },
     });
+  };
+
+  const handleBookOnlineClick = () => {
+    if (!authAPI.isAuthenticated()) {
+      router.push(`/login?redirect=/package/${packageSlug}`);
+      return;
+    }
+    setIsBookingModalOpen(true);
   };
 
   // Submit enquiry
@@ -181,12 +193,51 @@ Please share the details.`;
           <MessageCircle size={20} /> <span>WhatsApp</span>
         </a>
         <button
-          onClick={() => setShowForm(true)}
-          className="calc-btn-premium enquire"
+          onClick={handleBookOnlineClick}
+          className="calc-btn-premium book-online"
+          style={{ 
+            background: '#0f172a',
+            border: '1px solid #1e293b',
+            boxShadow: '0 8px 20px -4px rgba(15, 23, 42, 0.3)',
+            color: '#ffffff',
+            transition: 'all 0.3s ease'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = '#1e293b';
+            e.currentTarget.style.transform = 'translateY(-2px)';
+            e.currentTarget.style.boxShadow = '0 12px 25px -4px rgba(15, 23, 42, 0.4)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = '#0f172a';
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.boxShadow = '0 8px 20px -4px rgba(15, 23, 42, 0.3)';
+          }}
         >
-          <Send size={20} /> <span>Enquire Now</span>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Send size={20} style={{ color: '#ffffff' }} /> 
+              <span style={{ fontWeight: 800, letterSpacing: '0.02em', textTransform: 'uppercase', fontSize: '14px' }}>Book & Earn Points</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
+              <Star size={10} fill="#fbbf24" color="#fbbf24" />
+              <span style={{ fontSize: '10px', opacity: 1, fontWeight: 700, color: '#fbbf24' }}>+500 AJWA POINTS</span>
+            </div>
+          </div>
         </button>
       </div>
+
+      <BookingModal 
+        isOpen={isBookingModalOpen} 
+        onClose={() => setIsBookingModalOpen(false)}
+        packageData={{
+          packageSlug,
+          packageName,
+          days: actualDays,
+          withFlight,
+          hotelStar,
+          groupSize
+        }}
+      />
 
       {/* ── Lead Capture Form ── */}
       {showForm && !submitted && (

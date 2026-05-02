@@ -176,11 +176,6 @@ export default function LoginPage() {
           </Link>
         </p>
 
-        <p style={{ textAlign: 'center', color: '#475569', fontSize: 12, marginTop: 24, marginBottom: 0 }}>
-          <Link href="/admin/login" style={{ color: '#64748b', textDecoration: 'none' }}>
-            Admin Login
-          </Link>
-        </p>
       </div>
 
       <style jsx global>{`

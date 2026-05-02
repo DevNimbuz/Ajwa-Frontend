@@ -1,7 +1,9 @@
-'use client';
-import { Plane, Calendar, MapPin, ChevronRight, Clock, AlertCircle, CheckCircle } from 'lucide-react';
+import { useState } from 'react';
+import { Plane, Calendar, MapPin, ChevronRight, Clock, AlertCircle, CheckCircle, CreditCard, Loader2 } from 'lucide-react';
+import BookingDetailModal from './BookingDetailModal';
 
 export default function BookingList({ trips }) {
+  const [selectedTrip, setSelectedTrip] = useState(null);
   if (!trips || trips.all.length === 0) {
     return (
       <div className="glass-card flex-center" style={{ padding: '80px 20px', flexDirection: 'column', textAlign: 'center' }}>
@@ -19,6 +21,9 @@ export default function BookingList({ trips }) {
   const getStatusColor = (status) => {
     switch (status) {
       case 'BOOKED': return '#059669';
+      case 'PAYMENT_ACCEPTED': return '#10b981';
+      case 'PROCESSING': return '#ec4899';
+      case 'UNDER_REVIEW': return '#6366f1';
       case 'QUOTED': return '#3b82f6';
       case 'CONTACTED': return '#f59e0b';
       case 'LOST': return '#ef4444';
@@ -69,33 +74,70 @@ export default function BookingList({ trips }) {
                   ₹{trip.quotedPrice.toLocaleString()}
                 </div>
               )}
-              <button className="btn btn-outline btn-sm" style={{ padding: '4px 12px', fontSize: 12 }}>
+              <button 
+                className="btn btn-outline btn-sm" 
+                style={{ padding: '4px 12px', fontSize: 12 }}
+                onClick={() => setSelectedTrip(trip)}
+              >
                 View Details
               </button>
             </div>
           </div>
 
-          {/* Status Timeline Preview */}
-          <div style={{ background: '#f8fafc', padding: '16px 24px', borderTop: '1px solid rgba(0,0,0,0.03)', display: 'flex', alignItems: 'center', gap: 24, overflowX: 'auto' }}>
+          {/* Status Timeline Preview (5 Steps) */}
+          <div style={{ background: '#f8fafc', padding: '16px 24px', borderTop: '1px solid rgba(0,0,0,0.03)', display: 'flex', alignItems: 'center', gap: 16, overflowX: 'auto' }}>
+             {/* Step 1: Inquiry */}
              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#63ab45', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <CheckCircle size={14} />
                 </div>
-                <span style={{ fontSize: 12, fontWeight: 600, color: '#475569', whiteSpace: 'nowrap' }}>Inquiry Received</span>
+                <span style={{ fontSize: 11, fontWeight: 600, color: '#475569', whiteSpace: 'nowrap' }}>Inquiry</span>
              </div>
-             <div style={{ height: 2, width: 40, background: trip.status !== 'NEW' ? '#63ab45' : '#e2e8f0', flexShrink: 0 }} />
+
+             {/* Step 2: Review */}
+             <div style={{ height: 2, minWidth: 20, background: trip.status !== 'NEW' && trip.status !== 'CONTACTED' ? '#63ab45' : '#e2e8f0', flex: 1 }} />
              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <div style={{ 
                   width: 24, height: 24, borderRadius: '50%', 
-                  background: trip.status !== 'NEW' ? '#63ab45' : '#f1f5f9', 
-                  color: trip.status !== 'NEW' ? '#fff' : '#94a3b8', 
+                  background: ['UNDER_REVIEW', 'PROCESSING', 'PAYMENT_ACCEPTED', 'BOOKED'].includes(trip.status) ? '#63ab45' : '#f1f5f9', 
+                  color: ['UNDER_REVIEW', 'PROCESSING', 'PAYMENT_ACCEPTED', 'BOOKED'].includes(trip.status) ? '#fff' : '#94a3b8', 
                   display: 'flex', alignItems: 'center', justifyContent: 'center' 
                 }}>
-                  {trip.status !== 'NEW' ? <CheckCircle size={14} /> : <Clock size={14} />}
+                  {['UNDER_REVIEW', 'PROCESSING', 'PAYMENT_ACCEPTED', 'BOOKED'].includes(trip.status) ? <CheckCircle size={14} /> : <Clock size={14} />}
                 </div>
-                <span style={{ fontSize: 12, fontWeight: 600, color: trip.status !== 'NEW' ? '#475569' : '#94a3b8', whiteSpace: 'nowrap' }}>Under Review</span>
+                <span style={{ fontSize: 11, fontWeight: 600, color: ['UNDER_REVIEW', 'PROCESSING', 'PAYMENT_ACCEPTED', 'BOOKED'].includes(trip.status) ? '#475569' : '#94a3b8', whiteSpace: 'nowrap' }}>Review</span>
              </div>
-             <div style={{ height: 2, width: 40, background: trip.status === 'BOOKED' ? '#63ab45' : '#e2e8f0', flexShrink: 0 }} />
+
+             {/* Step 3: Processing */}
+             <div style={{ height: 2, minWidth: 20, background: ['PROCESSING', 'PAYMENT_ACCEPTED', 'BOOKED'].includes(trip.status) ? '#63ab45' : '#e2e8f0', flex: 1 }} />
+             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ 
+                  width: 24, height: 24, borderRadius: '50%', 
+                  background: ['PROCESSING', 'PAYMENT_ACCEPTED', 'BOOKED'].includes(trip.status) ? '#63ab45' : '#f1f5f9', 
+                  color: ['PROCESSING', 'PAYMENT_ACCEPTED', 'BOOKED'].includes(trip.status) ? '#fff' : '#94a3b8', 
+                  display: 'flex', alignItems: 'center', justifyContent: 'center' 
+                }}>
+                  {['PROCESSING', 'PAYMENT_ACCEPTED', 'BOOKED'].includes(trip.status) ? <CheckCircle size={14} /> : <Loader2 size={14} />}
+                </div>
+                <span style={{ fontSize: 11, fontWeight: 600, color: ['PROCESSING', 'PAYMENT_ACCEPTED', 'BOOKED'].includes(trip.status) ? '#475569' : '#94a3b8', whiteSpace: 'nowrap' }}>Processing</span>
+             </div>
+
+             {/* Step 4: Payment */}
+             <div style={{ height: 2, minWidth: 20, background: ['PAYMENT_ACCEPTED', 'BOOKED'].includes(trip.status) ? '#63ab45' : '#e2e8f0', flex: 1 }} />
+             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ 
+                  width: 24, height: 24, borderRadius: '50%', 
+                  background: ['PAYMENT_ACCEPTED', 'BOOKED'].includes(trip.status) ? '#63ab45' : '#f1f5f9', 
+                  color: ['PAYMENT_ACCEPTED', 'BOOKED'].includes(trip.status) ? '#fff' : '#94a3b8', 
+                  display: 'flex', alignItems: 'center', justifyContent: 'center' 
+                }}>
+                  {['PAYMENT_ACCEPTED', 'BOOKED'].includes(trip.status) ? <CheckCircle size={14} /> : <CreditCard size={14} />}
+                </div>
+                <span style={{ fontSize: 11, fontWeight: 600, color: ['PAYMENT_ACCEPTED', 'BOOKED'].includes(trip.status) ? '#475569' : '#94a3b8', whiteSpace: 'nowrap' }}>Payment</span>
+             </div>
+
+             {/* Step 5: Confirmed */}
+             <div style={{ height: 2, minWidth: 20, background: trip.status === 'BOOKED' ? '#63ab45' : '#e2e8f0', flex: 1 }} />
              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <div style={{ 
                   width: 24, height: 24, borderRadius: '50%', 
@@ -105,11 +147,16 @@ export default function BookingList({ trips }) {
                 }}>
                   {trip.status === 'BOOKED' ? <CheckCircle size={14} /> : <AlertCircle size={14} />}
                 </div>
-                <span style={{ fontSize: 12, fontWeight: 600, color: trip.status === 'BOOKED' ? '#475569' : '#94a3b8', whiteSpace: 'nowrap' }}>Confirmed</span>
+                <span style={{ fontSize: 11, fontWeight: 600, color: trip.status === 'BOOKED' ? '#475569' : '#94a3b8', whiteSpace: 'nowrap' }}>Confirmed</span>
              </div>
           </div>
         </div>
       ))}
+
+      {/* Detail Modal */}
+      {selectedTrip && (
+        <BookingDetailModal trip={selectedTrip} onClose={() => setSelectedTrip(null)} />
+      )}
     </div>
   );
 }

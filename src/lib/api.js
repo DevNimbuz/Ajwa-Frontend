@@ -465,6 +465,11 @@ export const galleryAPI = {
   async upload(formData) { 
     return apiFetch('/gallery', { method: 'POST', body: formData }); 
   },
+  
+  /** Upload system/UI images (Admin) - doesn't save to gallery DB */
+  async uploadSystem(formData) {
+    return apiFetch('/gallery/upload-system', { method: 'POST', body: formData });
+  },
 
   /** Delete a single image (Admin) */
   async delete(id) { 
