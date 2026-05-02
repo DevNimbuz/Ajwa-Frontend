@@ -72,15 +72,16 @@ export default function AdminTeam() {
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+      <div className="admin-card-header">
         <h1 style={{ color: '#f1f5f9', fontSize: 24, fontWeight: 700, margin: 0 }}>👥 Team</h1>
         <button
           onClick={() => { setShowForm(true); setEditing(null); setForm({ name: '', email: '', password: '', phone: '', role: 'TEAM' }); }}
           style={{
-            display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px',
+            display: 'flex', alignItems: 'center', gap: 6, padding: '10px 24px',
             background: 'linear-gradient(135deg, #63ab45, #4d8a35)', border: 'none',
-            borderRadius: 8, color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 600,
-          }}><Plus size={14} /> Add Member</button>
+            borderRadius: 9999, color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 700,
+            boxShadow: '0 4px 12px rgba(99, 171, 69, 0.2)'
+          }}><Plus size={16} /> Add Member</button>
       </div>
 
       {/* Team List */}
@@ -118,20 +119,21 @@ export default function AdminTeam() {
 
             {m.phone && <div style={{ color: '#94a3b8', fontSize: 13, marginBottom: 12 }}>📞 {m.phone}</div>}
 
-            <div style={{ display: 'flex', gap: 8 }}>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               <button onClick={() => startEdit(m)} style={{
-                flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
-                padding: '6px', background: '#0f172a', border: '1px solid #334155', borderRadius: 6,
-                color: '#94a3b8', cursor: 'pointer', fontSize: 12,
-              }}><Edit size={13} /> Edit</button>
+                flex: 1, minWidth: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                padding: '8px 12px', background: '#0f172a', border: '1px solid #334155', borderRadius: 9999,
+                color: '#94a3b8', cursor: 'pointer', fontSize: 12, fontWeight: 600
+              }}><Edit size={14} /> Edit</button>
               <button onClick={() => toggleActive(m)} style={{
-                padding: '6px 10px', background: '#0f172a', border: '1px solid #334155',
-                borderRadius: 6, color: m.isActive ? '#ef4444' : '#22c55e', cursor: 'pointer', fontSize: 12,
+                padding: '8px 16px', background: '#0f172a', border: '1px solid #334155',
+                borderRadius: 9999, color: m.isActive ? '#ef4444' : '#22c55e', cursor: 'pointer', fontSize: 12, fontWeight: 600
               }}>{m.isActive ? 'Deactivate' : 'Activate'}</button>
               <button onClick={() => deleteMember(m)} style={{
-                padding: '6px', background: '#dc262610', border: '1px solid #dc262630',
-                borderRadius: 6, color: '#ef4444', cursor: 'pointer',
-              }}><Trash2 size={13} /></button>
+                width: 38, height: 38, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: '#dc262610', border: '1px solid #dc262630',
+                borderRadius: '50%', color: '#ef4444', cursor: 'pointer',
+              }}><Trash2 size={14} /></button>
             </div>
           </div>
         ))}
@@ -199,8 +201,9 @@ export default function AdminTeam() {
               </div>
 
               <button type="submit" style={{
-                width: '100%', padding: '10px', background: 'linear-gradient(135deg, #63ab45, #4d8a35)',
-                border: 'none', borderRadius: 8, color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer',
+                width: '100%', padding: '12px', background: 'linear-gradient(135deg, #63ab45, #4d8a35)',
+                border: 'none', borderRadius: 9999, color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer',
+                marginTop: 8, boxShadow: '0 4px 12px rgba(99, 171, 69, 0.2)'
               }}>{editing ? 'Update Member' : 'Add Member'}</button>
             </form>
           </div>

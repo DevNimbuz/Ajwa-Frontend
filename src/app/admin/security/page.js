@@ -87,43 +87,45 @@ export default function SecurityLogs() {
       </div>
 
       {/* Filters */}
-      <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
-        <div style={{ position: 'relative', flex: '1 1 280px' }}>
-          <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#64748b' }} />
+      <div style={{ display: 'flex', gap: 12, marginBottom: 24, flexWrap: 'wrap', alignItems: 'center' }}>
+        <div style={{ position: 'relative', flex: '1 1 300px' }}>
+          <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#64748b' }} />
           <input 
             type="text" 
             placeholder="Search logs..." 
             value={filters.search}
             onChange={e => setFilters({...filters, search: e.target.value})}
-            style={{ width: '100%', padding: '10px 12px 10px 40px', background: '#1e293b', border: '1px solid #334155', borderRadius: '8px', color: '#f1f5f9', outline: 'none' }}
+            style={{ width: '100%', padding: '10px 14px 10px 40px', background: '#1e293b', border: '1px solid #334155', borderRadius: 9999, color: '#f1f5f9', outline: 'none', fontSize: 14 }}
           />
         </div>
-        <select 
-          value={filters.category}
-          onChange={e => setFilters({...filters, category: e.target.value})}
-          style={{ padding: '10px 12px', background: '#1e293b', border: '1px solid #334155', borderRadius: '8px', color: '#f1f5f9', cursor: 'pointer' }}
-        >
-          <option value="">All Categories</option>
-          <option value="SUCCESS">Success</option>
-          <option value="HAZARD">Hazard</option>
-          <option value="CAUTION">Caution</option>
-          <option value="SYSTEM">System</option>
-        </select>
-        <select 
-          value={filters.action}
-          onChange={e => setFilters({...filters, action: e.target.value})}
-          style={{ padding: '10px 12px', background: '#1e293b', border: '1px solid #334155', borderRadius: '8px', color: '#f1f5f9', cursor: 'pointer' }}
-        >
-          <option value="">All Actions</option>
-          <option value="LOGIN">Login</option>
-          <option value="UNAUTHORIZED">Unauthorized Access</option>
-          <option value="SETTINGS">Settings Change</option>
-          <option value="LEAD">Leads Export</option>
-          <option value="PACKAGE">Packages</option>
-        </select>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', flex: '1 1 auto' }}>
+          <select 
+            value={filters.category}
+            onChange={e => setFilters({...filters, category: e.target.value})}
+            style={{ flex: 1, minWidth: 140, padding: '10px 14px', background: '#1e293b', border: '1px solid #334155', borderRadius: 9999, color: '#f1f5f9', cursor: 'pointer', fontSize: 13 }}
+          >
+            <option value="">All Categories</option>
+            <option value="SUCCESS">Success</option>
+            <option value="HAZARD">Hazard</option>
+            <option value="CAUTION">Caution</option>
+            <option value="SYSTEM">System</option>
+          </select>
+          <select 
+            value={filters.action}
+            onChange={e => setFilters({...filters, action: e.target.value})}
+            style={{ flex: 1, minWidth: 140, padding: '10px 14px', background: '#1e293b', border: '1px solid #334155', borderRadius: 9999, color: '#f1f5f9', cursor: 'pointer', fontSize: 13 }}
+          >
+            <option value="">All Actions</option>
+            <option value="LOGIN">Login</option>
+            <option value="UNAUTHORIZED">Unauthorized Access</option>
+            <option value="SETTINGS">Settings Change</option>
+            <option value="LEAD">Leads Export</option>
+            <option value="PACKAGE">Packages</option>
+          </select>
+        </div>
         <button 
           onClick={handleClearLogs}
-          style={{ padding: '10px 16px', background: '#ef444415', border: '1px solid #ef444440', borderRadius: '8px', color: '#ef4444', cursor: 'pointer', fontSize: '0.875rem', fontWeight: 600 }}
+          style={{ padding: '10px 20px', background: '#ef444415', border: '1px solid #ef444440', borderRadius: 9999, color: '#ef4444', cursor: 'pointer', fontSize: '0.875rem', fontWeight: 700 }}
         >
           Clear History
         </button>
@@ -196,7 +198,7 @@ export default function SecurityLogs() {
                       {log.action === 'LOGIN_FAILURE' && (
                         <button 
                           onClick={(e) => handleUnlock(e, log.email)}
-                          style={{ padding: '4px 8px', background: '#63ab4520', border: '1px solid #63ab4540', borderRadius: '4px', color: '#63ab45', fontSize: '0.7rem', fontWeight: 600, cursor: 'pointer' }}
+                          style={{ padding: '6px 14px', background: '#63ab4520', border: '1px solid #63ab4540', borderRadius: 9999, color: '#63ab45', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
                         >
                           Unlock User
                         </button>
@@ -291,7 +293,7 @@ export default function SecurityLogs() {
             <div style={{ padding: '16px 24px', background: '#0f172a', borderTop: '1px solid #334155', display: 'flex', justifyContent: 'flex-end' }}>
               <button 
                 onClick={() => setSelectedLog(null)}
-                style={{ padding: '8px 24px', background: '#63ab45', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '0.875rem', fontWeight: 600, cursor: 'pointer', transition: 'transform 0.2s' }}
+                style={{ padding: '12px 32px', background: '#63ab45', color: '#fff', border: 'none', borderRadius: 9999, fontSize: '0.875rem', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 4px 12px rgba(99, 171, 69, 0.2)' }}
                 onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
                 onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
               >

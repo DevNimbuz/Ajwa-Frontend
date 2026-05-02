@@ -145,7 +145,17 @@ export default function AdminPackages() {
 
   return (
     <div>
-      <h1 style={{ color: '#f1f5f9', fontSize: 24, fontWeight: 700, margin: '0 0 24px' }}>📦 Packages</h1>
+      <div className="admin-card-header">
+        <h1 style={{ color: '#f1f5f9', fontSize: 24, fontWeight: 700, margin: 0 }}>📦 Packages</h1>
+        {isSuperAdmin && (
+          <button style={{
+            display: 'flex', alignItems: 'center', gap: 6, padding: '10px 24px',
+            background: 'linear-gradient(135deg, #63ab45, #4d8a35)', border: 'none',
+            borderRadius: 9999, color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 700,
+            boxShadow: '0 4px 12px rgba(99, 171, 69, 0.2)'
+          }}><Plus size={16} /> New Package</button>
+        )}
+      </div>
 
       {/* ── Package Grid ── */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: 16 }}>
@@ -189,39 +199,44 @@ export default function AdminPackages() {
               </div>
 
               {/* Actions */}
-              <div style={{ display: 'flex', gap: 8 }}>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                 <button
                   onClick={() => openPricingEditor(pkg)}
                   style={{
-                    flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                    padding: '7px 12px', background: '#63ab4520', border: '1px solid #63ab4540',
-                    borderRadius: 6, color: '#63ab45', cursor: 'pointer', fontSize: 12, fontWeight: 500,
+                    flex: 1, minWidth: '120px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                    padding: '8px 16px', background: '#63ab4520', border: '1px solid #63ab4540',
+                    borderRadius: 9999, color: '#63ab45', cursor: 'pointer', fontSize: 12, fontWeight: 700,
                   }}
                 >
-                  <IndianRupee size={13} /> Edit Pricing
+                  <IndianRupee size={13} /> Pricing
                 </button>
-                <button onClick={() => openDetailsEditor(pkg)} style={{
-                  padding: '7px', background: '#0f172a', border: '1px solid #334155',
-                  borderRadius: 6, color: '#94a3b8', cursor: 'pointer',
-                }} title="Edit Name/Image">
-                  <Edit size={14} />
-                </button>
-                {isSuperAdmin && (
-                  <>
-                    <button onClick={() => toggleActive(pkg)} style={{
-                      padding: '7px', background: '#0f172a', border: '1px solid #334155',
-                      borderRadius: 6, color: pkg.isActive ? '#22c55e' : '#ef4444', cursor: 'pointer',
-                    }}>
-                      {pkg.isActive ? <ToggleRight size={16} /> : <ToggleLeft size={16} />}
-                    </button>
-                    <button onClick={() => deletePkg(pkg)} style={{
-                      padding: '7px', background: '#dc262610', border: '1px solid #dc262630',
-                      borderRadius: 6, color: '#ef4444', cursor: 'pointer',
-                    }}>
-                      <Trash2 size={14} />
-                    </button>
-                  </>
-                )}
+                <div style={{ display: 'flex', gap: 6 }}>
+                  <button onClick={() => openDetailsEditor(pkg)} style={{
+                    width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    background: '#0f172a', border: '1px solid #334155',
+                    borderRadius: '50%', color: '#94a3b8', cursor: 'pointer',
+                  }} title="Edit Content">
+                    <Edit size={14} />
+                  </button>
+                  {isSuperAdmin && (
+                    <>
+                      <button onClick={() => toggleActive(pkg)} style={{
+                        width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        background: '#0f172a', border: '1px solid #334155',
+                        borderRadius: '50%', color: pkg.isActive ? '#22c55e' : '#ef4444', cursor: 'pointer',
+                      }}>
+                        {pkg.isActive ? <ToggleRight size={18} /> : <ToggleLeft size={18} />}
+                      </button>
+                      <button onClick={() => deletePkg(pkg)} style={{
+                        width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        background: '#dc262610', border: '1px solid #dc262630',
+                        borderRadius: '50%', color: '#ef4444', cursor: 'pointer',
+                      }}>
+                        <Trash2 size={14} />
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           </div>

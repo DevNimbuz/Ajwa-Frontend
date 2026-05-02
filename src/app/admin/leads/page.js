@@ -195,65 +195,68 @@ export default function AdminLeads() {
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+      <div className="admin-card-header">
         <h1 style={{ color: '#f1f5f9', fontSize: 24, fontWeight: 700, margin: 0 }}>💬 Leads</h1>
         <button onClick={exportCSV} style={{
-          display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px', background: '#1e293b',
-          border: '1px solid #334155', borderRadius: 8, color: '#94a3b8', cursor: 'pointer', fontSize: 13,
+          display: 'flex', alignItems: 'center', gap: 6, padding: '10px 20px', background: '#1e293b',
+          border: '1px solid #334155', borderRadius: 9999, color: '#94a3b8', cursor: 'pointer', fontSize: 13,
+          fontWeight: 600, transition: 'all 0.2s'
         }}>
-          <Download size={14} /> Export CSV
+          <Download size={16} /> Export CSV
         </button>
       </div>
 
       {/* ── Filters Bar ── */}
-      <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
-        <div style={{ position: 'relative', flex: 1, minWidth: 200 }}>
-          <Search size={16} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#64748b' }} />
+      <div style={{ display: 'flex', gap: 12, marginBottom: 24, flexWrap: 'wrap', alignItems: 'center' }}>
+        <div style={{ position: 'relative', flex: '1 1 300px', minWidth: 200 }}>
+          <Search size={16} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#64748b' }} />
           <input
             placeholder="Search name, email, phone..."
             value={filters.search}
             onChange={(e) => setFilters(f => ({ ...f, search: e.target.value }))}
             style={{
-              width: '100%', padding: '8px 12px 8px 36px', background: '#1e293b', border: '1px solid #334155',
-              borderRadius: 8, color: '#e2e8f0', fontSize: 13, outline: 'none', boxSizing: 'border-box',
+              width: '100%', padding: '10px 14px 10px 40px', background: '#1e293b', border: '1px solid #334155',
+              borderRadius: 9999, color: '#e2e8f0', fontSize: 14, outline: 'none', boxSizing: 'border-box',
             }}
           />
         </div>
-        <select
-          value={filters.status}
-          onChange={(e) => setFilters(f => ({ ...f, status: e.target.value, page: 1 }))}
-          style={{ padding: '8px 12px', background: '#1e293b', border: '1px solid #334155', borderRadius: 8, color: '#e2e8f0', fontSize: 13, cursor: 'pointer' }}
-        >
-          <option value="">All Statuses</option>
-          {statuses.map(s => <option key={s} value={s}>{s}</option>)}
-        </select>
-        <select
-          value={filters.source}
-          onChange={(e) => setFilters(f => ({ ...f, source: e.target.value, page: 1 }))}
-          style={{ padding: '8px 12px', background: '#1e293b', border: '1px solid #334155', borderRadius: 8, color: '#e2e8f0', fontSize: 13, cursor: 'pointer' }}
-        >
-          <option value="">All Sources</option>
-          {sources.map(s => <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
-        </select>
-        <select
-          value={filters.priority}
-          onChange={(e) => setFilters(f => ({ ...f, priority: e.target.value, page: 1 }))}
-          style={{ padding: '8px 12px', background: '#1e293b', border: '1px solid #334155', borderRadius: 8, color: '#e2e8f0', fontSize: 13, cursor: 'pointer' }}
-        >
-          <option value="">All Priorities</option>
-          {priorities.map(p => <option key={p} value={p}>{p}</option>)}
-        </select>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#1e293b', border: '1px solid #334155', borderRadius: 8, padding: '0 12px' }}>
-          <span style={{ fontSize: 11, color: '#64748b', fontWeight: 600 }}>FROM</span>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', flex: '1 1 auto' }}>
+          <select
+            value={filters.status}
+            onChange={(e) => setFilters(f => ({ ...f, status: e.target.value, page: 1 }))}
+            style={{ flex: 1, minWidth: 120, padding: '10px 14px', background: '#1e293b', border: '1px solid #334155', borderRadius: 9999, color: '#e2e8f0', fontSize: 13, cursor: 'pointer' }}
+          >
+            <option value="">Status</option>
+            {statuses.map(s => <option key={s} value={s}>{s}</option>)}
+          </select>
+          <select
+            value={filters.source}
+            onChange={(e) => setFilters(f => ({ ...f, source: e.target.value, page: 1 }))}
+            style={{ flex: 1, minWidth: 120, padding: '10px 14px', background: '#1e293b', border: '1px solid #334155', borderRadius: 9999, color: '#e2e8f0', fontSize: 13, cursor: 'pointer' }}
+          >
+            <option value="">Source</option>
+            {sources.map(s => <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
+          </select>
+          <select
+            value={filters.priority}
+            onChange={(e) => setFilters(f => ({ ...f, priority: e.target.value, page: 1 }))}
+            style={{ flex: 1, minWidth: 120, padding: '10px 14px', background: '#1e293b', border: '1px solid #334155', borderRadius: 9999, color: '#e2e8f0', fontSize: 13, cursor: 'pointer' }}
+          >
+            <option value="">Priority</option>
+            {priorities.map(p => <option key={p} value={p}>{p}</option>)}
+          </select>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#1e293b', border: '1px solid #334155', borderRadius: 9999, padding: '0 16px', height: 42 }}>
+          <CalendarIcon size={14} style={{ color: '#64748b' }} />
           <DatePicker
             selected={filters.startDate ? new Date(filters.startDate) : null}
             onChange={(date) => setFilters({...filters, startDate: date ? date.toISOString().split('T')[0] : '', page: 1})}
             dateFormat="dd/MM/yy"
             placeholderText="Start"
             className="admin-datepicker"
-            customInput={<input style={{ width: 70, padding: '8px 0', background: 'none', border: 'none', color: '#e2e8f0', fontSize: 12, outline: 'none', cursor: 'pointer' }} />}
+            customInput={<input style={{ width: 65, background: 'none', border: 'none', color: '#e2e8f0', fontSize: 12, outline: 'none', cursor: 'pointer' }} />}
           />
-          <span style={{ fontSize: 11, color: '#64748b', fontWeight: 600 }}>TO</span>
+          <span style={{ color: '#334155' }}>|</span>
           <DatePicker
             selected={filters.endDate ? new Date(filters.endDate) : null}
             onChange={(date) => setFilters({...filters, endDate: date ? date.toISOString().split('T')[0] : '', page: 1})}
@@ -261,13 +264,13 @@ export default function AdminLeads() {
             placeholderText="End"
             className="admin-datepicker"
             minDate={filters.startDate ? new Date(filters.startDate) : null}
-            customInput={<input style={{ width: 70, padding: '8px 0', background: 'none', border: 'none', color: '#e2e8f0', fontSize: 12, outline: 'none', cursor: 'pointer' }} />}
+            customInput={<input style={{ width: 65, background: 'none', border: 'none', color: '#e2e8f0', fontSize: 12, outline: 'none', cursor: 'pointer' }} />}
           />
         </div>
       </div>
 
       {/* ── Leads Table ── */}
-      <div style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155', overflow: 'hidden' }}>
+      <div className="admin-table-wrapper">
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ background: '#0f172a' }}>
@@ -364,16 +367,30 @@ export default function AdminLeads() {
                     )}
                   </div>
                 </td>
-                {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN') && (
+                {(user?.role === 'SUPER_ADMIN' || user?.role === 'TEAM') && (
                   <td style={{ padding: '12px 16px', textAlign: 'right' }}>
                     <button 
-                      onClick={(e) => handleDelete(e, lead._id)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleDelete(e, lead._id);
+                      }}
                       style={{
-                        background: 'none', border: 'none', color: '#475569', cursor: 'pointer',
-                        padding: 6, borderRadius: 6, transition: 'all 0.2s',
+                        background: 'transparent', 
+                        border: 'none', 
+                        color: '#475569', 
+                        cursor: 'pointer',
+                        width: 32,
+                        height: 32,
+                        borderRadius: '50%',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        transition: 'all 0.2s',
                       }}
                       onMouseEnter={(e) => e.currentTarget.style.color = '#ef4444'}
                       onMouseLeave={(e) => e.currentTarget.style.color = '#475569'}
+                      title="Delete Lead"
                     >
                       <Trash2 size={16} />
                     </button>
@@ -406,8 +423,11 @@ export default function AdminLeads() {
 
       {/* ── Lead Detail Sidebar ── */}
       {selectedLead && (
-        <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: 420, background: '#1e293b', borderLeft: '1px solid #334155',
-          zIndex: 100, overflowY: 'auto', boxShadow: '-4px 0 20px rgba(0,0,0,0.3)', padding: 24 }}>
+        <div className="lead-detail-sidebar" style={{ 
+          position: 'fixed', top: 0, right: 0, bottom: 0, 
+          width: 'min(420px, 100%)', background: '#1e293b', borderLeft: '1px solid #334155',
+          zIndex: 2000, overflowY: 'auto', boxShadow: '-4px 0 24px rgba(0,0,0,0.4)', padding: 24 
+        }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
             <h2 style={{ color: '#f1f5f9', fontSize: 18, fontWeight: 600, margin: 0 }}>{selectedLead.name}</h2>
             <button 
@@ -555,11 +575,11 @@ export default function AdminLeads() {
                 value={selectedLead.quotedPrice || ''}
                 placeholder="e.g., 50000"
                 onChange={(e) => setSelectedLead({ ...selectedLead, quotedPrice: Number(e.target.value) })}
-                style={{ flex: 1, padding: '8px 12px', background: '#0f172a', border: '1px solid #334155', borderRadius: 8, color: '#e2e8f0', fontSize: 13, outline: 'none' }}
+                style={{ flex: 1, padding: '8px 16px', background: '#0f172a', border: '1px solid #334155', borderRadius: 9999, color: '#e2e8f0', fontSize: 13, outline: 'none' }}
               />
               <button 
                 onClick={() => updateLead(selectedLead._id, { quotedPrice: selectedLead.quotedPrice })}
-                style={{ padding: '0 12px', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: 8, fontSize: 11, fontWeight: 700, cursor: 'pointer' }}
+                style={{ padding: '0 20px', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: 9999, fontSize: 11, fontWeight: 700, cursor: 'pointer' }}
               >
                 SAVE QUOTE
               </button>
@@ -577,8 +597,8 @@ export default function AdminLeads() {
               </a>
               <div style={{ display: 'flex', gap: 8 }}>
                 <button onClick={() => verifyPayment(true)} style={{ 
-                  flex: 1, padding: '8px', background: '#22c55e', color: '#fff', border: 'none', borderRadius: 6, 
-                  cursor: 'pointer', fontSize: 12, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 
+                  flex: 1, padding: '10px', background: '#22c55e', color: '#fff', border: 'none', borderRadius: 9999, 
+                  cursor: 'pointer', fontSize: 12, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 
                 }}>
                   <CheckSquare size={14} /> Verify
                 </button>
@@ -586,8 +606,8 @@ export default function AdminLeads() {
                   const reason = prompt('Reason for rejection?');
                   if (reason) verifyPayment(false, reason);
                 }} style={{ 
-                  flex: 1, padding: '8px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: 6, 
-                  cursor: 'pointer', fontSize: 12, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 
+                  flex: 1, padding: '10px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: 9999, 
+                  cursor: 'pointer', fontSize: 12, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 
                 }}>
                   <XSquare size={14} /> Reject
                 </button>
@@ -602,8 +622,8 @@ export default function AdminLeads() {
             </div>
             
             <button onClick={() => setShowInvoiceModal(true)} style={{ 
-              width: '100%', padding: '10px', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: 8, 
-              cursor: 'pointer', fontSize: 13, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 
+              width: '100%', padding: '12px', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: 9999, 
+              cursor: 'pointer', fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 
             }}>
               <Receipt size={16} /> {selectedLead.invoice ? 'Manage Invoice' : 'Create Invoice'}
             </button>
@@ -626,26 +646,27 @@ export default function AdminLeads() {
               <div style={{ color: '#f59e0b', fontSize: 11, fontWeight: 700, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
                 <Wallet size={14} /> LOYALTY CONTROLS
               </div>
-              <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 12 }}>
                 <input 
                   type="number" 
                   placeholder="Points" 
                   value={pointsToCredit} 
                   onChange={(e) => setPointsToCredit(e.target.value)}
-                  style={{ flex: 1, padding: '6px 10px', background: '#1e293b', border: '1px solid #334155', borderRadius: 6, color: '#e2e8f0', fontSize: 12 }} 
+                  style={{ width: '100%', padding: '10px 14px', background: '#1e293b', border: '1px solid #334155', borderRadius: 9999, color: '#e2e8f0', fontSize: 13 }} 
                 />
                 <input 
                   placeholder="Reason (e.g. Compensation)" 
                   value={creditReason} 
                   onChange={(e) => setCreditReason(e.target.value)}
-                  style={{ flex: 2, padding: '6px 10px', background: '#1e293b', border: '1px solid #334155', borderRadius: 6, color: '#e2e8f0', fontSize: 12 }} 
+                  style={{ width: '100%', padding: '10px 14px', background: '#1e293b', border: '1px solid #334155', borderRadius: 9999, color: '#e2e8f0', fontSize: 13 }} 
                 />
               </div>
               <button onClick={creditPoints} style={{ 
-                width: '100%', padding: '8px', background: '#f59e0b', color: '#fff', border: 'none', borderRadius: 6, 
-                cursor: 'pointer', fontSize: 12, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 
+                width: 'fit-content', padding: '10px 24px', background: '#f59e0b', color: '#fff', border: 'none', borderRadius: 9999, 
+                cursor: 'pointer', fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                margin: '0 0 0 auto', boxShadow: '0 4px 12px rgba(245, 158, 11, 0.2)'
               }}>
-                <Plus size={14} /> Credit Ajwa Points
+                <Plus size={16} /> Credit Ajwa Points
               </button>
             </div>
           )}
@@ -675,14 +696,15 @@ export default function AdminLeads() {
                 placeholder="Add a note..."
                 onKeyDown={(e) => e.key === 'Enter' && addNote()}
                 style={{
-                  flex: 1, padding: '8px 12px', background: '#0f172a', border: '1px solid #334155',
-                  borderRadius: 8, color: '#e2e8f0', fontSize: 13, outline: 'none',
+                  flex: 1, padding: '10px 16px', background: '#0f172a', border: '1px solid #334155',
+                  borderRadius: 9999, color: '#e2e8f0', fontSize: 13, outline: 'none',
                 }}
               />
               <button onClick={addNote} style={{
-                padding: '8px 16px', background: '#63ab45', border: 'none', borderRadius: 8,
+                width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: '#63ab45', border: 'none', borderRadius: '50%',
                 color: '#fff', cursor: 'pointer', fontSize: 13,
-              }}><Plus size={16} /></button>
+              }}><Plus size={18} /></button>
             </div>
             {(selectedLead.notes || []).map((note, i) => (
               <div key={i} style={{ background: '#0f172a', borderRadius: 10, padding: 12, marginBottom: 8, border: '1px solid #1e293b' }}>
@@ -696,21 +718,25 @@ export default function AdminLeads() {
           </div>
 
           {/* Dangerous Zone */}
-          {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN') && (
+          {(user?.role === 'SUPER_ADMIN' || user?.role === 'TEAM') && (
             <div style={{ borderTop: '1px solid #334155', paddingTop: 20, marginTop: 40 }}>
               <button
-                onClick={(e) => handleDelete(e, selectedLead._id)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleDelete(e, selectedLead._id);
+                }}
                 style={{
                   width: '100%', padding: '12px', background: 'rgba(239, 68, 68, 0.1)',
-                  border: '1px solid rgba(239, 68, 68, 0.4)', borderRadius: 10,
-                  color: '#ef4444', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                  border: '1px solid rgba(239, 68, 68, 0.4)', borderRadius: 9999,
+                  color: '#ef4444', fontSize: 13, fontWeight: 700, cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                   transition: 'all 0.2s',
                 }}
-                onMouseEnter={(e) => e.target.style.background = 'rgba(239, 68, 68, 0.2)'}
-                onMouseLeave={(e) => e.target.style.background = 'rgba(239, 68, 68, 0.1)'}
+                onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)'}
+                onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)'}
               >
-                <Trash2 size={16} /> Delete Lead Permanentally
+                <Trash2 size={16} /> Delete Lead Permanently
               </button>
             </div>
           )}

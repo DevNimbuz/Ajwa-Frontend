@@ -69,14 +69,15 @@ export default function AdminDashboard() {
           <button
             onClick={() => window.location.reload()}
             style={{
-              padding: '0.75rem 1.5rem',
+              padding: '12px 28px',
               background: '#63ab45',
               color: '#fff',
               border: 'none',
-              borderRadius: 8,
+              borderRadius: 9999,
               fontSize: '0.875rem',
-              fontWeight: 600,
+              fontWeight: 700,
               cursor: 'pointer',
+              boxShadow: '0 4px 12px rgba(99, 171, 69, 0.2)'
             }}
           >
             Reload Page
@@ -91,17 +92,19 @@ export default function AdminDashboard() {
 
   return (
     <>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
-        <div style={{ width: 48, height: 48, background: 'transparent', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-          <img 
-            src="/assets/img/icon-flyajwa.png" 
-            alt="FlyAjwa Icon" 
-            style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
-          />
-        </div>
-        <div>
-          <h1 style={{ color: '#f1f5f9', fontSize: '1.5rem', fontWeight: 700, margin: 0 }}>Dashboard</h1>
-          <p style={{ color: '#94a3b8', fontSize: '0.875rem' }}>Welcome back! Here's what's happening today.</p>
+      <div className="admin-card-header" style={{ marginBottom: 32 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ width: 48, height: 48, background: 'transparent', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+            <img 
+              src="/assets/img/icon-flyajwa.png" 
+              alt="FlyAjwa Icon" 
+              style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
+            />
+          </div>
+          <div>
+            <h1 style={{ color: '#f1f5f9', fontSize: '1.5rem', fontWeight: 700, margin: 0 }}>Dashboard</h1>
+            <p style={{ color: '#94a3b8', fontSize: '0.875rem' }}>Welcome back! Here's what's happening today.</p>
+          </div>
         </div>
       </div>
 
