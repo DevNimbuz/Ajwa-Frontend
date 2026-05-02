@@ -30,14 +30,7 @@ const coreValues = [
   { icon: <Headphones size={24} />, title: '24/7 Support', desc: 'Travel doesn\'t follow a 9-to-5 schedule, and neither do we. Our team is always available when you need assistance.' },
 ];
 
-const activities = [
-  { title: 'Paragliding', img: '/assets/img/Ajwa/paragliding-02.jpg' },
-  { title: 'Surfing', img: '/assets/img/Ajwa/surfing-02.jpg' },
-  { title: 'Rafting', img: '/assets/img/Ajwa/rafting-02.jpg' },
-  { title: 'Ski Touring', img: '/assets/img/Ajwa/ski-touring-02.jpg' },
-  { title: 'Bungee Jump', img: '/assets/img/Ajwa/bungee-jump-02.jpg' },
-  { title: 'Zip Lining', img: '/assets/img/Ajwa/zip-landing-02.jpg' },
-];
+
 
 const milestones = [
   { year: '2019', title: 'Founded', desc: 'Fly Ajwa Travels & Holidays was born in Edappal, Kerala with a dream to make travel accessible.' },
@@ -278,38 +271,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Activities */}
-      <section className="section section-alt" id="activities">
-        <div className="container">
-          <AnimatedSection>
-            <div className="section-header">
-              <span className="subtitle">Adventure Awaits</span>
-              <h2 className="heading-2">Thrilling Activities</h2>
-              <p>From sky-high adventures to ocean depths, experience the thrill of a lifetime with our curated adventures.</p>
-            </div>
-          </AnimatedSection>
 
-          <div className="grid grid-3">
-            {activities.map((a, i) => (
-              <AnimatedSection key={a.title} delay={i * 0.1}>
-                <div className="activity-card activity-card-height">
-                  <Image 
-                    src={a.img} 
-                    alt={a.title} 
-                    fill 
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                    style={{ objectFit: 'cover' }} 
-                  />
-                  <div className="activity-card-overlay" />
-                  <div className="activity-card-content">
-                    <h3>{a.title}</h3>
-                  </div>
-                </div>
-              </AnimatedSection>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* CTA Banner */}
       <section className="section">
