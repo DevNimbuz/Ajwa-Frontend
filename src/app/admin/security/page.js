@@ -102,7 +102,21 @@ export default function SecurityLogs() {
           <select 
             value={filters.category}
             onChange={e => setFilters({...filters, category: e.target.value})}
-            style={{ flex: 1, minWidth: 140, padding: '10px 14px', background: '#1e293b', border: '1px solid #334155', borderRadius: 9999, color: '#f1f5f9', cursor: 'pointer', fontSize: 13 }}
+            style={{ 
+              flex: 1, 
+              minWidth: 140, 
+              padding: '10px 36px 10px 16px', 
+              background: '#1e293b', 
+              border: '1px solid #334155', 
+              borderRadius: 9999, 
+              color: '#f1f5f9', 
+              cursor: 'pointer', 
+              fontSize: 13,
+              appearance: 'none',
+              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`,
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'calc(100% - 14px) center',
+            }}
           >
             <option value="">All Categories</option>
             <option value="SUCCESS">Success</option>
@@ -113,7 +127,21 @@ export default function SecurityLogs() {
           <select 
             value={filters.action}
             onChange={e => setFilters({...filters, action: e.target.value})}
-            style={{ flex: 1, minWidth: 140, padding: '10px 14px', background: '#1e293b', border: '1px solid #334155', borderRadius: 9999, color: '#f1f5f9', cursor: 'pointer', fontSize: 13 }}
+            style={{ 
+              flex: 1, 
+              minWidth: 140, 
+              padding: '10px 36px 10px 16px', 
+              background: '#1e293b', 
+              border: '1px solid #334155', 
+              borderRadius: 9999, 
+              color: '#f1f5f9', 
+              cursor: 'pointer', 
+              fontSize: 13,
+              appearance: 'none',
+              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`,
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'calc(100% - 14px) center',
+            }}
           >
             <option value="">All Actions</option>
             <option value="LOGIN">Login</option>
