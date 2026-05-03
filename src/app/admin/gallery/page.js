@@ -125,33 +125,83 @@ export default function AdminGalleryPage() {
         <form 
           onSubmit={handleUpload} 
           style={{ 
-            display: 'flex', gap: '1rem', alignItems: 'center', 
-            background: '#1e293b', padding: '16px', borderRadius: '12px', 
-            border: '1px solid #334155', flexWrap: 'wrap', width: '100%', maxWidth: 'none'
+            display: 'flex', gap: '0.75rem', alignItems: 'stretch', 
+            background: 'rgba(30, 42, 74, 0.2)', padding: '16px', borderRadius: '16px', 
+            border: '1px solid rgba(255, 255, 255, 0.08)', flexWrap: 'wrap', width: '100%',
+            backdropFilter: 'blur(10px)'
           }}
+          className="gallery-upload-form"
         >
           {selectedIds.length > 0 && (
             <button 
               type="button"
               onClick={confirmBulkDelete}
-              style={{ background: '#ef4444', color: '#fff', padding: '8px 16px', borderRadius: '6px', border: 'none', cursor: 'pointer', fontWeight: 600, fontSize: '0.875rem', flex: '1 1 auto' }}
+              style={{ background: '#ef4444', color: '#fff', padding: '10px 18px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '0.85rem', flex: '1 1 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, transition: 'all 0.2s' }}
+              onMouseOver={e => e.currentTarget.style.background = '#dc2626'}
+              onMouseOut={e => e.currentTarget.style.background = '#ef4444'}
             >
+              <Trash2 size={16} />
               Delete Selected ({selectedIds.length})
             </button>
           )}
 
-          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flex: '1 1 200px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'stretch', flex: '2 1 400px', flexWrap: 'wrap' }} className="gallery-inputs-group">
             <select 
               value={targetPackage}
               onChange={e => setTargetPackage(e.target.value)}
-              style={{ padding: '10px 12px', background: '#334155', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '0.875rem', cursor: 'pointer', flex: '1 1 120px' }}
+              style={{ 
+                padding: '12px 36px 12px 16px', 
+                background: '#1e293b', 
+                color: '#fff', 
+                border: '1px solid #334155', 
+                borderRadius: '10px', 
+                fontSize: '0.875rem', 
+                cursor: 'pointer', 
+                flex: '1 1 180px',
+                appearance: 'none',
+                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`,
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'calc(100% - 14px) center',
+                transition: 'all 0.2s'
+              }}
+              onFocus={e => e.target.style.borderColor = '#63ab45'}
+              onBlur={e => e.target.style.borderColor = '#334155'}
             >
               <option value="">General Gallery</option>
               {Object.keys(packagesData).map(slug => (
                 <option key={slug} value={slug}>{packagesData[slug].name}</option>
               ))}
             </select>
-
+            <style jsx>{`
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: .5; }
+        }
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        .spin {
+          animation: spin 1s linear infinite;
+        }
+        
+        @media (max-width: 768px) {
+          .gallery-upload-form {
+            flex-direction: column;
+            align-items: stretch !important;
+          }
+          .gallery-inputs-group {
+            flex-direction: column;
+            flex: 1 1 auto !important;
+          }
+          .gallery-upload-form select,
+          .gallery-upload-form label,
+          .gallery-upload-form button {
+            width: 100% !important;
+            flex: none !important;
+          }
+        }
+      `}</style>
             <input 
               type="file" 
               accept="image/*" 
@@ -160,18 +210,29 @@ export default function AdminGalleryPage() {
               onChange={e => setFiles(e.target.files)} 
               style={{ display: 'none' }}
             />
-            <label htmlFor="gallery-upload" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px', background: '#334155', color: '#cbd5e1', borderRadius: '6px', cursor: 'pointer', fontSize: '0.875rem', transition: 'all 0.2s', flex: '1 1 auto', justifyContent: 'center' }}>
-              <ImageIcon size={18} />
+            <label htmlFor="gallery-upload" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 20px', background: '#334155', color: '#f1f5f9', borderRadius: '10px', border: '1px solid #475569', cursor: 'pointer', fontSize: '0.875rem', fontWeight: 600, transition: 'all 0.2s', flex: '1 1 180px', justifyContent: 'center' }}>
+              <ImageIcon size={18} color="#63ab45" />
               {files.length > 0 ? `${files.length} selected` : 'Choose Photos'}
             </label>
           </div>
           <button 
             type="submit" 
             disabled={uploading || files.length === 0}
-            style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#63ab45', color: '#fff', padding: '10px 20px', borderRadius: '6px', border: 'none', cursor: 'pointer', fontWeight: 600, opacity: uploading || files.length === 0 ? 0.6 : 1, flex: '1 1 auto', justifyContent: 'center' }}
+            style={{ 
+              display: 'flex', alignItems: 'center', gap: 10, 
+              background: uploading || files.length === 0 ? '#334155' : '#63ab45', 
+              color: '#fff', padding: '12px 28px', borderRadius: '10px', 
+              border: 'none', cursor: uploading || files.length === 0 ? 'not-allowed' : 'pointer', 
+              fontWeight: 700, fontSize: '0.9rem',
+              transition: 'all 0.2s',
+              boxShadow: uploading || files.length === 0 ? 'none' : '0 4px 12px rgba(99, 171, 69, 0.2)',
+              flex: '1 1 140px', justifyContent: 'center' 
+            }}
+            onMouseOver={e => !uploading && files.length > 0 && (e.currentTarget.style.background = '#54963a')}
+            onMouseOut={e => !uploading && files.length > 0 && (e.currentTarget.style.background = '#63ab45')}
           >
-            {uploading ? <UploadCloud size={16} className="spin" /> : <UploadCloud size={16} />}
-            {uploading ? 'Uploading...' : 'Upload'}
+            {uploading ? <UploadCloud size={20} className="spin" /> : <UploadCloud size={20} />}
+            {uploading ? 'Uploading...' : 'Upload Now'}
           </button>
         </form>
       </div>
