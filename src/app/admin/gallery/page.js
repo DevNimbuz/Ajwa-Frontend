@@ -172,36 +172,7 @@ export default function AdminGalleryPage() {
                 <option key={slug} value={slug}>{packagesData[slug].name}</option>
               ))}
             </select>
-            <style jsx>{`
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: .5; }
-        }
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        .spin {
-          animation: spin 1s linear infinite;
-        }
-        
-        @media (max-width: 768px) {
-          .gallery-upload-form {
-            flex-direction: column;
-            align-items: stretch !important;
-          }
-          .gallery-inputs-group {
-            flex-direction: column;
-            flex: 1 1 auto !important;
-          }
-          .gallery-upload-form select,
-          .gallery-upload-form label,
-          .gallery-upload-form button {
-            width: 100% !important;
-            flex: none !important;
-          }
-        }
-      `}</style>
+            </select>
             <input 
               type="file" 
               accept="image/*" 
@@ -220,12 +191,13 @@ export default function AdminGalleryPage() {
             disabled={uploading || files.length === 0}
             style={{ 
               display: 'flex', alignItems: 'center', gap: 10, 
-              background: uploading || files.length === 0 ? '#334155' : '#63ab45', 
+              background: '#63ab45', 
               color: '#fff', padding: '12px 28px', borderRadius: '10px', 
               border: 'none', cursor: uploading || files.length === 0 ? 'not-allowed' : 'pointer', 
               fontWeight: 700, fontSize: '0.9rem',
               transition: 'all 0.2s',
-              boxShadow: uploading || files.length === 0 ? 'none' : '0 4px 12px rgba(99, 171, 69, 0.2)',
+              opacity: uploading || files.length === 0 ? 0.5 : 1,
+              boxShadow: uploading || files.length === 0 ? 'none' : '0 4px 12px rgba(99, 171, 69, 0.3)',
               flex: '1 1 140px', justifyContent: 'center' 
             }}
             onMouseOver={e => !uploading && files.length > 0 && (e.currentTarget.style.background = '#54963a')}
