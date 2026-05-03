@@ -225,12 +225,12 @@ export default function DashboardPage() {
 
       <Sidebar user={user} onLogout={handleLogout} mobileOpen={mobileMenuOpen} setMobileOpen={setMobileMenuOpen} />
 
-      <main className="dashboard-main animate-fade-in" style={{ position: 'relative', zIndex: 10, padding: '24px 16px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 32, flexWrap: 'wrap', gap: 20 }}>
+      <main className="dashboard-main animate-fade-in" style={{ position: 'relative', zIndex: 10, padding: '100px 24px 40px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 32, flexWrap: 'wrap', gap: 24 }}>
           <div style={{ flex: '1 1 300px' }}>
-            <h1 className="responsive-h1" style={{ marginBottom: 8, color: '#fff', display: 'flex', alignItems: 'center', gap: 12 }}>
+            <h1 className="responsive-h1" style={{ marginBottom: 8, color: '#ffffff', textShadow: '0 2px 10px rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', gap: 12 }}>
               {currentTab === 'overview' ? `Marhaba, ${user.name?.split(' ')[0]}! 👋` : currentTab.charAt(0).toUpperCase() + currentTab.slice(1)}
-              {user.role === 'CUSTOMER' && <ShieldCheck size={24} style={{ color: '#63ab45', filter: 'drop-shadow(0 0 8px rgba(99,171,69,0.4))' }} title="Verified Traveler" />}
+              {user.role === 'CUSTOMER' && <ShieldCheck size={28} style={{ color: '#63ab45', filter: 'drop-shadow(0 0 12px rgba(99,171,69,0.5))' }} title="Verified Traveler" />}
             </h1>
             <p style={{ color: '#94a3b8', fontSize: 15, fontWeight: 500 }}>
               {currentTab === 'overview' ? (
@@ -296,20 +296,32 @@ export default function DashboardPage() {
         .orb-2 { width: 450px; height: 450px; background: #0ea5e9; bottom: -100px; left: -150px; animation: float 25s infinite alternate-reverse; }
         .orb-3 { width: 400px; height: 400px; background: #63ab45; top: 30%; left: 10%; opacity: 0.1; animation: float 30s infinite alternate; }
         
-        .responsive-h1 { font-size: 2.5rem; }
+        .responsive-h1 { font-size: 2.5rem; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
         .stats-grid { 
           display: grid; 
           grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
           gap: 20px; 
         }
 
+        @media (max-width: 1024px) {
+           .dashboard-main { padding-top: 80px !important; }
+           .grid-2-responsive { grid-template-columns: 1fr; gap: 32px; } 
+        }
+
         @media (max-width: 768px) {
+          .dashboard-main { padding-top: 70px !important; padding-left: 12px !important; padding-right: 12px !important; }
           .responsive-h1 { font-size: 1.75rem; }
           .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
         }
 
         @media (max-width: 480px) {
+          .responsive-h1 { font-size: 1.5rem; }
           .stats-grid { grid-template-columns: 1fr; }
+          .dashboard-main { padding-top: 60px !important; }
+        }
+
+        @media (min-width: 1025px) {
+          .grid-2-responsive { grid-template-columns: 1.6fr 1fr; gap: 48px; }
         }
 
         @keyframes float {
@@ -319,13 +331,6 @@ export default function DashboardPage() {
 
         .list-item-hover:hover { background: rgba(255,255,255,0.05) !important; transform: scale(1.01); }
         .action-card-hover:hover { border-color: rgba(99, 171, 69, 0.4) !important; background: rgba(99, 171, 69, 0.05) !important; transform: translateY(-4px); }
-        
-        @media (max-width: 1024px) { 
-          .grid-2-responsive { grid-template-columns: 1fr; gap: 32px; } 
-        }
-        @media (min-width: 1025px) {
-          .grid-2-responsive { grid-template-columns: 1.6fr 1fr; gap: 48px; }
-        }
       `}</style>
       
       <style jsx global>{`
