@@ -127,52 +127,62 @@ export default function ProfilePage() {
   if (!user) return null;
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f8fafc' }}>
+    <div style={{ minHeight: '100vh', background: '#050a0a', position: 'relative', overflow: 'hidden' }}>
       <Header />
       
-      <main style={{ padding: '120px 20px 80px', maxWidth: 1000, margin: '0 auto' }}>
+      {/* Floating Orbs */}
+      <div className="orb orb-1" />
+      <div className="orb orb-2" />
+
+      <main style={{ padding: '140px 20px 80px', maxWidth: 1000, margin: '0 auto', position: 'relative', zIndex: 10 }}>
         {/* Header Section */}
-        <div style={{ marginBottom: 40 }}>
-          <Link href="/dashboard" style={{ color: '#63ab45', fontSize: 14, fontWeight: 600, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6, marginBottom: 16 }}>
-            <ChevronRight size={16} style={{ transform: 'rotate(180deg)' }} /> Back to Hub
+        <div style={{ marginBottom: 48 }} className="animate-fade-in">
+          <Link href="/dashboard" style={{ color: '#63ab45', fontSize: 14, fontWeight: 700, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
+            <ChevronRight size={18} style={{ transform: 'rotate(180deg)' }} /> Back to Traveler Hub
           </Link>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
-            <div style={{ width: 80, height: 80, borderRadius: 24, background: 'var(--gradient-gold)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 32, fontWeight: 700 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 32, flexWrap: 'wrap' }}>
+            <div style={{ 
+              width: 100, height: 100, borderRadius: 32, 
+              background: 'linear-gradient(135deg, #63ab45, #4d8a35)', 
+              display: 'flex', alignItems: 'center', justifyContent: 'center', 
+              color: '#fff', fontSize: 40, fontWeight: 800,
+              boxShadow: '0 15px 30px rgba(99, 171, 69, 0.3)'
+            }}>
               {user.name?.charAt(0)}
             </div>
             <div>
-              <h1 className="heading-2" style={{ margin: 0 }}>My Traveler Profile</h1>
-              <p style={{ color: '#64748b', fontSize: 16, margin: '4px 0 0' }}>Manage your personal details and travel preferences</p>
+              <h1 className="heading-1" style={{ margin: 0, color: '#fff', fontSize: '2.5rem' }}>My Traveler Profile</h1>
+              <p style={{ color: '#94a3b8', fontSize: 18, margin: '8px 0 0', fontWeight: 500 }}>Manage your personal details and travel preferences</p>
             </div>
           </div>
         </div>
 
         {message.text && (
-          <div className="glass-card" style={{
+          <div className="glass-card animate-slide-up" style={{
             display: 'flex', alignItems: 'center', gap: 12,
-            padding: '16px 20px', marginBottom: 32,
-            background: message.type === 'success' ? '#dcfce7' : '#fee2e2',
-            borderColor: message.type === 'success' ? '#16a34a' : '#ef4444',
-            color: message.type === 'success' ? '#16a34a' : '#dc2626',
-            fontSize: 15, fontWeight: 600,
+            padding: '20px 24px', marginBottom: 40,
+            background: message.type === 'success' ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+            borderColor: message.type === 'success' ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)',
+            color: message.type === 'success' ? '#4ade80' : '#f87171',
+            fontSize: 15, fontWeight: 700, borderRadius: 16
           }}>
-            {message.type === 'success' ? <CheckCircle size={20} /> : <AlertCircle size={20} />}
+            {message.type === 'success' ? <CheckCircle size={22} /> : <AlertCircle size={22} />}
             <span>{message.text}</span>
           </div>
         )}
 
-        <form onSubmit={handleSave} style={{ display: 'grid', gap: 32 }}>
+        <form onSubmit={handleSave} style={{ display: 'grid', gap: 32 }} className="animate-slide-up">
           
           {/* Section 1: Personal Identity */}
-          <section className="glass-card" style={{ padding: 32 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
-              <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(99, 171, 69, 0.1)', color: '#63ab45', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <User size={20} />
+          <section className="glass-card" style={{ padding: 40, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 24 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 32 }}>
+              <div style={{ width: 44, height: 44, borderRadius: 14, background: 'rgba(99, 171, 69, 0.1)', color: '#63ab45', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <User size={22} />
               </div>
-              <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>Personal Identity</h2>
+              <h2 style={{ fontSize: 20, fontWeight: 800, margin: 0, color: '#fff' }}>Personal Identity</h2>
             </div>
             
-            <div className="grid grid-2" style={{ gap: 24 }}>
+            <div className="grid grid-2" style={{ gap: 32 }}>
               <div>
                 <label style={labelStyle}>Full Name</label>
                 <input
@@ -187,13 +197,13 @@ export default function ProfilePage() {
               <div>
                 <label style={labelStyle}>Phone Number</label>
                 <div style={{ position: 'relative' }}>
-                  <Phone size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                  <Phone size={18} style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', color: '#64748b' }} />
                   <input
                     type="tel"
                     value={form.phone}
                     onChange={(e) => setForm({ ...form, phone: e.target.value })}
                     required
-                    style={{ ...inputStyle, paddingLeft: 44 }}
+                    style={{ ...inputStyle, paddingLeft: 48 }}
                     placeholder="+91 00000 00000"
                   />
                 </div>
@@ -201,35 +211,35 @@ export default function ProfilePage() {
               <div>
                 <label style={labelStyle}>Email Address (Login)</label>
                 <div style={{ position: 'relative' }}>
-                  <Mail size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                  <Mail size={18} style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', color: '#475569' }} />
                   <input
                     type="email"
                     value={form.email}
                     disabled
-                    style={{ ...inputStyle, paddingLeft: 44, background: '#f1f5f9', cursor: 'not-allowed' }}
+                    style={{ ...inputStyle, paddingLeft: 48, background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.02)', cursor: 'not-allowed', color: '#64748b' }}
                   />
                 </div>
-                <p style={{ fontSize: 11, color: '#94a3b8', marginTop: 6, display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <ShieldCheck size={12} /> Contact support to change your email
+                <p style={{ fontSize: 12, color: '#475569', marginTop: 10, display: 'flex', alignItems: 'center', gap: 6, fontWeight: 600 }}>
+                  <ShieldCheck size={14} /> Contact support to change your email
                 </p>
               </div>
             </div>
           </section>
 
           {/* Section 2: Traveler Details */}
-          <section className="glass-card" style={{ padding: 32 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
-              <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <MapPin size={20} />
+          <section className="glass-card" style={{ padding: 40, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 24 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 32 }}>
+              <div style={{ width: 44, height: 44, borderRadius: 14, background: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <MapPin size={22} />
               </div>
-              <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>Traveler Details</h2>
+              <h2 style={{ fontSize: 20, fontWeight: 800, margin: 0, color: '#fff' }}>Traveler Details</h2>
             </div>
             
-            <div className="grid" style={{ gridTemplateColumns: '1fr 2fr', gap: 24 }}>
+            <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 32 }}>
               <div>
                 <label style={labelStyle}>Date of Birth</label>
                 <div style={{ position: 'relative' }}>
-                  <Calendar size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', zIndex: 1, color: '#94a3b8', pointerEvents: 'none' }} />
+                  <Calendar size={18} style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', zIndex: 1, color: '#64748b', pointerEvents: 'none' }} />
                   <DatePicker
                     selected={form.dob ? new Date(form.dob) : null}
                     onChange={(date) => setForm({ ...form, dob: date ? date.toISOString().split('T')[0] : '' })}
@@ -240,7 +250,7 @@ export default function ProfilePage() {
                     placeholderText="Select your birth date"
                     className="premium-datepicker"
                     maxDate={new Date()}
-                    customInput={<input style={{ ...inputStyle, paddingLeft: 44 }} />}
+                    customInput={<input style={{ ...inputStyle, paddingLeft: 48 }} />}
                   />
                 </div>
               </div>
@@ -251,22 +261,22 @@ export default function ProfilePage() {
                   onChange={(e) => setForm({ ...form, address: e.target.value })}
                   rows={2}
                   placeholder="Your address for immigration/documents"
-                  style={inputStyle}
+                  style={{ ...inputStyle, height: 'auto', resize: 'none' }}
                 />
               </div>
             </div>
           </section>
 
           {/* Section 3: Passport Details */}
-          <section className="glass-card" style={{ padding: 32 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
-              <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(245, 158, 11, 0.1)', color: '#f59e0b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <ShieldCheck size={20} />
+          <section className="glass-card" style={{ padding: 40, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 24 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 32 }}>
+              <div style={{ width: 44, height: 44, borderRadius: 14, background: 'rgba(245, 158, 11, 0.1)', color: '#f59e0b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <ShieldCheck size={22} />
               </div>
-              <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>Passport Details</h2>
+              <h2 style={{ fontSize: 20, fontWeight: 800, margin: 0, color: '#fff' }}>Passport Details</h2>
             </div>
             
-            <div className="grid grid-2" style={{ gap: 24 }}>
+            <div className="grid grid-2" style={{ gap: 32 }}>
               <div>
                 <label style={labelStyle}>Passport Number</label>
                 <input
@@ -280,7 +290,7 @@ export default function ProfilePage() {
               <div>
                 <label style={labelStyle}>Passport Expiry</label>
                 <div style={{ position: 'relative' }}>
-                  <Calendar size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', zIndex: 1, color: '#94a3b8', pointerEvents: 'none' }} />
+                  <Calendar size={18} style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', zIndex: 1, color: '#64748b', pointerEvents: 'none' }} />
                   <DatePicker
                     selected={form.passportExpiry ? new Date(form.passportExpiry) : null}
                     onChange={(date) => setForm({ ...form, passportExpiry: date ? date.toISOString().split('T')[0] : '' })}
@@ -291,29 +301,29 @@ export default function ProfilePage() {
                     placeholderText="Expiry date"
                     className="premium-datepicker"
                     minDate={new Date()}
-                    customInput={<input style={{ ...inputStyle, paddingLeft: 44 }} />}
+                    customInput={<input style={{ ...inputStyle, paddingLeft: 48 }} />}
                   />
                 </div>
               </div>
             </div>
-            <div style={{ marginTop: 24, padding: '16px 20px', background: '#f8fafc', borderRadius: 12, border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: 12 }}>
-              <Info size={20} className="text-gold" />
-              <p style={{ margin: 0, fontSize: 13, color: '#64748b', lineHeight: 1.5 }}>
-                Your verified travel tickets, vouchers, and visas have been moved to the <Link href="/dashboard?tab=documents" style={{ color: '#63ab45', fontWeight: 700, textDecoration: 'none' }}>Documents</Link> tab in your Dashboard for easier access.
+            <div style={{ marginTop: 32, padding: '20px 24px', background: 'rgba(245, 158, 11, 0.05)', borderRadius: 16, border: '1px solid rgba(245, 158, 11, 0.1)', display: 'flex', alignItems: 'center', gap: 14 }}>
+              <Info size={22} style={{ color: '#f59e0b', flexShrink: 0 }} />
+              <p style={{ margin: 0, fontSize: 14, color: '#94a3b8', lineHeight: 1.6, fontWeight: 500 }}>
+                Your verified travel tickets, vouchers, and visas are available in the <Link href="/dashboard?tab=documents" style={{ color: '#63ab45', fontWeight: 800, textDecoration: 'none' }}>Documents Hub</Link> for easier access.
               </p>
             </div>
           </section>
 
           {/* Section 4: Flight Preferences */}
-          <section className="glass-card" style={{ padding: 32 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
-              <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Plane size={20} />
+          <section className="glass-card" style={{ padding: 40, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 24 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 32 }}>
+              <div style={{ width: 44, height: 44, borderRadius: 14, background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Plane size={22} />
               </div>
-              <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>Flight Preferences</h2>
+              <h2 style={{ fontSize: 20, fontWeight: 800, margin: 0, color: '#fff' }}>Flight Preferences</h2>
             </div>
             
-            <div className="grid grid-2" style={{ gap: 24 }}>
+            <div className="grid grid-2" style={{ gap: 32 }}>
               <div>
                 <label style={labelStyle}>Meal Preference</label>
                 <select
@@ -342,14 +352,18 @@ export default function ProfilePage() {
           </section>
 
           {/* Submit Button */}
-          <div style={{ position: 'sticky', bottom: 20, zIndex: 10 }}>
+          <div style={{ position: 'sticky', bottom: 32, zIndex: 100 }}>
             <button
               type="submit"
               disabled={saving}
               className="btn btn-primary"
-              style={{ width: '100%', padding: '18px', fontSize: 16, borderRadius: 16 }}
+              style={{ 
+                width: '100%', padding: '20px', fontSize: 16, borderRadius: 20, fontWeight: 800, 
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
+                boxShadow: '0 15px 40px rgba(99, 171, 69, 0.4)'
+              }}
             >
-              {saving ? <><Loader2 size={20} style={{ animation: 'spin 1s linear infinite' }} /> Processing...</> : <><Save size={20} /> Update My Profile</>}
+              {saving ? <><Loader2 size={22} style={{ animation: 'spin 1s linear infinite' }} /> Updating Profile...</> : <><Save size={22} /> SAVE PROFILE CHANGES</>}
             </button>
           </div>
 
@@ -357,30 +371,51 @@ export default function ProfilePage() {
       </main>
 
       <Footer />
+
+      <style jsx>{`
+        .orb { position: fixed; border-radius: 50%; filter: blur(120px); z-index: 1; opacity: 0.2; }
+        .orb-1 { width: 500px; height: 500px; background: #63ab45; top: -150px; right: -150px; animation: float 20s infinite alternate; }
+        .orb-2 { width: 450px; height: 450px; background: #0ea5e9; bottom: -100px; left: -150px; animation: float 25s infinite alternate-reverse; }
+        @keyframes float {
+          0% { transform: translate(0, 0) scale(1); }
+          100% { transform: translate(50px, 60px) scale(1.1); }
+        }
+      `}</style>
+
+      <style jsx global>{`
+        .premium-datepicker { width: 100%; }
+        select {
+          appearance: none;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+          background-repeat: no-repeat;
+          background-position: right 16px center;
+          background-size: 18px;
+        }
+      `}</style>
     </div>
   );
 }
 
 const labelStyle = {
   display: 'block',
-  fontSize: 13,
-  fontWeight: 700,
+  fontSize: 12,
+  fontWeight: 800,
   color: '#475569',
-  marginBottom: 8,
+  marginBottom: 10,
   textTransform: 'uppercase',
-  letterSpacing: '0.02em',
+  letterSpacing: '0.08em',
 };
 
 const inputStyle = {
   width: '100%',
-  padding: '14px 16px',
-  background: '#ffffff',
-  border: '1px solid #e2e8f0',
-  borderRadius: 12,
-  color: '#1e293b',
+  padding: '16px 18px',
+  background: 'rgba(255,255,255,0.02)',
+  border: '1px solid rgba(255,255,255,0.05)',
+  borderRadius: 16,
+  color: '#fff',
   fontSize: 15,
-  fontWeight: 500,
+  fontWeight: 600,
   outline: 'none',
-  transition: 'all 0.2s',
+  transition: 'all 0.3s',
   boxSizing: 'border-box',
 };

@@ -1,11 +1,4 @@
 'use client';
-/**
- * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- * Flyajwa — Admin Lead CRM
- * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- * Filterable lead table with status updates, notes,
- * assignment, search, and CSV export.
- */
 
 import { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
@@ -13,81 +6,54 @@ import { leadsAPI, usersAPI, authAPI } from '@/lib/api';
 import {
   Search, Filter, Download, ChevronLeft, ChevronRight, ChevronDown,
   MessageSquare, Phone, Mail, MapPin, Clock, X, Plus, Trash2, Calendar as CalendarIcon, Star,
-  Receipt, Wallet, CreditCard, CheckSquare, XSquare, Loader2
+  Receipt, Wallet, CreditCard, CheckSquare, XSquare, Loader2, ArrowRight, Eye, Users, Hash
 } from 'lucide-react';
 
 const statusColors = {
-  NEW: '#3b82f6', 
-  CONTACTED: '#f59e0b', 
-  INTERESTED: '#8b5cf6',
-  QUOTED: '#06b6d4', 
-  UNDER_REVIEW: '#6366f1',
-  PROCESSING: '#ec4899',
-  PAYMENT_ACCEPTED: '#10b981',
-  BOOKED: '#22c55e', 
-  LOST: '#ef4444',
+  NEW: { main: '#3b82f6', bg: 'rgba(59, 130, 246, 0.1)', border: 'rgba(59, 130, 246, 0.2)' },
+  CONTACTED: { main: '#f59e0b', bg: 'rgba(245, 158, 11, 0.1)', border: 'rgba(245, 158, 11, 0.2)' },
+  INTERESTED: { main: '#8b5cf6', bg: 'rgba(139, 92, 246, 0.1)', border: 'rgba(139, 92, 246, 0.2)' },
+  QUOTED: { main: '#06b6d4', bg: 'rgba(6, 182, 212, 0.1)', border: 'rgba(6, 182, 212, 0.2)' },
+  UNDER_REVIEW: { main: '#6366f1', bg: 'rgba(99, 102, 241, 0.1)', border: 'rgba(99, 102, 241, 0.2)' },
+  PROCESSING: { main: '#ec4899', bg: 'rgba(236, 72, 153, 0.1)', border: 'rgba(236, 72, 153, 0.2)' },
+  PAYMENT_ACCEPTED: { main: '#10b981', bg: 'rgba(16, 185, 129, 0.1)', border: 'rgba(16, 185, 129, 0.2)' },
+  BOOKED: { main: '#22c55e', bg: 'rgba(34, 197, 94, 0.15)', border: 'rgba(34, 197, 94, 0.3)' },
+  LOST: { main: '#ef4444', bg: 'rgba(239, 68, 68, 0.1)', border: 'rgba(239, 68, 68, 0.2)' },
 };
-const statuses = ['NEW', 'CONTACTED', 'INTERESTED', 'QUOTED', 'UNDER_REVIEW', 'PROCESSING', 'PAYMENT_ACCEPTED', 'BOOKED', 'LOST'];
-const priorities = ['LOW', 'NORMAL', 'HIGH', 'URGENT'];
-const sources = ['website', 'whatsapp', 'phone', 'social', 'referral', 'other'];
+
+const priorityColors = {
+  LOW: { main: '#94a3b8', bg: 'rgba(148, 163, 184, 0.1)' },
+  NORMAL: { main: '#3b82f6', bg: 'rgba(59, 130, 246, 0.1)' },
+  HIGH: { main: '#f59e0b', bg: 'rgba(245, 158, 11, 0.1)' },
+  URGENT: { main: '#ef4444', bg: 'rgba(239, 68, 68, 0.1)' },
+};
+
+const statuses = Object.keys(statusColors);
+const priorities = Object.keys(priorityColors);
 
 export default function AdminLeads() {
   const [leads, setLeads] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, pages: 1, total: 0 });
   const [filters, setFilters] = useState({ 
-    status: '', 
-    source: '', 
-    search: '', 
-    priority: '',
-    startDate: '',
-    endDate: '',
-    page: 1 
+    status: '', source: '', search: '', priority: '', startDate: '', endDate: '', page: 1 
   });
   const [selectedLead, setSelectedLead] = useState(null);
-  const [deletingId, setDeletingId] = useState(null);
-  const [teamMembers, setTeamMembers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [noteText, setNoteText] = useState('');
   const user = authAPI.getUser();
 
-  // Fetch leads
   const fetchLeads = async () => {
     setLoading(true);
     try {
-      const params = {};
-      if (filters.status) params.status = filters.status;
-      if (filters.source) params.source = filters.source;
-      if (filters.search) params.search = filters.search;
-      if (filters.priority) params.priority = filters.priority;
-      if (filters.startDate) params.startDate = filters.startDate;
-      if (filters.endDate) params.endDate = filters.endDate;
-      params.page = filters.page;
-      params.limit = 15;
-
+      const params = { ...filters, limit: 15 };
       const data = await leadsAPI.list(params);
       if (data.success) {
         setLeads(data.data);
         setPagination(data.pagination);
       }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
+    } catch (err) { console.error(err); } finally { setLoading(false); }
   };
 
   useEffect(() => { fetchLeads(); }, [filters.status, filters.source, filters.priority, filters.startDate, filters.endDate, filters.page]);
-  useEffect(() => {
-    if (user?.role === 'SUPER_ADMIN') {
-      usersAPI.list().then(d => d.success && setTeamMembers(d.data)).catch(() => {});
-    }
-  }, []);
-
-  // Search with debounce
-  useEffect(() => {
-    const timer = setTimeout(() => { setFilters(f => ({ ...f, page: 1 })); fetchLeads(); }, 500);
-    return () => clearTimeout(timer);
-  }, [filters.search]);
 
   const updateLead = async (id, updates) => {
     try {
@@ -97,36 +63,6 @@ export default function AdminLeads() {
         if (selectedLead?._id === id) setSelectedLead(data.data);
       }
     } catch (err) { alert(err.message); }
-  };
-
-  const addNote = async () => {
-    if (!noteText.trim() || !selectedLead) return;
-    await updateLead(selectedLead._id, { note: noteText.trim() });
-    setNoteText('');
-  };
-
-  const priorityColors = {
-    LOW: '#94a3b8',
-    NORMAL: '#3b82f6',
-    HIGH: '#f59e0b',
-    URGENT: '#ef4444',
-  };
-
-  const handleDelete = async (id) => {
-    try {
-      const data = await leadsAPI.delete(id);
-      if (data.success) {
-        setLeads(prev => prev.filter(l => l._id !== id));
-        if (selectedLead?._id === id) setSelectedLead(null);
-        setDeletingId(null);
-      } else {
-        console.error('[AdminLeads] Delete failed:', data.message);
-        alert(data.message || 'Delete failed');
-      }
-    } catch (err) {
-      console.error('[AdminLeads] Delete Error:', err);
-      alert(err.message || 'Delete failed');
-    }
   };
 
   const exportCSV = async () => {
@@ -141,720 +77,376 @@ export default function AdminLeads() {
     } catch (err) { alert('Export failed'); }
   };
 
-  // ── Invoice & Point Functions ──
-  const [invoiceItems, setInvoiceItems] = useState([{ description: '', amount: '' }]);
-  const [discount, setDiscount] = useState(0);
-  const [pointsToCredit, setPointsToCredit] = useState('');
-  const [creditReason, setCreditReason] = useState('');
-  const [showInvoiceModal, setShowInvoiceModal] = useState(false);
-
-  const handleSelectLead = (lead) => {
-    setSelectedLead(lead);
-    if (lead.invoice && lead.invoice.items?.length > 0) {
-      setInvoiceItems(lead.invoice.items);
-      setDiscount(lead.invoice.discount || 0);
-    } else {
-      setInvoiceItems([{ description: 'Package Booking', amount: lead.quotedPrice || '' }]);
-      setDiscount(0);
-    }
-    setPointsToCredit('');
-    setCreditReason('');
-  };
-
-  const addInvoiceItem = () => setInvoiceItems([...invoiceItems, { description: '', amount: '' }]);
-  const updateInvoiceItem = (i, field, val) => {
-    const updated = [...invoiceItems];
-    updated[i][field] = val;
-    setInvoiceItems(updated);
-  };
-
-  const generateInvoice = async () => {
-    try {
-      const { data } = await leadsAPI.submitInvoice(selectedLead._id, { items: invoiceItems, discount });
-      setSelectedLead(data.data);
-      alert('Invoice sent to customer dashboard!');
-      setShowInvoiceModal(false);
-    } catch (err) { alert(err.message); }
-  };
-
-  const creditPoints = async () => {
-    if (!pointsToCredit) return;
-    try {
-      await leadsAPI.creditPoints(selectedLead._id, { points: pointsToCredit, reason: creditReason });
-      alert(`Successfully credited ${pointsToCredit} points!`);
-      setPointsToCredit(''); setCreditReason('');
-      fetchLeads(); // Refresh to show new notes
-    } catch (err) { alert(err.message); }
-  };
-
-  const verifyPayment = async (verified, notes = '') => {
-    try {
-      const { data } = await leadsAPI.verifyPayment(selectedLead._id, { verified, notes });
-      setSelectedLead(data.data);
-      fetchLeads();
-      alert(verified ? 'Payment confirmed!' : 'Payment rejected.');
-    } catch (err) { alert(err.message); }
-  };
-
   return (
-    <div>
-      <div className="admin-card-header">
-        <h1 style={{ color: '#f1f5f9', fontSize: 24, fontWeight: 700, margin: 0 }}>💬 Leads</h1>
-        <button onClick={exportCSV} style={{
-          display: 'flex', alignItems: 'center', gap: 6, padding: '10px 20px', background: '#1e293b',
-          border: '1px solid #334155', borderRadius: 9999, color: '#94a3b8', cursor: 'pointer', fontSize: 13,
-          fontWeight: 600, transition: 'all 0.2s'
-        }}>
-          <Download size={16} /> Export CSV
+    <div className="admin-page-container animate-fade-in">
+      <div className="glass-header-nav">
+        <div className="title-group">
+          <h1 className="hd-title">Lead Management <span className="title-accent">Hub</span></h1>
+          <p className="hd-subtitle">Track, convert, and manage traveler inquiries with high precision.</p>
+        </div>
+        <button onClick={exportCSV} className="vibrant-action-btn">
+          <Download size={18} />
+          <span>Export Analytics</span>
         </button>
       </div>
 
-      {/* ── Filters Bar ── */}
-      <div style={{ display: 'flex', gap: 12, marginBottom: 24, flexWrap: 'wrap', alignItems: 'center' }}>
-        <div style={{ position: 'relative', flex: '1 1 300px', minWidth: 200 }}>
-          <Search size={16} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#64748b' }} />
+      <div className="hd-filters-bar">
+        <div className="search-box-hd">
+          <Search size={18} className="search-icon-hd" />
           <input
-            placeholder="Search name, email, phone..."
+            placeholder="Search by name, phone or destination..."
             value={filters.search}
-            onChange={(e) => setFilters(f => ({ ...f, search: e.target.value }))}
-            style={{
-              width: '100%', padding: '10px 14px 10px 40px', background: '#1e293b', border: '1px solid #334155',
-              borderRadius: 9999, color: '#e2e8f0', fontSize: 14, outline: 'none', boxSizing: 'border-box',
-            }}
+            onChange={(e) => setFilters(f => ({ ...f, search: e.target.value, page: 1 }))}
           />
         </div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          {[
-            { label: 'Status', value: filters.status, options: statuses, key: 'status' },
-            { label: 'Source', value: filters.source, options: sources, key: 'source', format: s => s.charAt(0).toUpperCase() + s.slice(1) },
-            { label: 'Priority', value: filters.priority, options: priorities, key: 'priority' }
-          ].map(filter => (
-            <div key={filter.key} style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-              <select
-                value={filter.value}
-                onChange={(e) => setFilters(f => ({ ...f, [filter.key]: e.target.value, page: 1 }))}
-                style={{
-                  padding: '10px 28px 10px 14px', 
-                  background: '#1e293b', 
-                  border: '1px solid #334155', 
-                  borderRadius: 9999, 
-                  color: '#e2e8f0', 
-                  fontSize: 13, 
-                  cursor: 'pointer',
-                  appearance: 'none',
-                  width: 'auto',
-                  minWidth: 'unset'
-                }}
-              >
-                <option value="">{filter.label}</option>
-                {filter.options.map(opt => (
-                  <option key={opt} value={opt}>{filter.format ? filter.format(opt) : opt}</option>
-                ))}
-              </select>
-              <ChevronDown 
-                size={14} 
-                style={{ 
-                  position: 'absolute', 
-                  right: 10, 
-                  pointerEvents: 'none', 
-                  color: '#64748b' 
-                }} 
-              />
-            </div>
-          ))}
+        
+        <div className="quick-selectors">
+          <div className="custom-select-hd status">
+            <select value={filters.status} onChange={(e) => setFilters(f => ({ ...f, status: e.target.value, page: 1 }))}>
+              <option value="">Status: All</option>
+              {statuses.map(s => <option key={s} value={s}>{s.replace('_', ' ')}</option>)}
+            </select>
+            <ChevronDown size={14} />
+          </div>
+          <div className="custom-select-hd priority">
+            <select value={filters.priority} onChange={(e) => setFilters(f => ({ ...f, priority: e.target.value, page: 1 }))}>
+              <option value="">Priority: All</option>
+              {priorities.map(p => <option key={p} value={p}>{p}</option>)}
+            </select>
+            <ChevronDown size={14} />
+          </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#1e293b', border: '1px solid #334155', borderRadius: 9999, padding: '0 16px', height: 42 }}>
-          <CalendarIcon size={14} style={{ color: '#64748b' }} />
-          <DatePicker
-            selected={filters.startDate ? new Date(filters.startDate) : null}
-            onChange={(date) => setFilters({...filters, startDate: date ? date.toISOString().split('T')[0] : '', page: 1})}
-            dateFormat="dd/MM/yy"
-            placeholderText="Start"
-            className="admin-datepicker"
-            customInput={<input style={{ width: 65, background: 'none', border: 'none', color: '#e2e8f0', fontSize: 12, outline: 'none', cursor: 'pointer' }} />}
-          />
-          <span style={{ color: '#334155' }}>|</span>
-          <DatePicker
-            selected={filters.endDate ? new Date(filters.endDate) : null}
-            onChange={(date) => setFilters({...filters, endDate: date ? date.toISOString().split('T')[0] : '', page: 1})}
-            dateFormat="dd/MM/yy"
-            placeholderText="End"
-            className="admin-datepicker"
-            minDate={filters.startDate ? new Date(filters.startDate) : null}
-            customInput={<input style={{ width: 65, background: 'none', border: 'none', color: '#e2e8f0', fontSize: 12, outline: 'none', cursor: 'pointer' }} />}
-          />
+
+        <div className="date-hub-hd">
+           <CalendarIcon size={16} color="#63ab45" />
+           <div className="dp-wrapper">
+             <DatePicker
+               selected={filters.startDate ? new Date(filters.startDate) : null}
+               onChange={(date) => setFilters({...filters, startDate: date ? date.toISOString().split('T')[0] : '', page: 1})}
+               dateFormat="dd MMM"
+               placeholderText="From"
+               className="hd-datepicker"
+             />
+           </div>
+           <span className="dp-sep">to</span>
+           <div className="dp-wrapper">
+             <DatePicker
+               selected={filters.endDate ? new Date(filters.endDate) : null}
+               onChange={(date) => setFilters({...filters, endDate: date ? date.toISOString().split('T')[0] : '', page: 1})}
+               dateFormat="dd MMM"
+               placeholderText="End"
+               className="hd-datepicker"
+             />
+           </div>
         </div>
       </div>
 
-      {/* ── Leads Table ── */}
-      <div className="admin-table-wrapper">
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ background: '#0f172a' }}>
-              {['Name', 'Contact', 'Intent', 'Priority', 'Value', 'Assigned To', 'Status', 'Timeline', ''].map(h => (
-                <th key={h} style={{ textAlign: 'left', padding: '12px 16px', color: '#64748b', fontSize: 12, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr><td colSpan={9} style={{ padding: 60, textAlign: 'center', color: '#64748b', fontSize: 16 }}>Loading...</td></tr>
-            ) : leads.length === 0 ? (
-              <tr><td colSpan={9} style={{ padding: 60, textAlign: 'center', color: '#64748b', fontSize: 16 }}>No leads found</td></tr>
-            ) : leads.map(lead => (
-              <tr
-                key={lead._id}
-                onClick={() => handleSelectLead(lead)}
-                style={{ borderBottom: '1px solid #334155', cursor: 'pointer', transition: 'all 0.2s' }}
-                onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(99, 171, 69, 0.05)'}
-                onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-              >
-                <td style={{ padding: '24px 16px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <div style={{ 
-                      width: 44, height: 44, borderRadius: 12, 
-                      background: 'linear-gradient(135deg, #1e293b, #0f172a)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center', 
-                      color: '#63ab45', fontWeight: 800, fontSize: 18,
-                      border: '1px solid #334155'
-                    }}>
-                      {lead.name?.[0]?.toUpperCase()}
-                    </div>
-                    <div>
-                      <div style={{ color: '#f1f5f9', fontWeight: 700, fontSize: 16 }}>{lead.name}</div>
-                      <div style={{ color: '#64748b', fontSize: 12 }}>Lead ID: {lead._id.slice(-6).toUpperCase()}</div>
-                    </div>
+      <div className="main-leads-display">
+        {loading ? (
+          <div className="hd-loading">
+            <Loader2 className="spin" size={48} color="#63ab45" />
+            <p>Gathering Intelligence...</p>
+          </div>
+        ) : leads.length === 0 ? (
+          <div className="hd-empty">
+            <MessageSquare size={64} color="#1e293b" />
+            <h3>No Active Leads</h3>
+            <p>Try adjusting your search or filters.</p>
+          </div>
+        ) : (
+          <div className="leads-grid-system">
+            {leads.map(lead => (
+              <div key={lead._id} className="lead-vibrant-card" onClick={() => setSelectedLead(lead)}>
+                <div className="card-hd-top">
+                  <div className="user-avatar-hd" style={{ background: `linear-gradient(135deg, ${statusColors[lead.status]?.main || '#1e293b'}, #0f172a)` }}>
+                    {lead.name?.[0]?.toUpperCase()}
                   </div>
-                </td>
-                <td style={{ padding: '24px 16px' }}>
-                  <div style={{ color: '#f1f5f9', fontSize: 14, fontWeight: 600 }}>{lead.phone}</div>
-                  {lead.email && <div style={{ color: '#64748b', fontSize: 12, marginTop: 2 }}>{lead.email}</div>}
-                </td>
-                <td style={{ padding: '24px 16px' }}>
-                  <div style={{ color: '#e2e8f0', fontSize: 14, fontWeight: 600 }}>{lead.destination || 'Inquiry'}</div>
-                  <div style={{ 
-                    color: lead.bookingType === 'DIRECT_BOOKING' ? '#22c55e' : '#3b82f6', 
-                    fontSize: 10, fontWeight: 800, textTransform: 'uppercase', marginTop: 4,
-                    display: 'flex', alignItems: 'center', gap: 4
-                  }}>
-                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'currentColor' }} />
-                    {lead.bookingType === 'DIRECT_BOOKING' ? 'Direct Booking' : 'General Inquiry'}
+                  <div className="user-meta-hd">
+                    <h4 className="user-name-hd">{lead.name}</h4>
+                    <span className="user-id-hd">ID: {lead._id.slice(-6).toUpperCase()}</span>
                   </div>
-                </td>
-                <td style={{ padding: '24px 16px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{
-                      background: (priorityColors[lead.priority] || '#3b82f6') + '15',
-                      color: priorityColors[lead.priority] || '#3b82f6',
-                      padding: '4px 10px', borderRadius: 8, fontSize: 11, fontWeight: 800,
-                      border: `1px solid ${priorityColors[lead.priority] || '#3b82f6'}30`
-                    }}>
-                      {lead.priority || 'NORMAL'}
-                    </span>
-                    {lead.priorityScore > 80 && <span title="High Score">🔥</span>}
+                  <div className="status-indicator-hd" style={{ color: statusColors[lead.status]?.main }}>
+                    {lead.status?.replace('_', ' ')}
                   </div>
-                </td>
-                <td style={{ padding: '24px 16px' }}>
-                  <div style={{ color: '#63ab45', fontSize: 15, fontWeight: 800 }}>
-                    {lead.quotedPrice ? `₹${lead.quotedPrice.toLocaleString()}` : '—'}
-                  </div>
-                  {lead.ajwaPointsAwarded && (
-                    <div style={{ color: '#f59e0b', fontSize: 10, fontWeight: 700, marginTop: 2 }}>POINTS AWARDED</div>
-                  )}
-                </td>
-                <td style={{ padding: '24px 16px' }}>
-                  {lead.assignedTo ? (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#3b82f6', color: '#fff', fontSize: 11, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>
-                        {lead.assignedTo.name?.[0]}
-                      </div>
-                      <span style={{ color: '#e2e8f0', fontSize: 14, fontWeight: 500 }}>{lead.assignedTo.name}</span>
-                    </div>
-                  ) : (
-                    <span style={{ color: '#475569', fontSize: 13, fontStyle: 'italic' }}>Unassigned</span>
-                  )}
-                </td>
-                <td style={{ padding: '20px 16px' }}>
-                  <span style={{
-                    background: (statusColors[lead.status] || '#3b82f6') + '20',
-                    color: statusColors[lead.status] || '#3b82f6',
-                    padding: '6px 12px', borderRadius: 8, fontSize: 12, fontWeight: 700,
-                    border: `1px solid ${statusColors[lead.status]}40`,
-                    display: 'inline-block', minWidth: 100, textAlign: 'center',
-                    textTransform: 'uppercase'
-                  }}>
-                    {lead.status?.replace('_', ' ') || 'NEW'}
-                  </span>
-                </td>
-                <td style={{ padding: '20px 16px' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                    <div style={{ color: '#f1f5f9', fontSize: 13, fontWeight: 600 }}>
-                      {new Date(lead.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
-                    </div>
-                    {lead.travelDate && (
-                      <div style={{ color: '#22c55e', fontSize: 12, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <CalendarIcon size={14} /> {new Date(lead.travelDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
-                      </div>
-                    )}
-                  </div>
-                </td>
-                <td style={{ padding: '24px 16px', textAlign: 'right' }}>
-                   {(user?.role === 'SUPER_ADMIN' || user?.role === 'TEAM') && (
-                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                      {deletingId === lead._id ? (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#ef444415', padding: '6px 12px', borderRadius: 12, border: '1px solid #ef444430' }}>
-                          <span style={{ fontSize: 11, color: '#ef4444', fontWeight: 800 }}>DELETE?</span>
-                          <button onClick={(e) => { e.stopPropagation(); handleDelete(lead._id); }} style={{ background: '#ef4444', color: '#fff', border: 'none', borderRadius: 8, padding: '4px 8px', fontSize: 10, fontWeight: 700, cursor: 'pointer' }}>YES</button>
-                          <button onClick={(e) => { e.stopPropagation(); setDeletingId(null); }} style={{ background: '#334155', color: '#fff', border: 'none', borderRadius: 8, padding: '4px 8px', fontSize: 10, fontWeight: 700, cursor: 'pointer' }}>NO</button>
-                        </div>
-                      ) : (
-                        <button 
-                          onClick={(e) => { e.stopPropagation(); setDeletingId(lead._id); }}
-                          style={{ background: 'transparent', border: 'none', color: '#475569', cursor: 'pointer', width: 36, height: 36, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
-                          onMouseEnter={(e) => { e.currentTarget.style.background = '#ef444410'; e.currentTarget.style.color = '#ef4444'; }}
-                          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#475569'; }}
-                        >
-                          <Trash2 size={18} />
-                        </button>
-                      )}
-                    </div>
-                   )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                </div>
 
-        {/* Pagination */}
-        {pagination.pages > 1 && (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, padding: '16px', borderTop: '1px solid #334155' }}>
-            <button
-              disabled={filters.page <= 1}
-              onClick={() => setFilters(f => ({ ...f, page: f.page - 1 }))}
-              aria-label="Previous Page"
-              style={{ background: 'none', border: 'none', color: filters.page <= 1 ? '#334155' : '#94a3b8', cursor: 'pointer' }}
-            ><ChevronLeft size={18} /></button>
-            <span style={{ color: '#94a3b8', fontSize: 13 }}>Page {pagination.page} of {pagination.pages} ({pagination.total} leads)</span>
-            <button
-              disabled={filters.page >= pagination.pages}
-              onClick={() => setFilters(f => ({ ...f, page: f.page + 1 }))}
-              aria-label="Next Page"
-              style={{ background: 'none', border: 'none', color: filters.page >= pagination.pages ? '#334155' : '#94a3b8', cursor: 'pointer' }}
-            ><ChevronRight size={18} /></button>
+                <div className="card-hd-body">
+                   <div className="lead-intent-box">
+                      <MapPin size={14} color="#63ab45" />
+                      <span>{lead.destination || 'General Inquiry'}</span>
+                   </div>
+                   <div className="lead-contact-line">
+                      <Phone size={14} color="#94a3b8" />
+                      <span>{lead.phone}</span>
+                   </div>
+                </div>
+
+                <div className="card-hd-footer">
+                   <div className="priority-dot-box">
+                      <div className="p-dot" style={{ background: priorityColors[lead.priority]?.main }} />
+                      <span>{lead.priority}</span>
+                   </div>
+                   <div className="date-tag-hd">
+                      <Clock size={12} />
+                      {new Date(lead.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                   </div>
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>
 
-      {/* ── Lead Detail Modal (Premium Overlay) ── */}
       {selectedLead && (
-        <div style={{ 
-          position: 'fixed', inset: 0, zIndex: 3000, 
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          padding: 20, animation: 'fadeIn 0.2s ease'
-        }}>
-          {/* Backdrop */}
-          <div 
-            onClick={() => setSelectedLead(null)}
-            style={{ position: 'absolute', inset: 0, background: 'rgba(2, 6, 23, 0.85)', backdropFilter: 'blur(8px)' }} 
-          />
-
-          {/* Modal Content */}
-          <div className="lead-detail-modal" style={{ 
-            position: 'relative', width: '100%', maxWidth: 1100, maxHeight: '90vh',
-            background: '#1e293b', borderRadius: 24, border: '1px solid #475569',
-            boxShadow: '0 25px 80px -12px rgba(0, 0, 0, 0.6)',
-            display: 'flex', flexDirection: 'column', overflow: 'hidden'
-          }}>
-            {/* Modal Header */}
-            <div style={{ 
-              display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
-              padding: '24px 32px', borderBottom: '1px solid #334155', background: '#1e293b'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                <div style={{
-                  width: 48, height: 48, borderRadius: '50%',
-                  background: 'linear-gradient(135deg, #63ab45, #4d8a35)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: '#fff', fontSize: 20, fontWeight: 700
-                }}>
-                  {selectedLead.name?.[0]?.toUpperCase() || 'L'}
+        <div className="modal-viewport">
+          <div className="modal-blur-overlay" onClick={() => setSelectedLead(null)} />
+          <div className="hd-modal-container">
+             <div className="hd-modal-header" style={{ background: `linear-gradient(90deg, ${statusColors[selectedLead.status]?.main}20, transparent)` }}>
+                <div className="header-user-info">
+                   <div className="header-avatar" style={{ background: statusColors[selectedLead.status]?.main }}>{selectedLead.name?.[0]}</div>
+                   <div className="header-text-group">
+                      <h2>{selectedLead.name}</h2>
+                      <p><Hash size={14} /> {selectedLead._id.slice(-6).toUpperCase()} • Via {selectedLead.source}</p>
+                   </div>
                 </div>
-                <div>
-                  <h2 style={{ color: '#f1f5f9', fontSize: 22, fontWeight: 600, margin: 0 }}>{selectedLead.name}</h2>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 4 }}>
-                    <span style={{ fontSize: 13, color: '#94a3b8' }}>Lead #{selectedLead._id.slice(-6).toUpperCase()}</span>
-                    <span style={{ width: 4, height: 4, borderRadius: '50%', background: '#475569' }} />
-                    <span style={{ fontSize: 13, color: '#63ab45', fontWeight: 600 }}>{selectedLead.source}</span>
-                  </div>
-                </div>
-              </div>
-              <button 
-                onClick={() => setSelectedLead(null)} 
-                aria-label="Close Lead Details"
-                style={{ background: '#334155', border: 'none', color: '#94a3b8', cursor: 'pointer', width: 40, height: 40, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-              >
-                <X size={20} />
-              </button>
-            </div>
+                <button className="hd-close-btn" onClick={() => setSelectedLead(null)}><X size={24} /></button>
+             </div>
 
-            {/* Modal Body */}
-            <div style={{ padding: '32px', overflowY: 'auto', flex: 1, background: '#0f172a' }}>
-              <div className="admin-grid-1-2" style={{ gridTemplateColumns: '1fr 1.6fr', gap: 48, alignItems: 'start' }}>
-                
-                {/* ── LEFT COLUMN: Basic Info & Admin Controls ── */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
-                  
-                  {/* Contact Details Card */}
-                  <div style={{ background: '#1e293b', borderRadius: 20, padding: 24, border: '1px solid #334155' }}>
-                    <h3 style={{ color: '#63ab45', fontSize: 11, fontWeight: 700, marginBottom: 20, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Contact Details</h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 12, color: '#f1f5f9', fontSize: 15 }}>
-                        <div style={{ width: 32, height: 32, borderRadius: 8, background: '#334155', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8' }}>
-                          <Phone size={16} />
-                        </div>
-                        <a href={`tel:${selectedLead.phone}`} style={{ color: '#3b82f6', textDecoration: 'none', fontWeight: 600 }}>{selectedLead.phone}</a>
-                      </div>
-                      {selectedLead.email && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 12, color: '#f1f5f9', fontSize: 15 }}>
-                          <div style={{ width: 32, height: 32, borderRadius: 8, background: '#334155', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8' }}>
-                            <Mail size={16} />
-                          </div>
-                          <a href={`mailto:${selectedLead.email}`} style={{ color: '#3b82f6', textDecoration: 'none', fontWeight: 600 }}>{selectedLead.email}</a>
-                        </div>
-                      )}
-                      {selectedLead.destination && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 12, color: '#f1f5f9', fontSize: 15 }}>
-                          <div style={{ width: 32, height: 32, borderRadius: 8, background: '#334155', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8' }}>
-                            <MapPin size={16} />
-                          </div>
-                          <span style={{ fontWeight: 600 }}>{selectedLead.destination}</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Status & Priority Card */}
-                  <div style={{ background: '#1e293b', borderRadius: 20, padding: 24, border: '1px solid #334155' }}>
-                    <h3 style={{ color: '#63ab45', fontSize: 11, fontWeight: 700, marginBottom: 20, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Lifecycle Controls</h3>
-                    
-                    <div style={{ marginBottom: 20 }}>
-                      <label style={{ color: '#94a3b8', fontSize: 11, fontWeight: 600, marginBottom: 8, display: 'block' }}>CURRENT STATUS</label>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                        {statuses.map(s => (
-                          <button
-                            key={s}
-                            onClick={() => updateLead(selectedLead._id, { status: s })}
-                            style={{
-                              padding: '6px 12px', borderRadius: 9999, fontSize: 11, fontWeight: 700,
-                              cursor: 'pointer', transition: 'all 0.2s',
-                              background: selectedLead.status === s ? statusColors[s] : '#334155',
-                              color: selectedLead.status === s ? '#fff' : '#94a3b8',
-                              border: 'none',
-                            }}
-                          >
-                            {s.replace('_', ' ')}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div style={{ marginBottom: 20 }}>
-                      <label style={{ color: '#94a3b8', fontSize: 11, fontWeight: 600, marginBottom: 8, display: 'block' }}>PRIORITY LEVEL</label>
-                      <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                        <select
-                          value={selectedLead.priority || 'NORMAL'}
-                          onChange={(e) => updateLead(selectedLead._id, { priority: e.target.value })}
-                          style={{ 
-                            padding: '10px 36px 10px 16px', background: '#0f172a', border: '1px solid #334155', borderRadius: 12, color: '#e2e8f0', fontSize: 13, cursor: 'pointer', width: '100%',
-                            appearance: 'none'
-                          }}
-                        >
-                          {priorities.map(p => <option key={p} value={p}>{p}</option>)}
-                        </select>
-                        <ChevronDown size={16} style={{ position: 'absolute', right: 12, pointerEvents: 'none', color: '#64748b' }} />
-                      </div>
-                    </div>
-
-                    {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN') && teamMembers.length > 0 && (
-                      <div style={{ marginBottom: 20 }}>
-                        <label style={{ color: '#94a3b8', fontSize: 11, fontWeight: 600, marginBottom: 8, display: 'block' }}>ASSIGNED STAFF</label>
-                        <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                          <select
-                            value={selectedLead.assignedTo?._id || ''}
-                            onChange={(e) => updateLead(selectedLead._id, { assignedTo: e.target.value || null })}
-                            style={{ 
-                              padding: '10px 36px 10px 16px', background: '#0f172a', border: '1px solid #334155', borderRadius: 12, color: '#e2e8f0', fontSize: 13, cursor: 'pointer', width: '100%',
-                              appearance: 'none'
-                            }}
-                          >
-                            <option value="">Unassigned</option>
-                            {teamMembers.map(m => <option key={m._id} value={m._id}>{m.name}</option>)}
-                          </select>
-                          <ChevronDown size={16} style={{ position: 'absolute', right: 12, pointerEvents: 'none', color: '#64748b' }} />
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Financial Controls */}
-                  <div style={{ background: '#1e293b', borderRadius: 20, padding: 24, border: '1px solid #334155' }}>
-                    <h3 style={{ color: '#63ab45', fontSize: 11, fontWeight: 700, marginBottom: 20, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Financials</h3>
-                    
-                    <div style={{ marginBottom: 24 }}>
-                      <button onClick={() => setShowInvoiceModal(true)} style={{ 
-                        width: '100%', padding: '12px', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: 12, 
-                        cursor: 'pointer', fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 
-                      }}>
-                        <Receipt size={16} /> {selectedLead.invoice ? 'Manage Invoice' : 'Generate Invoice'}
-                      </button>
-                    </div>
-
-                    {selectedLead.customer && (
-                      <div>
-                        <label style={{ color: '#94a3b8', fontSize: 11, fontWeight: 600, marginBottom: 12, display: 'block' }}>CREDIT AJWA POINTS</label>
-                        <div style={{ display: 'flex', gap: 10 }}>
-                          <input 
-                            type="number" 
-                            placeholder="Points" 
-                            value={pointsToCredit} 
-                            onChange={(e) => setPointsToCredit(e.target.value)}
-                            style={{ flex: 1, padding: '10px 14px', background: '#0f172a', border: '1px solid #334155', borderRadius: 12, color: '#e2e8f0', fontSize: 13 }} 
-                          />
-                          <button onClick={creditPoints} style={{ 
-                            padding: '10px 20px', background: '#f59e0b', color: '#fff', border: 'none', borderRadius: 12, 
-                            cursor: 'pointer', fontSize: 12, fontWeight: 700
-                          }}>
-                            Credit
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Right Column: Specifications & Message */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-                  {/* Trip Specifications (MUCH LARGER) */}
-                  {(selectedLead.selectedGroupSize || selectedLead.selectedDays || selectedLead.selectedHotelStar || selectedLead.travelDate) && (
-                    <div style={{ background: '#0f172a', borderRadius: 20, padding: 24, border: '1px solid #334155', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.2)' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-                        <h3 style={{ color: '#63ab45', fontSize: 12, fontWeight: 700, margin: 0, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Trip Specifications</h3>
-                        {selectedLead.travelDate && (
-                          <div style={{ background: '#22c55e20', color: '#22c55e', padding: '6px 12px', borderRadius: 9999, fontSize: 12, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <CalendarIcon size={14} /> {new Date(selectedLead.travelDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
-                          </div>
-                        )}
+             <div className="hd-modal-body">
+                <div className="modal-content-grid">
+                   <div className="modal-column controls">
+                      <div className="hd-control-group">
+                         <label>Quick Connect</label>
+                         <div className="hd-action-row">
+                            <a href={`tel:${selectedLead.phone}`} className="hd-btn-vibrant call"><Phone size={18} /> Call Customer</a>
+                            <a href={`mailto:${selectedLead.email}`} className="hd-btn-vibrant mail"><Mail size={18} /> Email</a>
+                         </div>
                       </div>
 
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 20 }}>
-                        <div style={{ background: '#1e293b', padding: 16, borderRadius: 12, border: '1px solid #334155' }}>
-                          <label style={{ display: 'block', fontSize: 11, color: '#64748b', marginBottom: 4, fontWeight: 600 }}>TRAVELERS</label>
-                          <div style={{ fontSize: 18, color: '#f1f5f9', fontWeight: 700 }}>
-                            {selectedLead.adults || selectedLead.selectedGroupSize || 1} <span style={{ fontSize: 13, color: '#94a3b8' }}>Adults</span>
-                            {selectedLead.children > 0 && <span style={{ fontSize: 14, color: '#94a3b8' }}>, {selectedLead.children} Child</span>}
-                          </div>
-                        </div>
-                        <div style={{ background: '#1e293b', padding: 16, borderRadius: 12, border: '1px solid #334155' }}>
-                          <label style={{ display: 'block', fontSize: 11, color: '#64748b', marginBottom: 4, fontWeight: 600 }}>DURATION</label>
-                          <div style={{ fontSize: 18, color: '#f1f5f9', fontWeight: 700 }}>
-                            {selectedLead.selectedDays || 'N/A'} <span style={{ fontSize: 13, color: '#94a3b8' }}>Days</span>
-                          </div>
-                        </div>
-                        <div style={{ background: '#1e293b', padding: 16, borderRadius: 12, border: '1px solid #334155' }}>
-                          <label style={{ display: 'block', fontSize: 11, color: '#64748b', marginBottom: 4, fontWeight: 600 }}>HOTEL CLASS</label>
-                          <div style={{ fontSize: 18, color: '#f1f5f9', fontWeight: 700 }}>
-                            {selectedLead.selectedHotelStar ? `${selectedLead.selectedHotelStar} Star` : 'Any Class'}
-                          </div>
-                        </div>
-                        <div style={{ background: '#1e293b', padding: 16, borderRadius: 12, border: '1px solid #334155' }}>
-                          <label style={{ display: 'block', fontSize: 11, color: '#64748b', marginBottom: 4, fontWeight: 600 }}>ACCOMMODATION</label>
-                          <div style={{ fontSize: 18, color: '#f1f5f9', fontWeight: 700 }}>
-                            {selectedLead.selectedRoomType || 'Standard'}
-                          </div>
-                        </div>
+                      <div className="hd-control-group">
+                         <label>Manage Status</label>
+                         <div className="hd-status-grid">
+                            {statuses.map(s => (
+                              <button 
+                                key={s}
+                                onClick={() => updateLead(selectedLead._id, { status: s })}
+                                className={`hd-status-btn ${selectedLead.status === s ? 'active' : ''}`}
+                                style={{ 
+                                  '--status-color': statusColors[s].main,
+                                  '--status-bg': statusColors[s].bg,
+                                  '--status-border': statusColors[s].border
+                                }}
+                              >
+                                {s.replace('_', ' ')}
+                              </button>
+                            ))}
+                         </div>
                       </div>
 
-                      <div style={{ marginTop: 20, paddingTop: 20, borderTop: '1px solid #334155', display: 'flex', alignItems: 'center', gap: 12 }}>
-                        <div style={{ 
-                          padding: '6px 12px', borderRadius: 9999, fontSize: 11, fontWeight: 700,
-                          background: selectedLead.bookingType === 'DIRECT_BOOKING' ? '#22c55e20' : '#3b82f620',
-                          color: selectedLead.bookingType === 'DIRECT_BOOKING' ? '#22c55e' : '#3b82f6'
-                        }}>
-                          {selectedLead.bookingType === 'DIRECT_BOOKING' ? 'DIRECT BOOKING' : 'GENERAL INQUIRY'}
-                        </div>
-                        {selectedLead.packageSlug && (
-                          <div style={{ background: '#334155', color: '#94a3b8', padding: '6px 12px', borderRadius: 9999, fontSize: 11, fontWeight: 600 }}>
-                            Package: {selectedLead.packageSlug}
-                          </div>
-                        )}
+                      <div className="hd-control-group">
+                         <label>Adjust Priority</label>
+                         <div className="hd-priority-strip">
+                            {priorities.map(p => (
+                              <button 
+                                key={p} 
+                                onClick={() => updateLead(selectedLead._id, { priority: p })}
+                                className={`p-strip-btn ${selectedLead.priority === p ? 'active' : ''}`}
+                                style={{ '--p-color': priorityColors[p].main }}
+                              >
+                                {p}
+                              </button>
+                            ))}
+                         </div>
                       </div>
-                    </div>
-                  )}
+                   </div>
 
-                  {/* Message Section */}
-                  {selectedLead.message && (
-                    <div style={{ background: '#1e293b', borderRadius: 20, padding: 24, border: '1px solid #334155' }}>
-                      <h3 style={{ color: '#63ab45', fontSize: 11, fontWeight: 700, marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Customer Message</h3>
-                      
-                      {selectedLead.message.includes('Room:') || selectedLead.message.includes('Special Requests:') ? (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                          {selectedLead.message.split(/(?=Room:|Special Requests:)/).map((part, i) => {
-                            const [label, ...val] = part.split(':');
-                            const value = val.join(':').trim();
-                            const cleanLabel = label.trim().replace('Direct Booking Request', '').trim();
-                            
-                            if (i === 0 && part.includes('Direct Booking Request')) {
-                              return (
-                                <div key={i} style={{ padding: '12px 16px', background: '#3b82f610', borderRadius: 12, border: '1px solid #3b82f620' }}>
-                                  <div style={{ color: '#3b82f6', fontSize: 11, fontWeight: 800, marginBottom: 4, textTransform: 'uppercase' }}>INTENT</div>
-                                  <div style={{ color: '#f1f5f9', fontSize: 15, fontWeight: 600 }}>Direct Booking Request</div>
+                   <div className="modal-column info">
+                      <div className="hd-specs-board">
+                         <div className="spec-card-hd color-blue">
+                            <Clock size={20} className="spec-icon" />
+                            <div className="spec-text"><h4>{selectedLead.selectedDays || 'N/A'}</h4><p>Days</p></div>
+                         </div>
+                         <div className="spec-card-hd color-purple">
+                            <Users size={20} className="spec-icon" />
+                            <div className="spec-text"><h4>{selectedLead.adults || 1}</h4><p>Travelers</p></div>
+                         </div>
+                         <div className="spec-card-hd color-gold">
+                            <Star size={20} className="spec-icon" />
+                            <div className="spec-text"><h4>{selectedLead.selectedHotelStar || 'Any'}</h4><p>Hotel Star</p></div>
+                         </div>
+                         <div className="spec-card-hd color-green">
+                            <MapPin size={20} className="spec-icon" />
+                            <div className="spec-text"><h4>{selectedLead.destination || 'Global'}</h4><p>Target</p></div>
+                         </div>
+                      </div>
+
+                      <div className="hd-message-container">
+                         <label>Inquiry Message</label>
+                         <div className="hd-message-bubble">
+                            {selectedLead.message || "Customer left no specific instructions."}
+                         </div>
+                      </div>
+
+                      {selectedLead.whatsappClicks?.length > 0 && (
+                        <div className="hd-history-log">
+                           <label>Interaction History</label>
+                           <div className="log-scroll">
+                              {selectedLead.whatsappClicks.slice().reverse().map((click, i) => (
+                                <div key={i} className="log-entry">
+                                   <div className="log-time">{new Date(click.clickedAt).toLocaleString()}</div>
+                                   <div className="log-desc">{click.selectedOptions?.days} Days Package • {click.selectedOptions?.hotelStar} Star</div>
                                 </div>
-                              );
-                            }
-
-                            if (!value) return null;
-
-                            return (
-                              <div key={i} style={{ borderLeft: '2px solid #334155', paddingLeft: 16 }}>
-                                <div style={{ color: '#64748b', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', marginBottom: 4 }}>{label.trim()}</div>
-                                <div style={{ color: '#f1f5f9', fontSize: 15, fontWeight: 500, lineHeight: 1.5 }}>{value}</div>
-                              </div>
-                            );
-                          })}
+                              ))}
+                           </div>
                         </div>
-                      ) : (
-                        <p style={{ color: '#f1f5f9', fontSize: 16, margin: 0, lineHeight: 1.6, fontStyle: selectedLead.message.length > 50 ? 'normal' : 'italic' }}>
-                          "{selectedLead.message}"
-                        </p>
                       )}
-                    </div>
-                  )}
-
-                  {/* WhatsApp History */}
-                  {selectedLead.whatsappClicks && selectedLead.whatsappClicks.length > 0 && (
-                    <div style={{ background: '#22c55e05', borderRadius: 20, padding: 24, border: '1px solid #22c55e20' }}>
-                      <h3 style={{ color: '#22c55e', fontSize: 12, fontWeight: 700, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <MessageSquare size={16} /> WhatsApp Interaction History ({selectedLead.whatsappClicks.length})
-                      </h3>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                        {selectedLead.whatsappClicks.slice().reverse().map((click, i) => (
-                          <div key={i} style={{ background: '#1e293b', padding: 12, borderRadius: 12, border: '1px solid #334155' }}>
-                            <div style={{ color: '#64748b', fontSize: 11, fontWeight: 600 }}>
-                              {new Date(click.clickedAt).toLocaleString('en-IN')}
-                            </div>
-                            {click.selectedOptions && (
-                              <div style={{ color: '#94a3b8', fontSize: 13, marginTop: 4 }}>
-                                {click.selectedOptions.days} Days • {click.selectedOptions.hotelStar}★ • {click.selectedOptions.groupSize} Pax
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                   </div>
                 </div>
-              </div>
-            </div>
-
-            {/* Modal Footer: Dangerous Actions */}
-            <div style={{ padding: '24px 32px', background: '#0f172a', borderTop: '1px solid #334155', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 20 }}>
-              <div style={{ marginRight: 'auto', color: '#64748b', fontSize: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
-                <Clock size={14} /> Recorded on {new Date(selectedLead.createdAt).toLocaleString('en-IN')}
-              </div>
-
-            </div>
+             </div>
           </div>
         </div>
       )}
 
-      {/* ── Invoice Builder Modal ── */}
-      {showInvoiceModal && selectedLead && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 10001, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-          <div onClick={() => setShowInvoiceModal(false)} style={{ position: 'absolute', inset: 0, background: 'rgba(15, 23, 42, 0.7)', backdropFilter: 'blur(4px)' }} />
-          
-          <div style={{ position: 'relative', width: '100%', maxWidth: 500, background: '#0f172a', borderRadius: 16, overflow: 'hidden', border: '1px solid #334155', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)' }}>
-            <div style={{ padding: '20px 24px', borderBottom: '1px solid #1e293b', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div style={{ width: 36, height: 36, borderRadius: 10, background: '#3b82f620', color: '#3b82f6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Receipt size={18} />
-                </div>
-                <div>
-                  <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: '#f8fafc' }}>Invoice Builder</h3>
-                  <div style={{ fontSize: 12, color: '#94a3b8', marginTop: 2 }}>For: {selectedLead.name}</div>
-                </div>
-              </div>
-              <button onClick={() => setShowInvoiceModal(false)} style={{ background: '#1e293b', border: 'none', width: 32, height: 32, borderRadius: '50%', color: '#94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-                <X size={16} />
-              </button>
-            </div>
-            
-            <div style={{ padding: '24px', maxHeight: '60vh', overflowY: 'auto' }}>
-              <label style={{ display: 'block', color: '#94a3b8', fontSize: 12, fontWeight: 600, marginBottom: 12 }}>ITEMIZED CHARGES</label>
-              
-              {invoiceItems.map((item, idx) => (
-                <div key={idx} style={{ display: 'flex', gap: 12, marginBottom: 12 }}>
-                  <input 
-                    placeholder="E.g., 5-Night Hotel Stay" 
-                    value={item.description} 
-                    onChange={(e) => updateInvoiceItem(idx, 'description', e.target.value)}
-                    style={{ flex: 2, padding: '10px 12px', background: '#1e293b', border: '1px solid #334155', borderRadius: 8, color: '#e2e8f0', fontSize: 13, outline: 'none' }} 
-                  />
-                  <div style={{ position: 'relative', flex: 1 }}>
-                    <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#64748b', fontSize: 13 }}>₹</span>
-                    <input 
-                      type="number" 
-                      placeholder="0" 
-                      value={item.amount} 
-                      onChange={(e) => updateInvoiceItem(idx, 'amount', e.target.value)}
-                      style={{ width: '100%', boxSizing: 'border-box', padding: '10px 12px 10px 24px', background: '#1e293b', border: '1px solid #334155', borderRadius: 8, color: '#e2e8f0', fontSize: 13, outline: 'none' }} 
-                    />
-                  </div>
-                  {invoiceItems.length > 1 && (
-                    <button 
-                      onClick={() => setInvoiceItems(invoiceItems.filter((_, i) => i !== idx))}
-                      style={{ background: '#ef444420', color: '#ef4444', border: 'none', width: 40, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  )}
-                </div>
-              ))}
-              
-              <button onClick={addInvoiceItem} style={{ background: '#3b82f615', border: '1px dashed #3b82f650', color: '#3b82f6', width: '100%', padding: '10px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginBottom: 24 }}>
-                <Plus size={16} /> Add Another Item
-              </button>
-              
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
-                <div>
-                  <label style={{ display: 'block', color: '#94a3b8', fontSize: 12, fontWeight: 600, marginBottom: 8 }}>EXTRA DISCOUNT</label>
-                  <div style={{ position: 'relative' }}>
-                    <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#64748b', fontSize: 13 }}>₹</span>
-                    <input 
-                      type="number" 
-                      value={discount} 
-                      onChange={(e) => setDiscount(Number(e.target.value))} 
-                      style={{ width: '100%', boxSizing: 'border-box', padding: '10px 12px 10px 24px', background: '#1e293b', border: '1px solid #334155', borderRadius: 8, color: '#e2e8f0', fontSize: 13, outline: 'none' }} 
-                    />
-                  </div>
-                </div>
-                <div style={{ background: '#1e293b', borderRadius: 8, padding: 12, border: '1px solid #334155', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                  <div style={{ fontSize: 11, color: '#94a3b8', marginBottom: 4 }}>CALCULATED TOTAL</div>
-                  <div style={{ fontSize: 18, color: '#22c55e', fontWeight: 800 }}>
-                    ₹{Math.max(0, invoiceItems.reduce((acc, item) => acc + (Number(item.amount) || 0), 0) - discount).toLocaleString()}
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div style={{ padding: '16px 24px', background: '#1e293b', borderTop: '1px solid #334155', display: 'flex', gap: 12 }}>
-              <button onClick={() => setShowInvoiceModal(false)} style={{ flex: 1, padding: '12px', background: 'transparent', color: '#94a3b8', border: '1px solid #334155', borderRadius: 8, cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>Cancel</button>
-              <button onClick={generateInvoice} style={{ flex: 2, padding: '12px', background: '#63ab45', color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer', fontSize: 13, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                <Receipt size={16} /> {selectedLead.invoice ? 'Update & Send to Customer' : 'Send Invoice to Customer'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <style jsx>{`
+        .admin-page-container { padding: 40px; max-width: 1400px; margin: 0 auto; width: 100%; min-height: 100vh; }
+        
+        .glass-header-nav { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; }
+        .hd-title { color: #fff; font-size: 2.5rem; font-weight: 800; letter-spacing: -0.03em; margin: 0; }
+        .title-accent { color: #63ab45; }
+        .hd-subtitle { color: #64748b; font-size: 1.1rem; margin-top: 8px; }
+        
+        .vibrant-action-btn { background: #63ab45; color: #fff; padding: 12px 28px; border-radius: 100px; font-weight: 700; display: flex; align-items: center; gap: 10px; box-shadow: 0 10px 30px rgba(99, 171, 69, 0.3); transition: 0.3s; }
+        .vibrant-action-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(99, 171, 69, 0.4); }
+
+        .hd-filters-bar { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 24px; display: flex; gap: 12px; align-items: center; margin-bottom: 32px; flex-wrap: wrap; }
+        
+        .search-box-hd { flex: 1; min-width: 300px; position: relative; background: #0f172a; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); padding: 0 16px; display: flex; align-items: center; height: 48px; }
+        .search-icon-hd { color: #475569; margin-right: 12px; }
+        .search-box-hd input { background: transparent; border: none; color: #fff; font-size: 14px; width: 100%; outline: none; }
+        
+        .quick-selectors { display: flex; gap: 12px; }
+        .custom-select-hd { position: relative; background: #0f172a; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); height: 48px; display: flex; align-items: center; padding: 0 16px; cursor: pointer; }
+        .custom-select-hd select { appearance: none; background: transparent; border: none; color: #e2e8f0; font-size: 14px; font-weight: 600; padding-right: 24px; cursor: pointer; outline: none; }
+        .custom-select-hd :global(svg) { position: absolute; right: 16px; pointer-events: none; color: #64748b; }
+        
+        .date-hub-hd { display: flex; align-items: center; gap: 4px; background: #0f172a; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); padding: 0 12px; height: 48px; }
+        .dp-wrapper { width: 60px; }
+        
+        /* 🔥 Force library styles to match our theme */
+        :global(.react-datepicker-wrapper) { width: auto; }
+        :global(.react-datepicker__input-container input) {
+          background: transparent !important;
+          border: none !important;
+          color: #ffffff !important;
+          font-size: 13px !important;
+          font-weight: 700 !important;
+          outline: none !important;
+          width: 60px !important;
+          padding: 0 !important;
+          cursor: pointer !important;
+        }
+        :global(.react-datepicker__input-container input::placeholder) {
+          color: #475569 !important;
+          opacity: 1 !important;
+        }
+        
+        .dp-sep { color: #1e293b; font-size: 10px; font-weight: 900; }
+
+        .leads-grid-system { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+        .lead-vibrant-card { background: rgba(30, 41, 59, 0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 24px; padding: 24px; cursor: pointer; transition: 0.3s; position: relative; overflow: hidden; }
+        .lead-vibrant-card:hover { transform: translateY(-5px); border-color: #63ab4560; background: rgba(30, 41, 59, 0.6); }
+        .lead-vibrant-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, #63ab45, transparent); opacity: 0; transition: 0.3s; }
+        .lead-vibrant-card:hover::before { opacity: 1; }
+
+        .card-hd-top { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+        .user-avatar-hd { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 1.2rem; }
+        .user-meta-hd { flex: 1; }
+        .user-name-hd { color: #fff; font-size: 1rem; font-weight: 700; margin-bottom: 2px; }
+        .user-id-hd { color: #475569; font-size: 11px; font-weight: 600; }
+        .status-indicator-hd { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.05em; }
+
+        .card-hd-body { margin-bottom: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .lead-intent-box { display: flex; align-items: center; gap: 8px; color: #f1f5f9; font-weight: 600; font-size: 14px; }
+        .lead-contact-line { display: flex; align-items: center; gap: 8px; color: #64748b; font-size: 13px; }
+
+        .card-hd-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.05); }
+        .priority-dot-box { display: flex; align-items: center; gap: 8px; color: #94a3b8; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+        .p-dot { width: 6px; height: 6px; border-radius: 50%; }
+        .date-tag-hd { display: flex; align-items: center; gap: 6px; color: #475569; font-size: 11px; font-weight: 600; }
+
+        .modal-viewport { position: fixed; inset: 0; z-index: 5000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .modal-blur-overlay { position: absolute; inset: 0; background: rgba(2, 6, 23, 0.8); backdrop-filter: blur(12px); }
+        .hd-modal-container { position: relative; width: 100%; max-width: 1100px; background: #0f172a; border: 1px solid #1e293b; border-radius: 32px; overflow: hidden; box-shadow: 0 50px 100px rgba(0,0,0,0.6); }
+        
+        .hd-modal-header { padding: 32px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1e293b; }
+        .header-user-info { display: flex; align-items: center; gap: 20px; }
+        .header-avatar { width: 60px; height: 60px; border-radius: 18px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 1.5rem; font-weight: 800; }
+        .header-text-group h2 { color: #fff; font-size: 1.8rem; margin: 0; }
+        .header-text-group p { color: #64748b; margin: 4px 0 0; display: flex; align-items: center; gap: 6px; font-weight: 600; }
+        .hd-close-btn { color: #64748b; transition: 0.2s; }
+        .hd-close-btn:hover { color: #fff; transform: rotate(90deg); }
+
+        .hd-modal-body { padding: 40px; max-height: 80vh; overflow-y: auto; }
+        .modal-content-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 40px; }
+        
+        .hd-control-group { margin-bottom: 32px; }
+        .hd-control-group label { display: block; color: #63ab45; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 20px; }
+        
+        .hd-action-row { display: flex; gap: 12px; }
+        .hd-btn-vibrant { flex: 1; padding: 14px; border-radius: 16px; font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; }
+        .hd-btn-vibrant.call { background: #3b82f6; color: #fff; box-shadow: 0 8px 20px rgba(59, 130, 246, 0.2); }
+        .hd-btn-vibrant.mail { background: #1e293b; color: #94a3b8; border: 1px solid #334155; }
+        
+        .hd-status-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .hd-status-btn { 
+          padding: 12px; border-radius: 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; cursor: pointer; transition: 0.2s;
+          background: var(--status-bg); color: var(--status-color); border: 1px solid var(--status-border);
+        }
+        .hd-status-btn:hover { border-color: var(--status-color); }
+        .hd-status-btn.active { background: var(--status-color); color: #fff; box-shadow: 0 8px 20px var(--status-bg); transform: scale(1.02); }
+
+        .hd-priority-strip { display: flex; background: #1e293b; padding: 6px; border-radius: 14px; gap: 4px; }
+        .p-strip-btn { flex: 1; padding: 10px; border-radius: 10px; font-size: 11px; font-weight: 800; color: #475569; transition: 0.2s; }
+        .p-strip-btn.active { background: #0f172a; color: var(--p-color); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+
+        .hd-specs-board { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 32px; }
+        .spec-card-hd { background: #1e293b; padding: 20px; border-radius: 20px; display: flex; align-items: center; gap: 16px; border: 1px solid #334155; }
+        .spec-icon { color: #ffffff; opacity: 1; }
+        .spec-card-hd.color-blue { border-left: 4px solid #3b82f6; }
+        .spec-card-hd.color-purple { border-left: 4px solid #8b5cf6; }
+        .spec-card-hd.color-gold { border-left: 4px solid #f59e0b; }
+        .spec-card-hd.color-green { border-left: 4px solid #22c55e; }
+        .spec-text h4 { color: #fff; font-size: 1.1rem; margin: 0; }
+        .spec-text p { color: #94a3b8; font-size: 11px; font-weight: 700; margin: 2px 0 0; text-transform: uppercase; }
+
+        .hd-message-container { background: #1e293b; border-radius: 24px; padding: 24px; border: 1px solid #334155; margin-bottom: 32px; }
+        .hd-message-container label { color: #fff; opacity: 0.6; display: block; margin-bottom: 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; }
+        .hd-message-bubble { color: #f1f5f9; line-height: 1.7; font-size: 1rem; }
+
+        .hd-history-log { background: #0f172a; border-radius: 24px; padding: 24px; border: 1px solid #1e293b; }
+        .log-scroll { display: flex; flex-direction: column; gap: 16px; margin-top: 16px; }
+        .log-entry { border-left: 2px solid #334155; padding-left: 16px; position: relative; }
+        .log-entry::before { content: ''; position: absolute; left: -5px; top: 0; width: 8px; height: 8px; border-radius: 50%; background: #63ab45; }
+        .log-time { font-size: 11px; font-weight: 700; color: #63ab45; margin-bottom: 4px; }
+        .log-desc { color: #94a3b8; font-size: 13px; font-weight: 500; }
+
+        .hd-loading, .hd-empty { height: 400px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #64748b; gap: 16px; }
+        .spin { animation: spin 1s linear infinite; }
+
+        @media (max-width: 991px) {
+          .admin-page-container { padding: 20px; }
+          .modal-content-grid { grid-template-columns: 1fr; }
+          .hd-modal-container { max-height: 95vh; }
+          .hd-modal-header { padding: 20px; }
+          .hd-modal-body { padding: 20px; }
+          .hd-specs-board { grid-template-columns: 1fr; }
+          .hd-title { font-size: 1.8rem; }
+          .glass-header-nav { flex-direction: column; align-items: flex-start; gap: 20px; }
+          .hd-filters-bar { flex-direction: column; align-items: stretch; }
+          .quick-selectors { display: grid; grid-template-columns: 1fr 1fr; }
+          .date-hub-hd { justify-content: center; }
+        }
+      `}</style>
     </div>
   );
 }

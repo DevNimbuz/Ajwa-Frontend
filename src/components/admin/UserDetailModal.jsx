@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import { 
   X, User, Mail, Phone, Calendar, Star, 
   FileText, Download, UploadCloud, Plane, 
-  ChevronRight, ExternalLink, Loader2, Trash2
+  ChevronRight, ExternalLink, Loader2, Trash2,
+  MapPin, MessageSquare
 } from 'lucide-react';
 import { usersAPI } from '@/lib/api';
 

@@ -63,7 +63,6 @@ export default function DashboardPage() {
       setTrips(tripsResult);
       setWishlist(wishlistData.data || []);
       
-      // Mock notifications for status updates
       const mockNotifications = (tripsData.data?.all || [])
         .filter(l => l.status !== 'NEW')
         .slice(0, 5)
@@ -98,49 +97,53 @@ export default function DashboardPage() {
         return <DocumentVaultView documents={user?.documents || []} />;
       default:
         return (
-          <div className="grid grid-2-responsive" style={{ alignItems: 'start' }}>
+          <div className="grid grid-2-responsive" style={{ alignItems: 'start', gap: 32 }}>
             {/* Recent Bookings Section */}
             <section>
               <div className="flex-between" style={{ marginBottom: 20 }}>
-                <h2 className="heading-3">My Recent Bookings</h2>
-                <Link href="/dashboard?tab=bookings" style={{ fontSize: 13, fontWeight: 600, color: '#63ab45', display: 'flex', alignItems: 'center', gap: 4 }}>
+                <h2 className="heading-3" style={{ color: '#fff' }}>My Recent Bookings</h2>
+                <Link href="/dashboard?tab=bookings" style={{ fontSize: 13, fontWeight: 700, color: '#63ab45', display: 'flex', alignItems: 'center', gap: 4, textDecoration: 'none' }}>
                   View All <ChevronRight size={14} />
                 </Link>
               </div>
               
-              <div className="glass-card" style={{ padding: 8 }}>
+              <div className="glass-card" style={{ padding: 12, background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.05)' }}>
                 {trips.booked.length === 0 ? (
-                  <div style={{ padding: '60px 20px', textAlign: 'center' }}>
-                    <div style={{ width: 64, height: 64, borderRadius: '50%', background: '#f8fafc', margin: '0 auto 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#cbd5e1' }}>
-                      <Plane size={32} />
+                  <div style={{ padding: '80px 20px', textAlign: 'center' }}>
+                    <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'rgba(255,255,255,0.02)', margin: '0 auto 24px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b' }}>
+                      <Plane size={40} />
                     </div>
-                    <p style={{ color: '#94a3b8', fontSize: 14 }}>No confirmed bookings yet. Start planning your next adventure!</p>
-                    <Link href="/package" className="text-gold" style={{ fontSize: 14, fontWeight: 600, marginTop: 12, display: 'inline-block' }}>Explore Packages</Link>
+                    <p style={{ color: '#94a3b8', fontSize: 15, fontWeight: 500 }}>No confirmed bookings yet. Start planning your next adventure!</p>
+                    <Link href="/package" className="btn btn-outline btn-sm" style={{ marginTop: 16 }}>Explore Packages</Link>
                   </div>
                 ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                     {trips.booked.slice(0, 4).map((trip, i) => (
                       <div 
                         key={trip._id} 
                         style={{ 
-                          padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                          borderBottom: i < trips.booked.length - 1 ? '1px solid rgba(0,0,0,0.05)' : 'none',
-                          transition: 'background 0.2s'
+                          padding: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                          borderRadius: 12,
+                          background: 'rgba(255,255,255,0.02)',
+                          border: '1px solid rgba(255,255,255,0.03)',
+                          transition: 'all 0.3s'
                         }}
                         className="list-item-hover"
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                          <div style={{ width: 44, height: 44, borderRadius: 10, background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#63ab45' }}>
-                            <MapPin size={20} />
+                          <div style={{ width: 48, height: 48, borderRadius: 12, background: 'rgba(99, 171, 69, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#63ab45' }}>
+                            <MapPin size={22} />
                           </div>
                           <div>
-                            <h4 style={{ fontSize: 15, fontWeight: 700, color: '#1e293b', margin: 0 }}>{trip.destination || 'Custom Tour'}</h4>
-                            <span style={{ fontSize: 12, color: '#94a3b8' }}>Booked on {new Date(trip.createdAt).toLocaleDateString()}</span>
+                            <h4 style={{ fontSize: 16, fontWeight: 700, color: '#fff', margin: 0 }}>{trip.destination || 'Custom Tour'}</h4>
+                            <span style={{ fontSize: 12, color: '#64748b' }}>Booked on {new Date(trip.createdAt).toLocaleDateString()}</span>
                           </div>
                         </div>
                         <div style={{ textAlign: 'right' }}>
-                          <span className="badge badge-success">CONFIRMED</span>
-                          <div style={{ fontSize: 11, color: '#cbd5e1', marginTop: 4 }}>ID: #{trip._id.slice(-6).toUpperCase()}</div>
+                          <span style={{ fontSize: 10, fontWeight: 800, padding: '4px 10px', borderRadius: 100, background: 'rgba(34, 197, 94, 0.1)', color: '#22c55e', textTransform: 'uppercase' }}>
+                            CONFIRMED
+                          </span>
+                          <div style={{ fontSize: 11, color: '#475569', marginTop: 6 }}>#{trip._id.slice(-6).toUpperCase()}</div>
                         </div>
                       </div>
                     ))}
@@ -150,10 +153,10 @@ export default function DashboardPage() {
             </section>
 
             {/* Sidebar Area: Quick Actions & Notifications */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-              <section className="glass-card" style={{ padding: '24px' }}>
-                <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>Quick Actions</h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
+              <section className="glass-card" style={{ padding: '24px', background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <h3 style={{ fontSize: 18, fontWeight: 700, color: '#fff', marginBottom: 20 }}>Quick Actions</h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                   {[
                     { label: 'Request Flight Ticket', icon: Plane, href: '/booking/ticket', desc: 'Book family or group flights' },
                     { label: 'Visa Assistance', icon: Globe, href: '/booking/visa', desc: 'New visa application/expert help' },
@@ -163,35 +166,39 @@ export default function DashboardPage() {
                   ].map((action, i) => (
                     <Link 
                       key={i} href={action.href}
-                      style={{ padding: 14, borderRadius: 12, border: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', gap: 14, textDecoration: 'none', transition: 'all 0.2s' }}
+                      style={{ padding: '16px', borderRadius: 14, border: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', gap: 16, textDecoration: 'none', transition: 'all 0.3s', background: 'rgba(255,255,255,0.01)' }}
                       className="action-card-hover"
                     >
-                      <div style={{ color: '#63ab45' }}><action.icon size={20} /></div>
-                      <div style={{ flex: 1 }}>
-                        <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: '#1e293b' }}>{action.label}</p>
-                        <p style={{ margin: 0, fontSize: 11, color: '#94a3b8' }}>{action.desc}</p>
+                      <div style={{ width: 40, height: 40, borderRadius: 10, background: 'rgba(99, 171, 69, 0.05)', color: '#63ab45', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <action.icon size={20} />
                       </div>
-                      <ChevronRight size={14} color="#cbd5e1" />
+                      <div style={{ flex: 1 }}>
+                        <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: '#f1f5f9' }}>{action.label}</p>
+                        <p style={{ margin: 0, fontSize: 11, color: '#64748b' }}>{action.desc}</p>
+                      </div>
+                      <ChevronRight size={14} color="#334155" />
                     </Link>
                   ))}
                 </div>
               </section>
 
-              <section className="glass-card" style={{ padding: '24px' }}>
-                <div className="flex-between" style={{ marginBottom: 16 }}>
-                  <h3 style={{ fontSize: 16, fontWeight: 700 }}>Notifications</h3>
-                  <Bell size={16} color="#94a3b8" />
+              <section className="glass-card" style={{ padding: '24px', background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <div className="flex-between" style={{ marginBottom: 20 }}>
+                  <h3 style={{ fontSize: 18, fontWeight: 700, color: '#fff' }}>Trip Updates</h3>
+                  <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b' }}>
+                    <Bell size={16} />
+                  </div>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                   {notifications.length === 0 ? (
-                    <p style={{ fontSize: 13, color: '#94a3b8', margin: 0 }}>Stay tuned for trip updates!</p>
+                    <p style={{ fontSize: 14, color: '#64748b', margin: 0, textAlign: 'center', padding: '20px 0' }}>Stay tuned for trip updates!</p>
                   ) : (
                     notifications.map((note) => (
-                      <div key={note.id} style={{ display: 'flex', gap: 12, paddingBottom: 12, borderBottom: '1px solid #f8fafc' }}>
-                        <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#3b82f6', marginTop: 6, flexShrink: 0 }} />
+                      <div key={note.id} style={{ display: 'flex', gap: 16, padding: '12px', borderRadius: 12, background: 'rgba(255,255,255,0.02)' }}>
+                        <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#63ab45', marginTop: 4, flexShrink: 0, boxShadow: '0 0 10px rgba(99, 171, 69, 0.5)' }} />
                         <div>
-                          <p style={{ margin: 0, fontSize: 13, color: '#475569', lineHeight: 1.5 }}>{note.text}</p>
-                          <span style={{ fontSize: 11, color: '#cbd5e1' }}>{new Date(note.date).toLocaleDateString()}</span>
+                          <p style={{ margin: 0, fontSize: 13, color: '#e2e8f0', lineHeight: 1.5, fontWeight: 500 }}>{note.text}</p>
+                          <span style={{ fontSize: 11, color: '#475569', marginTop: 4, display: 'block' }}>{new Date(note.date).toLocaleDateString()}</span>
                         </div>
                       </div>
                     ))
@@ -208,49 +215,55 @@ export default function DashboardPage() {
   if (!user) return null;
 
   return (
-    <div className="dashboard-layout">
+    <div className="dashboard-layout" style={{ background: '#050a0a', minHeight: '100vh', position: 'relative', overflow: 'hidden' }}>
       <Header />
+      
+      {/* Floating Orbs */}
+      <div className="orb orb-1" />
+      <div className="orb orb-2" />
+      <div className="orb orb-3" />
+
       <Sidebar user={user} onLogout={handleLogout} mobileOpen={mobileMenuOpen} setMobileOpen={setMobileMenuOpen} />
 
-      <main className="dashboard-main animate-fade-in">
+      <main className="dashboard-main animate-fade-in" style={{ position: 'relative', zIndex: 10, padding: '24px 16px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 32, flexWrap: 'wrap', gap: 20 }}>
           <div style={{ flex: '1 1 300px' }}>
-            <h1 className="heading-1" style={{ marginBottom: 8, color: '#1e293b', display: 'flex', alignItems: 'center', gap: 12 }}>
+            <h1 className="responsive-h1" style={{ marginBottom: 8, color: '#fff', display: 'flex', alignItems: 'center', gap: 12 }}>
               {currentTab === 'overview' ? `Marhaba, ${user.name?.split(' ')[0]}! 👋` : currentTab.charAt(0).toUpperCase() + currentTab.slice(1)}
-              {user.role === 'CUSTOMER' && <ShieldCheck size={24} className="text-gold" title="Verified Traveler" />}
+              {user.role === 'CUSTOMER' && <ShieldCheck size={24} style={{ color: '#63ab45', filter: 'drop-shadow(0 0 8px rgba(99,171,69,0.4))' }} title="Verified Traveler" />}
             </h1>
-            <p style={{ color: '#64748b', fontSize: 16 }}>
+            <p style={{ color: '#94a3b8', fontSize: 15, fontWeight: 500 }}>
               {currentTab === 'overview' ? (
-                <>You have <span className="text-gold" style={{ fontWeight: 700 }}>{trips.booked.length} verified bookings</span> and {trips.active.length} active inquiries.</>
+                <>You have <span style={{ color: '#63ab45', fontWeight: 800 }}>{trips.booked.length} verified bookings</span>.</>
               ) : (
                 `Manage your ${currentTab} and travel documents.`
               )}
             </p>
           </div>
 
-          <div style={{ display: 'flex', gap: 12, position: 'relative', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: 12, position: 'relative', flexWrap: 'wrap', width: '100%', maxWidth: 'fit-content' }}>
              <button 
               onClick={() => setShowNotifications(!showNotifications)}
               className="glass-card flex-center"
-              style={{ width: 48, height: 48, borderRadius: 14, color: '#64748b', position: 'relative', border: 'none', cursor: 'pointer' }}
+              style={{ width: 48, height: 48, borderRadius: 12, color: '#fff', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(99, 171, 69, 0.1)', cursor: 'pointer', transition: 'all 0.3s' }}
              >
                 <Bell size={20} />
-                {notifications.length > 0 && <span style={{ position: 'absolute', top: 12, right: 12, width: 8, height: 8, background: '#ef4444', borderRadius: '50%', border: '2px solid #fff' }} />}
+                {notifications.length > 0 && <span style={{ position: 'absolute', top: 12, right: 12, width: 8, height: 8, background: '#ef4444', borderRadius: '50%', border: '2px solid #050a0a' }} />}
              </button>
 
              {showNotifications && (
-                <div className="glass-card animate-slide-up" style={{ position: 'absolute', top: 'calc(100% + 12px)', right: 0, width: Math.min(320, typeof window !== 'undefined' ? window.innerWidth - 40 : 320), padding: 16, zIndex: 9999, overflow: 'hidden' }}>
+                <div className="glass-card animate-slide-up" style={{ position: 'absolute', top: 'calc(100% + 12px)', right: 0, width: 'min(320px, 90vw)', padding: 16, zIndex: 1000, background: 'rgba(5, 15, 15, 0.98)', backdropFilter: 'blur(24px)', border: '1px solid rgba(99, 171, 69, 0.2)', boxShadow: '0 20px 40px rgba(0,0,0,0.6)' }}>
                   <div className="flex-between" style={{ marginBottom: 12 }}>
-                    <h3 style={{ fontSize: 15, fontWeight: 700, color: '#1e293b' }}>Notifications</h3>
-                    <span style={{ fontSize: 11, color: '#94a3b8' }}>{notifications.length} New</span>
+                    <h3 style={{ fontSize: 14, fontWeight: 800, color: '#fff' }}>Notifications</h3>
+                    <span style={{ fontSize: 10, fontWeight: 700, color: '#63ab45', padding: '2px 6px', background: 'rgba(99, 171, 69, 0.1)', borderRadius: 4 }}>{notifications.length} NEW</span>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxHeight: 300, overflowY: 'auto' }}>
                     {notifications.map((note) => (
-                      <div key={note.id} style={{ display: 'flex', gap: 12, padding: 10, borderRadius: 10, background: '#f8fafc' }}>
-                        <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#3b82f6', marginTop: 6, flexShrink: 0 }} />
+                      <div key={note.id} style={{ display: 'flex', gap: 12, padding: 10, borderRadius: 10, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                        <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#63ab45', marginTop: 4, flexShrink: 0 }} />
                         <div>
-                          <p style={{ margin: 0, fontSize: 13, color: '#475569', lineHeight: 1.5 }}>{note.text}</p>
-                          <span style={{ fontSize: 11, color: '#cbd5e1' }}>{new Date(note.date).toLocaleDateString()}</span>
+                          <p style={{ margin: 0, fontSize: 12, color: '#cbd5e1', lineHeight: 1.4, fontWeight: 500 }}>{note.text}</p>
+                          <span style={{ fontSize: 10, color: '#475569', marginTop: 4, display: 'block' }}>{new Date(note.date).toLocaleDateString()}</span>
                         </div>
                       </div>
                     ))}
@@ -258,16 +271,16 @@ export default function DashboardPage() {
                 </div>
              )}
 
-             <Link href="/booking/ticket" className="btn btn-primary btn-sm" style={{ padding: '0 24px', height: 48, flex: '1 1 auto' }}>
-               <Plus size={18} /> New Ticket Booking
+             <Link href="/booking/ticket" className="btn btn-primary" style={{ height: 48, padding: '0 20px', borderRadius: 12, display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 700, boxShadow: '0 10px 20px rgba(99, 171, 69, 0.2)', flex: 1, whiteSpace: 'nowrap' }}>
+               <Plus size={18} /> NEW BOOKING
              </Link>
           </div>
         </div>
 
-        <div className="grid grid-4-responsive" style={{ marginBottom: 40, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 20 }}>
-          <StatCard label="Active Trips" value={trips.booked.length} icon={Plane} color="#059669" />
-          <StatCard label="My Inquiries" value={trips.all.length} icon={MessageSquare} color="#3b82f6" />
-          <StatCard label="Flyajwa Points" value={user.ajwaPoints || 0} icon={Star} color="#f59e0b" isPoints />
+        <div className="stats-grid" style={{ marginBottom: 40 }}>
+          <StatCard label="Trips" value={trips.booked.length} icon={Plane} color="#63ab45" />
+          <StatCard label="Inquiries" value={trips.all.length} icon={MessageSquare} color="#3b82f6" />
+          <StatCard label="Points" value={user.ajwaPoints || 0} icon={Star} color="#f59e0b" isPoints />
           <StatCard label="Saved" value={wishlist.length} icon={Heart} color="#ef4444" />
         </div>
 
@@ -278,20 +291,61 @@ export default function DashboardPage() {
       </main>
 
       <style jsx>{`
-        .list-item-hover:hover { background: #f8fafc; }
-        .action-card-hover:hover { border-color: #63ab45; background: rgba(99, 171, 69, 0.02); }
-        .dashboard-fab { position: fixed; bottom: 32; right: 32; width: 60; height: 60; borderRadius: 50%; background: var(--gradient-gold); color: #fff; zIndex: 100; border: none; transition: all 0.3s; display: flex; align-items: center; justify-content: center; }
-        .dashboard-fab:hover { transform: scale(1.1) rotate(5deg); }
-        @media (min-width: 1025px) { .dashboard-fab { display: none; } }
+        .orb { position: fixed; border-radius: 50%; filter: blur(120px); z-index: 1; opacity: 0.2; }
+        .orb-1 { width: 500px; height: 500px; background: #63ab45; top: -150px; right: -150px; animation: float 20s infinite alternate; }
+        .orb-2 { width: 450px; height: 450px; background: #0ea5e9; bottom: -100px; left: -150px; animation: float 25s infinite alternate-reverse; }
+        .orb-3 { width: 400px; height: 400px; background: #63ab45; top: 30%; left: 10%; opacity: 0.1; animation: float 30s infinite alternate; }
+        
+        .responsive-h1 { font-size: 2.5rem; }
+        .stats-grid { 
+          display: grid; 
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+          gap: 20px; 
+        }
+
+        @media (max-width: 768px) {
+          .responsive-h1 { font-size: 1.75rem; }
+          .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        }
+
+        @media (max-width: 480px) {
+          .stats-grid { grid-template-columns: 1fr; }
+        }
+
+        @keyframes float {
+          0% { transform: translate(0, 0) scale(1); }
+          100% { transform: translate(50px, 60px) scale(1.15); }
+        }
+
+        .list-item-hover:hover { background: rgba(255,255,255,0.05) !important; transform: scale(1.01); }
+        .action-card-hover:hover { border-color: rgba(99, 171, 69, 0.4) !important; background: rgba(99, 171, 69, 0.05) !important; transform: translateY(-4px); }
+        
         @media (max-width: 1024px) { 
-          .grid-2-responsive { grid-template-columns: 1fr; gap: 24px; } 
+          .grid-2-responsive { grid-template-columns: 1fr; gap: 32px; } 
         }
         @media (min-width: 1025px) {
-          .grid-2-responsive { grid-template-columns: 1.5fr 1fr; gap: 40px; }
-          .mobile-only-inline { display: none !important; }
+          .grid-2-responsive { grid-template-columns: 1.6fr 1fr; gap: 48px; }
         }
-        @media (max-width: 1024px) {
-          .mobile-actions-row { flex-direction: row-reverse; justify-content: space-between !important; }
+      `}</style>
+      
+      <style jsx global>{`
+        .dashboard-layout .btn-primary {
+          background: linear-gradient(135deg, #63ab45, #4d8a35);
+          border: none;
+          color: #fff;
+        }
+        .dashboard-layout .btn-primary:hover {
+          box-shadow: 0 0 30px rgba(99, 171, 69, 0.6);
+          transform: translateY(-2px);
+        }
+        .dashboard-layout .btn-outline {
+          border: 1px solid rgba(255,255,255,0.1);
+          color: #fff;
+          background: rgba(255,255,255,0.05);
+        }
+        .dashboard-layout .btn-outline:hover {
+          background: rgba(255,255,255,0.1);
+          border-color: rgba(99, 171, 69, 0.3);
         }
       `}</style>
     </div>

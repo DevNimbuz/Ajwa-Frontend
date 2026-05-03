@@ -249,28 +249,52 @@ export default function AdminLayout({ children }) {
 
       {/* ── Main Content Area ── */}
       <div className="admin-main">
-        <header className="admin-mobile-header">
+        <header className="admin-mobile-header" style={{ 
+          backdropFilter: 'blur(16px)', 
+          background: 'rgba(30, 41, 59, 0.85)',
+          padding: '12px 16px'
+        }}>
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
             aria-label={sidebarOpen ? "Close Sidebar Menu" : "Open Sidebar Menu"}
-            style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}
+            style={{ 
+              background: 'rgba(255,255,255,0.05)', 
+              border: '1px solid rgba(255,255,255,0.1)', 
+              color: '#f1f5f9', 
+              padding: '8px',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
           >
-            {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
+            {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#64748b', fontSize: 13 }}>
-            <Activity size={14} />
-            <span>{new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' })}</span>
+          
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#94a3b8', fontSize: 11, fontWeight: 500 }} className="mobile-date-hide">
+            <Activity size={12} color="#63ab45" />
+            <span>{new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</span>
           </div>
+
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <NotificationBell />
-            <a href="/" target="_blank" style={{ color: '#63ab45', fontSize: 13, textDecoration: 'none' }}>
-              View Website →
+            <a href="/" target="_blank" style={{ 
+              color: '#63ab45', 
+              fontSize: 12, 
+              fontWeight: 700,
+              textDecoration: 'none',
+              background: 'rgba(99, 171, 69, 0.1)',
+              padding: '6px 12px',
+              borderRadius: '6px'
+            }}>
+              Website
             </a>
           </div>
         </header>
 
         {/* Page Content */}
-        <main className="admin-content">
+        <main className="admin-content" style={{ padding: '24px 16px' }}>
           {children}
         </main>
       </div>
@@ -284,6 +308,9 @@ export default function AdminLayout({ children }) {
       )}
 
       <style jsx global>{`
+        @media (max-width: 480px) {
+          .mobile-date-hide { display: none !important; }
+        }
         @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
       </div>

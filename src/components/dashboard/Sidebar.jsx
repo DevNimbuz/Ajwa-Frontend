@@ -18,13 +18,13 @@ export default function Sidebar({ user, onLogout, mobileOpen, setMobileOpen }) {
 
   const sidebarContent = (
     <div className="sidebar-container" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <div className="sidebar-header" style={{ padding: '0 8px 24px' }}>
-        <h2 style={{ fontSize: 13, fontWeight: 700, color: '#94a3b8', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-          Traveler Menu
+      <div className="sidebar-header" style={{ padding: '0 8px 32px' }}>
+        <h2 style={{ fontSize: 11, fontWeight: 800, color: '#475569', letterSpacing: '0.2em', textTransform: 'uppercase' }}>
+          Traveler Hub
         </h2>
       </div>
 
-      <nav style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <nav style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {NAV_ITEMS.map((item) => {
           const isActive = pathname === item.href;
           return (
@@ -35,20 +35,21 @@ export default function Sidebar({ user, onLogout, mobileOpen, setMobileOpen }) {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: 12,
-                padding: '12px 16px',
-                borderRadius: 12,
+                gap: 14,
+                padding: '14px 18px',
+                borderRadius: 14,
                 fontSize: 14,
-                fontWeight: 600,
+                fontWeight: 700,
                 textDecoration: 'none',
-                transition: 'all 0.2s',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                 background: isActive ? 'rgba(99, 171, 69, 0.1)' : 'transparent',
-                color: isActive ? '#63ab45' : '#64748b',
+                color: isActive ? '#63ab45' : '#94a3b8',
                 border: isActive ? '1px solid rgba(99, 171, 69, 0.2)' : '1px solid transparent',
+                boxShadow: isActive ? '0 10px 15px -3px rgba(99, 171, 69, 0.1)' : 'none',
               }}
               className="nav-link-hover"
             >
-              <item.icon size={18} strokeWidth={isActive ? 2.5 : 2} />
+              <item.icon size={20} strokeWidth={isActive ? 2.5 : 2} />
               {item.label}
             </Link>
           );
@@ -61,27 +62,31 @@ export default function Sidebar({ user, onLogout, mobileOpen, setMobileOpen }) {
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: 12,
-            padding: '12px 16px',
+            gap: 14,
+            padding: '14px 18px',
             width: '100%',
-            borderRadius: 12,
+            borderRadius: 14,
             fontSize: 14,
-            fontWeight: 600,
-            color: '#ef4444',
-            transition: 'all 0.2s',
+            fontWeight: 700,
+            color: '#f87171',
+            transition: 'all 0.3s',
             background: 'rgba(239, 68, 68, 0.05)',
+            border: 'none',
+            cursor: 'pointer'
           }}
+          onMouseEnter={e => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)'}
+          onMouseLeave={e => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.05)'}
         >
-          <LogOut size={18} />
+          <LogOut size={20} />
           Sign Out
         </button>
       </div>
       
       <style jsx>{`
-        .nav-link-hover:hover {
-          background: rgba(99, 171, 69, 0.05);
-          color: #63ab45;
-          transform: translateX(4px);
+        .nav-link-hover:not(.active):hover {
+          background: rgba(255, 255, 255, 0.02);
+          color: #e2e8f0;
+          transform: translateX(6px);
         }
       `}</style>
     </div>
@@ -96,13 +101,15 @@ export default function Sidebar({ user, onLogout, mobileOpen, setMobileOpen }) {
         left: 0,
         bottom: 0,
         width: 'var(--sidebar-width)',
-        background: '#fff',
-        borderRight: '1px solid var(--color-border)',
-        padding: '32px 24px',
+        background: 'rgba(2, 6, 23, 0.5)',
+        backdropFilter: 'blur(20px)',
+        borderRight: '1px solid rgba(255, 255, 255, 0.05)',
+        padding: '40px 24px',
         zIndex: 50,
       }} className="desktop-sidebar-only">
         {sidebarContent}
       </aside>
+
 
 
       <style jsx global>{`

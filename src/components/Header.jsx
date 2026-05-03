@@ -117,7 +117,7 @@ export default function Header() {
 
           <div className="header-cta">
             {user && user.role === 'CUSTOMER' ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 {/* Notification Bell */}
                 <div style={{ position: 'relative' }}>
                   <button 
@@ -127,7 +127,7 @@ export default function Header() {
                     }}
                     className="flex-center" 
                     style={{ 
-                      width: 40, height: 40, borderRadius: '50%', 
+                      width: 36, height: 36, borderRadius: '50%', 
                       background: scrolled || !isHome ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.1)',
                       color: scrolled || !isHome ? '#1e293b' : '#fff',
                       position: 'relative',
@@ -136,46 +136,39 @@ export default function Header() {
                     }}
                     aria-label="Toggle Notifications"
                   >
-                    <Bell size={18} />
+                    <Bell size={16} />
                     {notifications.length > 0 && (
                       <span style={{ 
-                        position: 'absolute', top: 10, right: 10, width: 8, height: 8, 
-                        background: '#ef4444', borderRadius: '50%', border: '2px solid #fff' 
+                        position: 'absolute', top: 8, right: 8, width: 6, height: 6, 
+                        background: '#ef4444', borderRadius: '50%', border: '1.5px solid #fff' 
                       }} />
                     )}
                   </button>
 
                   {notificationsOpen && (
                     <div className="glass-card animate-slide-up" style={{
-                      position: 'absolute', top: 'calc(100% + 12px)', right: -60,
-                      width: 320, padding: 16, zIndex: 9999, overflow: 'hidden'
+                      position: 'absolute', top: 'calc(100% + 12px)', right: -120,
+                      width: 280, padding: 12, zIndex: 9999, overflow: 'hidden'
                     }}>
                       <div className="flex-between" style={{ marginBottom: 12 }}>
-                        <h3 style={{ fontSize: 15, fontWeight: 700, color: '#1e293b' }}>Notifications</h3>
-                        <span style={{ fontSize: 11, color: '#94a3b8' }}>{notifications.length} New</span>
+                        <h3 style={{ fontSize: 13, fontWeight: 700, color: '#1e293b' }}>Updates</h3>
+                        <span style={{ fontSize: 10, color: '#94a3b8' }}>{notifications.length} New</span>
                       </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxHeight: 300, overflowY: 'auto' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 250, overflowY: 'auto' }}>
                         {notifications.length === 0 ? (
-                          <p style={{ padding: '20px 0', textAlign: 'center', color: '#94a3b8', fontSize: 13 }}>No new notifications</p>
+                          <p style={{ padding: '20px 0', textAlign: 'center', color: '#94a3b8', fontSize: 12 }}>No new notifications</p>
                         ) : (
                           notifications.map((note) => (
-                            <div key={note.id} style={{ display: 'flex', gap: 12, padding: 10, borderRadius: 10, background: '#f8fafc' }}>
-                              <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#3b82f6', marginTop: 6, flexShrink: 0 }} />
+                            <div key={note.id} style={{ display: 'flex', gap: 10, padding: 8, borderRadius: 8, background: '#f8fafc' }}>
+                              <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#63ab45', marginTop: 5, flexShrink: 0 }} />
                               <div>
-                                <p style={{ margin: 0, fontSize: 13, color: '#475569', lineHeight: 1.5 }}>{note.text}</p>
-                                <span style={{ fontSize: 11, color: '#cbd5e1' }}>{new Date(note.date).toLocaleDateString()}</span>
+                                <p style={{ margin: 0, fontSize: 12, color: '#475569', lineHeight: 1.4 }}>{note.text}</p>
+                                <span style={{ fontSize: 10, color: '#cbd5e1' }}>{new Date(note.date).toLocaleDateString()}</span>
                               </div>
                             </div>
                           ))
                         )}
                       </div>
-                      <Link 
-                        href="/dashboard"
-                        onClick={() => setNotificationsOpen(false)}
-                        style={{ display: 'block', textAlign: 'center', marginTop: 12, fontSize: 12, color: '#63ab45', fontWeight: 600, textDecoration: 'none' }}
-                      >
-                        View All in Dashboard
-                      </Link>
                     </div>
                   )}
                 </div>
@@ -185,40 +178,39 @@ export default function Header() {
                   <button
                     onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
                     style={{ 
-                      padding: '4px 16px 4px 6px',
+                      padding: '4px 10px 4px 4px',
                       background: scrolled || !isHome ? '#f1f5f9' : 'rgba(255,255,255,0.15)',
                       borderRadius: 100,
-                      display: 'flex', alignItems: 'center', gap: 10,
+                      display: 'flex', alignItems: 'center', gap: 8,
                       border: '1px solid rgba(0,0,0,0.05)',
                       color: scrolled || !isHome ? '#1e293b' : '#fff',
                     }}
                   >
                     <div style={{ 
-                      width: 32, height: 32, borderRadius: '50%', 
+                      width: 28, height: 28, borderRadius: '50%', 
                       background: 'var(--gradient-gold)', color: '#fff',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 14, fontWeight: 700
+                      fontSize: 12, fontWeight: 700
                     }}>
                       {user.name?.charAt(0)}
                     </div>
-                    <span style={{ fontSize: 13, fontWeight: 600 }}>{user.name?.split(' ')[0]}</span>
+                    <span style={{ fontSize: 12, fontWeight: 600 }} className="hide-mobile-mini">{user.name?.split(' ')[0]}</span>
                   </button>
                   
                   {profileDropdownOpen && (
                     <div className="glass-card" style={{
                       position: 'absolute', top: 'calc(100% + 12px)', right: 0,
-                      width: 220, padding: 8, zIndex: 9999, overflow: 'hidden',
+                      width: 180, padding: 6, zIndex: 9999, overflow: 'hidden',
                       animation: 'slideUp 0.3s ease'
                     }}>
                       <Link href="/dashboard" style={dropdownItemStyle} className="dropdown-hover" onClick={() => setProfileDropdownOpen(false)}>
-                        <LayoutDashboard size={18} /> My Dashboard
+                        <LayoutDashboard size={16} /> Dashboard
                       </Link>
                       <Link href="/profile" style={dropdownItemStyle} className="dropdown-hover" onClick={() => setProfileDropdownOpen(false)}>
-                        <User size={18} /> My Profile
+                        <User size={16} /> My Profile
                       </Link>
-                      <div style={{ height: 1, background: 'rgba(0,0,0,0.05)', margin: '4px 8px' }} />
                       <button onClick={handleLogout} style={{ ...dropdownItemStyle, color: '#ef4444' }} className="dropdown-hover-red">
-                        <LogOut size={18} /> Sign Out
+                        <LogOut size={16} /> Sign Out
                       </button>
                     </div>
                   )}
@@ -236,8 +228,8 @@ export default function Header() {
             
             <a
               href={`tel:${siteConfig.contact.phone[0]}`}
-              className="btn btn-outline btn-sm"
-              style={{ padding: '8px 20px' }}
+              className="btn btn-outline btn-sm hide-mobile"
+              style={{ padding: '8px 16px' }}
             >
               <Phone size={14} />
               Call
@@ -457,6 +449,11 @@ export default function Header() {
         @keyframes slideUp {
           from { opacity: 0; transform: translateY(10px); }
           to { opacity: 1; transform: translateY(0); }
+        }
+        @media (max-width: 400px) {
+          :global(.hide-mobile-mini) {
+            display: none !important;
+          }
         }
       `}</style>
     </>

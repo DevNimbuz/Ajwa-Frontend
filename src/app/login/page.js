@@ -86,45 +86,45 @@ export default function LoginPage() {
         <div style={{ position: 'absolute', top: '40%', left: '40%', width: 300, height: 300, background: 'rgba(255, 255, 255, 0.15)', borderRadius: '50%', filter: 'blur(80px)', animation: 'float 8s ease-in-out infinite' }} />
       </div>
 
-      <div style={{
-        width: '100%', maxWidth: 440, padding: 48,
+      <div className="login-card" style={{
+        width: '100%', maxWidth: 440, padding: 'clamp(24px, 8vw, 48px)',
         position: 'relative', zIndex: 1,
         borderRadius: 'var(--radius-xl)',
         ...whiteGlass
       }}>
-        <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: 'rgba(255,255,255,0.7)', textDecoration: 'none', fontSize: 14, marginBottom: 24, fontWeight: 500, transition: 'color 0.2s' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(255,255,255,0.7)'}>
-          <ArrowLeft size={16} /> Back to Home
+        <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: 'rgba(255,255,255,0.7)', textDecoration: 'none', fontSize: 13, marginBottom: 20, fontWeight: 500, transition: 'color 0.2s' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(255,255,255,0.7)'}>
+          <ArrowLeft size={14} /> Back to Home
         </Link>
 
-        <div style={{ textAlign: 'center', marginBottom: 36 }}>
+        <div style={{ textAlign: 'center', marginBottom: 32 }}>
           <div style={{
-            width: 72, height: 72, margin: '0 auto 20px',
-            borderRadius: 24, display: 'flex', alignItems: 'center', justifyContent: 'center',
+            width: 60, height: 60, margin: '0 auto 16px',
+            borderRadius: 20, display: 'flex', alignItems: 'center', justifyContent: 'center',
             ...greenGlass
           }}>
-            <User size={36} color="#fff" />
+            <User size={30} color="#fff" />
           </div>
-          <h1 style={{ color: '#fff', fontSize: 28, fontWeight: 700, margin: '0 0 8px', fontFamily: 'var(--font-heading)', textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>Traveler Hub</h1>
-          <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 15, margin: 0 }}>Sign in to manage your bookings</p>
+          <h1 className="login-h1" style={{ color: '#fff', fontSize: '1.75rem', fontWeight: 700, margin: '0 0 4px', fontFamily: 'var(--font-heading)', textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>Traveler Hub</h1>
+          <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14, margin: 0 }}>Sign in to manage your bookings</p>
         </div>
 
         {error && (
           <div style={{
-            display: 'flex', alignItems: 'center', gap: 10,
-            padding: '12px 16px', marginBottom: 24,
+            display: 'flex', alignItems: 'center', gap: 8,
+            padding: '10px 14px', marginBottom: 20,
             background: 'rgba(220, 38, 38, 0.2)', border: '1px solid rgba(220, 38, 38, 0.4)',
             backdropFilter: 'blur(8px)',
-            borderRadius: 'var(--radius-md)', color: '#fca5a5', fontSize: 14,
+            borderRadius: 'var(--radius-md)', color: '#fca5a5', fontSize: 13,
             fontWeight: 500
           }}>
-            <AlertCircle size={18} />
+            <AlertCircle size={16} />
             <span>{error}</span>
           </div>
         )}
 
         <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: 20 }}>
-            <label style={{ display: 'block', color: 'rgba(255,255,255,0.9)', fontSize: 14, fontWeight: 600, marginBottom: 8, textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+          <div style={{ marginBottom: 16 }}>
+            <label style={{ display: 'block', color: 'rgba(255,255,255,0.9)', fontSize: 13, fontWeight: 600, marginBottom: 6, textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
               Email Address
             </label>
             <input
@@ -134,8 +134,8 @@ export default function LoginPage() {
               required
               placeholder="you@example.com"
               style={{
-                width: '100%', padding: '14px 16px',
-                color: '#fff', fontSize: 15,
+                width: '100%', padding: '12px 14px',
+                color: '#fff', fontSize: 14,
                 outline: 'none', transition: 'all 0.2s',
                 boxSizing: 'border-box',
                 borderRadius: 'var(--radius-md)',
@@ -146,13 +146,13 @@ export default function LoginPage() {
             />
           </div>
 
-          <div style={{ marginBottom: 28 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-              <label style={{ color: 'rgba(255,255,255,0.9)', fontSize: 14, fontWeight: 600, textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+          <div style={{ marginBottom: 24 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+              <label style={{ color: 'rgba(255,255,255,0.9)', fontSize: 13, fontWeight: 600, textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
                 Password
               </label>
-              <Link href="/forgot-password" style={{ color: '#7bc462', fontSize: 13, textDecoration: 'none', fontWeight: 600, textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
-                Forgot password?
+              <Link href="/forgot-password" style={{ color: '#7bc462', fontSize: 12, textDecoration: 'none', fontWeight: 600, textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+                Forgot?
               </Link>
             </div>
             <div style={{ position: 'relative' }}>
@@ -163,8 +163,8 @@ export default function LoginPage() {
                 required
                 placeholder="Enter your password"
                 style={{
-                  width: '100%', padding: '14px 48px 14px 16px',
-                  color: '#fff', fontSize: 15,
+                  width: '100%', padding: '12px 42px 12px 14px',
+                  color: '#fff', fontSize: 14,
                   outline: 'none', transition: 'all 0.2s',
                   boxSizing: 'border-box',
                   borderRadius: 'var(--radius-md)',
@@ -177,14 +177,14 @@ export default function LoginPage() {
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 style={{
-                  position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)',
+                  position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)',
                   background: 'none', border: 'none', color: 'rgba(255,255,255,0.6)', cursor: 'pointer', padding: 4,
                   display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'color 0.2s'
                 }}
                 onMouseOver={e => e.currentTarget.style.color = '#fff'}
                 onMouseOut={e => e.currentTarget.style.color = 'rgba(255,255,255,0.6)'}
               >
-                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
           </div>
@@ -193,9 +193,9 @@ export default function LoginPage() {
             type="submit"
             disabled={loading}
             style={{
-              width: '100%', padding: '16px 20px',
+              width: '100%', padding: '14px 20px',
               borderRadius: 'var(--radius-md)',
-              fontSize: 16, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer',
+              fontSize: 15, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
               opacity: loading ? 0.7 : 1,
               color: '#fff',
@@ -206,14 +206,14 @@ export default function LoginPage() {
             onMouseOver={e => !loading && (e.currentTarget.style.background = 'rgba(99, 210, 69, 0.75)')}
             onMouseOut={e => !loading && (e.currentTarget.style.background = 'rgba(99, 210, 69, 0.55)')}
           >
-            {loading ? <><Loader2 size={20} style={{ animation: 'spin 1s linear infinite' }} /> Signing in...</> : 'Sign In'}
+            {loading ? <><Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} /> Signing in...</> : 'Sign In'}
           </button>
         </form>
 
-        <div style={{ marginTop: 32, paddingTop: 24, borderTop: '1px solid rgba(255,255,255,0.1)', textAlign: 'center' }}>
-          <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 15, margin: 0 }}>
+        <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid rgba(255,255,255,0.1)', textAlign: 'center' }}>
+          <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14, margin: 0 }}>
             New to Flyajwa?{' '}
-            <Link href="/register" style={{ color: '#7bc462', fontWeight: 600, textDecoration: 'none', textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+            <Link href="/register" style={{ color: '#7bc462', fontWeight: 600, textDecoration: 'none' }}>
               Create Account
             </Link>
           </p>
@@ -225,9 +225,13 @@ export default function LoginPage() {
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes float {
           0%, 100% { transform: translateY(0) scale(1); }
-          50% { transform: translateY(-30px) scale(1.05); }
+          50% { transform: translateY(-20px) scale(1.02); }
         }
-        input::placeholder { color: rgba(255,255,255,0.4) !important; }
+        input::placeholder { color: rgba(255,255,255,0.3) !important; }
+        
+        @media (max-width: 480px) {
+          .login-h1 { font-size: 1.5rem !important; }
+        }
       `}</style>
     </div>
   );
