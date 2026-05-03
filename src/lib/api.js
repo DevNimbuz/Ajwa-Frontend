@@ -133,6 +133,12 @@ async function apiFetch(endpoint, options = {}) {
 
     const data = await response.json();
 
+    // Handle CSRF errors specifically (HIGH-PRIORITY FIX)
+    if (response.status === 403 && (data?.message?.includes('CSRF') || data?.message?.includes('token'))) {
+      console.warn('[API] CSRF Error detected. Clearing local CSRF token for retry.');
+      setCSRFToken(null);
+    }
+
 
     // Handle auth errors — auto logout
     if (response.status === 401) {
