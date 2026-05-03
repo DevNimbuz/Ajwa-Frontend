@@ -1,8 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { 
   LogIn, LogOut, Bell, Settings, LayoutDashboard,
   Home, Plane, Heart, FileText, Globe,
@@ -21,6 +20,7 @@ export default function Header() {
   const [user, setUser] = useState(null);
   const pathname = usePathname();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     const storedUser = authAPI.getUser();
@@ -229,11 +229,11 @@ export default function Header() {
             
             <a
               href={`tel:${siteConfig.contact.phone[0]}`}
-              className="btn btn-outline btn-sm hide-mobile"
-              style={{ padding: '8px 16px' }}
+              className="btn btn-primary btn-sm hide-mobile call-btn-flip"
+              style={{ padding: '8px 18px', borderRadius: 100, fontWeight: 700 }}
             >
               <Phone size={14} />
-              Call
+              CALL
             </a>
             <button
               className={`mobile-menu-btn ${mobileOpen ? 'active' : ''}`}
@@ -285,27 +285,29 @@ export default function Header() {
                   { label: 'Wishlist', href: '/dashboard?tab=wishlist', icon: Heart },
                   { label: 'My Documents', href: '/dashboard?tab=documents', icon: FileText },
                   { label: 'My Profile', href: '/profile', icon: User },
-                ].map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => setMobileOpen(false)}
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => setMobileOpen(false)}
-                    style={{ 
-                      padding: '12px 14px', borderRadius: 12, display: 'flex', alignItems: 'center', gap: 12,
-                      background: (item.href === '/profile' ? pathname === '/profile' : (pathname === '/dashboard' && (searchParams.get('tab') || 'overview') === (new URL(item.href, 'http://x.y').searchParams.get('tab') || 'overview'))) ? 'rgba(99, 171, 69, 0.15)' : 'transparent',
-                      color: (item.href === '/profile' ? pathname === '/profile' : (pathname === '/dashboard' && (searchParams.get('tab') || 'overview') === (new URL(item.href, 'http://x.y').searchParams.get('tab') || 'overview'))) ? '#63ab45' : '#fff',
-                      fontSize: 14, fontWeight: 600, textDecoration: 'none'
-                    }}
-                  >
-                    <item.icon size={18} />
-                    {item.label}
-                  </Link>
-                ))}
+                ].map((item) => {
+                  const itemTab = item.href.includes('tab=') ? item.href.split('tab=')[1] : 'overview';
+                  const isActive = item.href === '/profile' 
+                    ? pathname === '/profile' 
+                    : (pathname === '/dashboard' && (searchParams.get('tab') || 'overview') === itemTab);
+                  
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setMobileOpen(false)}
+                      style={{ 
+                        padding: '12px 14px', borderRadius: 12, display: 'flex', alignItems: 'center', gap: 12,
+                        background: isActive ? 'rgba(99, 171, 69, 0.15)' : 'transparent',
+                        color: isActive ? '#63ab45' : '#fff',
+                        fontSize: 14, fontWeight: 600, textDecoration: 'none'
+                      }}
+                    >
+                      <item.icon size={18} />
+                      {item.label}
+                    </Link>
+                  );
+                })}
               </div>
             </div>
           )}
@@ -465,6 +467,15 @@ export default function Header() {
         .header-dark-mode :global(.btn-outline) {
           color: #fff !important;
           border-color: rgba(255,255,255,0.2) !important;
+        }
+        .header-dark-mode :global(.call-btn-flip) {
+          background: #63ab45 !important;
+          color: #fff !important;
+          border: 1px solid #63ab45 !important;
+        }
+        .header-dark-mode :global(.call-btn-flip:hover) {
+          background: transparent !important;
+          color: #63ab45 !important;
         }
         .dropdown-hover:hover { background: rgba(99, 171, 69, 0.08); color: #63ab45; }
         .dropdown-hover-red:hover { background: rgba(239, 68, 68, 0.08); }
