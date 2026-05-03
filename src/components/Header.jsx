@@ -79,6 +79,7 @@ export default function Header() {
   }, [mobileOpen]);
 
   const isHome = pathname === '/';
+  const isDarkPage = pathname.startsWith('/dashboard') || pathname.startsWith('/profile');
 
   const dropdownItemStyle = {
     display: 'flex', alignItems: 'center', gap: 10,
@@ -90,7 +91,7 @@ export default function Header() {
   return (
     <>
       <header
-        className={`header ${scrolled || !isHome ? 'header-solid' : 'header-transparent'}`}
+        className={`header ${scrolled || !isHome ? 'header-solid' : 'header-transparent'} ${isDarkPage ? 'header-dark-mode' : ''}`}
         id="site-header"
       >
         <div className="header-inner">
@@ -128,8 +129,8 @@ export default function Header() {
                     className="flex-center" 
                     style={{ 
                       width: 36, height: 36, borderRadius: '50%', 
-                      background: scrolled || !isHome ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.1)',
-                      color: scrolled || !isHome ? '#1e293b' : '#fff',
+                      background: isDarkPage ? 'rgba(255,255,255,0.08)' : (scrolled || !isHome ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.1)'),
+                      color: isDarkPage || (!scrolled && isHome) ? '#fff' : '#1e293b',
                       position: 'relative',
                       border: 'none',
                       cursor: 'pointer'
@@ -179,11 +180,11 @@ export default function Header() {
                     onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
                     style={{ 
                       padding: '4px 10px 4px 4px',
-                      background: scrolled || !isHome ? '#f1f5f9' : 'rgba(255,255,255,0.15)',
+                      background: isDarkPage ? 'rgba(255,255,255,0.1)' : (scrolled || !isHome ? '#f1f5f9' : 'rgba(255,255,255,0.15)'),
                       borderRadius: 100,
                       display: 'flex', alignItems: 'center', gap: 8,
-                      border: '1px solid rgba(0,0,0,0.05)',
-                      color: scrolled || !isHome ? '#1e293b' : '#fff',
+                      border: isDarkPage ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.05)',
+                      color: isDarkPage || (!scrolled && isHome) ? '#fff' : '#1e293b',
                     }}
                   >
                     <div style={{ 
@@ -289,10 +290,15 @@ export default function Header() {
                     key={item.href}
                     href={item.href}
                     onClick={() => setMobileOpen(false)}
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setMobileOpen(false)}
                     style={{ 
                       padding: '12px 14px', borderRadius: 12, display: 'flex', alignItems: 'center', gap: 12,
-                      background: pathname === item.href ? 'rgba(99, 171, 69, 0.15)' : 'transparent',
-                      color: pathname === item.href ? '#63ab45' : '#fff',
+                      background: (item.href === '/profile' ? pathname === '/profile' : (pathname === '/dashboard' && (searchParams.get('tab') || 'overview') === (new URL(item.href, 'http://x.y').searchParams.get('tab') || 'overview'))) ? 'rgba(99, 171, 69, 0.15)' : 'transparent',
+                      color: (item.href === '/profile' ? pathname === '/profile' : (pathname === '/dashboard' && (searchParams.get('tab') || 'overview') === (new URL(item.href, 'http://x.y').searchParams.get('tab') || 'overview'))) ? '#63ab45' : '#fff',
                       fontSize: 14, fontWeight: 600, textDecoration: 'none'
                     }}
                   >
@@ -444,6 +450,22 @@ export default function Header() {
       )}
 
       <style jsx>{`
+        .header-dark-mode {
+          background: rgba(5, 10, 10, 0.8) !important;
+          backdrop-filter: blur(20px) !important;
+          border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+        }
+        .header-dark-mode :global(.header-nav a) {
+          color: rgba(255,255,255,0.7) !important;
+        }
+        .header-dark-mode :global(.header-nav a:hover), 
+        .header-dark-mode :global(.header-nav a.active) {
+          color: #63ab45 !important;
+        }
+        .header-dark-mode :global(.btn-outline) {
+          color: #fff !important;
+          border-color: rgba(255,255,255,0.2) !important;
+        }
         .dropdown-hover:hover { background: rgba(99, 171, 69, 0.08); color: #63ab45; }
         .dropdown-hover-red:hover { background: rgba(239, 68, 68, 0.08); }
         @keyframes slideUp {

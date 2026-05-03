@@ -1,12 +1,12 @@
 'use client';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { 
   Home, User, Plane, Heart, FileText, LogOut, X, Bell 
 } from 'lucide-react';
 
 const NAV_ITEMS = [
-  { key: 'dashboard', label: 'Dashboard', icon: Home, href: '/dashboard' },
+  { key: 'overview', label: 'Dashboard', icon: Home, href: '/dashboard' },
   { key: 'profile', label: 'My Profile', icon: User, href: '/profile' },
   { key: 'bookings', label: 'My Bookings', icon: Plane, href: '/dashboard?tab=bookings' },
   { key: 'wishlist', label: 'Wishlist', icon: Heart, href: '/dashboard?tab=wishlist' },
@@ -15,6 +15,8 @@ const NAV_ITEMS = [
 
 export default function Sidebar({ user, onLogout, mobileOpen, setMobileOpen }) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentTab = searchParams.get('tab') || 'overview';
 
   const sidebarContent = (
     <div className="sidebar-container" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -26,7 +28,13 @@ export default function Sidebar({ user, onLogout, mobileOpen, setMobileOpen }) {
 
       <nav style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {NAV_ITEMS.map((item) => {
-          const isActive = pathname === item.href;
+          // Logic: 
+          // 1. Profile is active if pathname is /profile
+          // 2. Others are active if pathname is /dashboard AND tab matches key
+          const isActive = item.key === 'profile' 
+            ? pathname === '/profile' 
+            : (pathname === '/dashboard' && currentTab === item.key);
+
           return (
             <Link 
               key={item.key} 
