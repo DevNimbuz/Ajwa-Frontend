@@ -49,11 +49,32 @@ export default function AdminUsersPage() {
     <div className="admin-page-container animate-fade-in">
       {/* Header & Stats */}
       <div className="admin-header-section">
-        <div className="admin-title-row">
-          <div className="admin-title-group">
-            <h1 className="admin-h1">Traveler Management</h1>
-            <p className="admin-p">Complete oversight of your traveler database and loyalty rewards.</p>
+        <div className="admin-title-group">
+          <h1 className="admin-h1">Traveler Management</h1>
+          <p className="admin-p">Complete oversight of your traveler database and loyalty rewards.</p>
+        </div>
+
+        <div className="header-action-row">
+          {/* Unified Search Bar */}
+          <div className="search-wrapper">
+            <form onSubmit={handleSearch} className="premium-search-bar">
+              <div className="search-input-group">
+                <Search size={20} color="#ffffff" style={{ marginLeft: '4px' }} className="search-icon-fixed" />
+                <input 
+                  type="text" 
+                  placeholder="Search by name, email, or phone..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="premium-input"
+                />
+              </div>
+              <button type="submit" className="premium-search-btn">
+                <span>Search</span>
+                <ArrowRight size={16} />
+              </button>
+            </form>
           </div>
+
           <div className="admin-stats-group">
              <div className="premium-stat-card">
                 <div className="stat-content">
@@ -65,26 +86,6 @@ export default function AdminUsersPage() {
                 </div>
              </div>
           </div>
-        </div>
-
-        {/* Unified Search Bar */}
-        <div className="search-wrapper">
-          <form onSubmit={handleSearch} className="premium-search-bar">
-            <div className="search-input-group">
-              <Search size={20} className="search-icon-fixed" />
-              <input 
-                type="text" 
-                placeholder="Search by name, email, or phone..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="premium-input"
-              />
-            </div>
-            <button type="submit" className="premium-search-btn">
-              <span>Search</span>
-              <ArrowRight size={16} />
-            </button>
-          </form>
         </div>
       </div>
 
@@ -242,16 +243,19 @@ export default function AdminUsersPage() {
 
       <style jsx>{`
         .admin-page-container {
-          padding: 40px;
+          padding: 20px 40px;
           max-width: 1400px;
           margin: 0 auto;
         }
 
         /* Header & Stats */
-        .admin-header-section { margin-bottom: 40px; }
-        .admin-title-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; margin-bottom: 32px; }
-        .admin-h1 { color: #fff; font-size: 2.5rem; font-weight: 800; margin: 0 0 12px; letter-spacing: -0.02em; }
+        .admin-header-section { margin-bottom: 12px; }
+        .admin-title-group { margin-bottom: 4px; padding-top: 10px; }
+        .admin-h1 { color: #fff; font-size: 2.5rem; font-weight: 800; margin: 0 0 8px; letter-spacing: -0.02em; }
         .admin-p { color: #94a3b8; font-size: 1.125rem; max-width: 600px; line-height: 1.6; }
+
+        .header-action-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; }
+        .search-wrapper { flex: 1; max-width: 800px; }
 
         .premium-stat-card {
           background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px);
@@ -261,19 +265,21 @@ export default function AdminUsersPage() {
         .stat-value { font-size: 32px; font-weight: 800; color: #63ab45; margin-bottom: 4px; }
         .stat-label { font-size: 12px; color: #64748b; font-weight: 700; text-transform: uppercase; }
         .stat-icon-box { width: 56px; height: 56px; background: rgba(99, 171, 69, 0.1); color: #63ab45; border-radius: 16px; display: flex; align-items: center; justify-content: center; }
-
-        /* Search */
-        .search-wrapper { max-width: 800px; }
         .premium-search-bar {
           background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px);
-          border: 1px solid rgba(255, 255, 255, 0.05); padding: 8px 8px 8px 24px;
-          border-radius: 100px; display: flex; align-items: center; gap: 16px;
+          border: 1px solid rgba(255, 255, 255, 0.05); padding: 6px 6px 6px 16px;
+          border-radius: 100px; display: flex; align-items: center; gap: 12px;
         }
-        .premium-input { width: 100%; background: transparent; border: none; color: #f1f5f9; font-size: 16px; outline: none; }
+        .search-input-group { flex: 1; display: flex; align-items: center; gap: 12px; min-width: 0; }
+        .search-icon-fixed { color: #ffffff !important; flex-shrink: 0; opacity: 1 !important; }
+        .premium-input { flex: 1; background: transparent; border: none; color: #f1f5f9; font-size: 15px; outline: none; min-width: 0; }
         .premium-search-btn {
-          background: #63ab45; color: #fff; border: none; padding: 12px 24px; border-radius: 100px;
+          background: #63ab45; color: #fff; border: none; padding: 10px 20px; border-radius: 100px;
           font-weight: 700; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.3s;
+          flex-shrink: 0; font-size: 13px; box-shadow: 0 4px 12px rgba(99, 171, 69, 0.2);
         }
+        .premium-search-btn:hover { background: #75c156; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(99, 171, 69, 0.3); }
+        .premium-search-btn:active { transform: scale(0.95); }
 
         /* Container */
         .data-display-container {
@@ -370,7 +376,8 @@ export default function AdminUsersPage() {
 
         @media (max-width: 480px) {
           .admin-h1 { font-size: 1.8rem; }
-          .premium-search-bar { border-radius: 20px; flex-direction: column; padding: 16px; gap: 12px; }
+          .premium-search-bar { border-radius: 20px; flex-direction: column; padding: 16px 8px !important; gap: 12px; align-items: stretch; }
+          .search-input-group { padding-left: 0px !important; gap: 8px; }
           .premium-search-btn { width: 100%; justify-content: center; }
         }
       `}</style>

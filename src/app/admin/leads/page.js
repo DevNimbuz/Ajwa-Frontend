@@ -94,12 +94,17 @@ export default function AdminLeads() {
 
       <div className="hd-filters-bar">
         <div className="search-box-hd">
-          <Search size={18} className="search-icon-hd" />
+          <Search size={18} color="#ffffff" style={{ marginLeft: '4px' }} className="search-icon-hd" />
           <input
             placeholder="Search by name, phone or destination..."
             value={filters.search}
             onChange={(e) => setFilters(f => ({ ...f, search: e.target.value, page: 1 }))}
+            onKeyPress={(e) => e.key === 'Enter' && fetchLeads()}
           />
+          <button className="search-trigger-hd" onClick={fetchLeads}>
+            <span>Search</span>
+            <ArrowRight size={16} />
+          </button>
         </div>
         
         <div className="quick-selectors">
@@ -353,20 +358,48 @@ export default function AdminLeads() {
         .vibrant-action-btn { background: #63ab45; color: #fff; padding: 12px 28px; border-radius: 100px; font-weight: 700; display: flex; align-items: center; gap: 10px; box-shadow: 0 10px 30px rgba(99, 171, 69, 0.3); transition: 0.3s; }
         .vibrant-action-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(99, 171, 69, 0.4); }
 
-        .hd-filters-bar { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 24px; display: flex; gap: 12px; align-items: center; margin-bottom: 32px; flex-wrap: wrap; }
+        .hd-filters-bar { 
+          background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.05); 
+          padding: 12px; border-radius: 24px; display: flex; gap: 12px; align-items: center; margin-bottom: 32px; flex-wrap: wrap; 
+        }
         
-        .search-box-hd { flex: 1; min-width: 300px; position: relative; background: #0f172a; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); padding: 0 16px; display: flex; align-items: center; height: 48px; }
-        .search-icon-hd { color: #475569; margin-right: 12px; }
-        .search-box-hd input { background: transparent; border: none; color: #fff; font-size: 14px; width: 100%; outline: none; }
+        .search-box-hd { flex: 2; min-width: 300px; position: relative; background: #0f172a; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); padding: 0 6px 0 8px !important; display: flex; align-items: center; height: 48px; gap: 10px; }
+        .search-icon-hd { color: #ffffff !important; flex-shrink: 0; opacity: 1 !important; }
+        .search-box-hd input { background: transparent; border: none; color: #fff; font-size: 14px; flex: 1; outline: none; min-width: 0; }
+        .search-trigger-hd { 
+          padding: 0 16px; height: 36px; background: #63ab45; color: #fff; border-radius: 100px; 
+          display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; 
+          flex-shrink: 0; font-weight: 700; font-size: 13px; box-shadow: 0 4px 12px rgba(99, 171, 69, 0.2); 
+        }
+        .search-trigger-hd:hover { background: #75c156; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(99, 171, 69, 0.3); }
+        .search-trigger-hd:active { transform: scale(0.95); }
         
-        .quick-selectors { display: flex; gap: 12px; }
-        .custom-select-hd { position: relative; background: #0f172a; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); height: 48px; display: flex; align-items: center; padding: 0 16px; cursor: pointer; }
-        .custom-select-hd select { appearance: none; background: transparent; border: none; color: #e2e8f0; font-size: 14px; font-weight: 600; padding-right: 24px; cursor: pointer; outline: none; }
+        .quick-selectors { display: flex; gap: 12px; flex: 1; }
+        .custom-select-hd { flex: 1; position: relative; background: #0f172a; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); height: 48px; display: flex; align-items: center; padding: 0 16px; cursor: pointer; min-width: 140px; }
+        .custom-select-hd select { appearance: none; background: transparent; border: none; color: #e2e8f0; font-size: 14px; font-weight: 600; padding-right: 24px; cursor: pointer; outline: none; width: 100%; }
         .custom-select-hd :global(svg) { position: absolute; right: 16px; pointer-events: none; color: #64748b; }
         
-        .date-hub-hd { display: flex; align-items: center; gap: 12px; background: #0f172a; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); padding: 0 16px; height: 48px; cursor: pointer; transition: 0.2s; }
+        .date-hub-hd { display: flex; align-items: center; gap: 12px; background: #0f172a; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); padding: 0 20px; height: 48px; cursor: pointer; transition: 0.2s; min-width: 220px; }
         .date-hub-hd:hover { border-color: #63ab4560; background: #1e293b; }
-        .date-display-text { color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+        .date-display-text { color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+
+        @media (max-width: 1200px) {
+          .hd-filters-bar { padding: 16px; gap: 16px; }
+          .search-box-hd { flex: none; width: 100%; order: 1; }
+          .quick-selectors { flex: 1; order: 2; }
+          .date-hub-hd { flex: none; order: 3; }
+        }
+
+        @media (max-width: 768px) {
+          .hd-filters-bar { flex-direction: column; align-items: stretch; border-radius: 20px; }
+          .quick-selectors { flex-direction: column; gap: 12px; }
+          .custom-select-hd { width: 100%; }
+          .date-hub-hd { width: 100%; justify-content: space-between; }
+          .user-name-hd { font-size: 0.85rem; white-space: nowrap !important; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
+          .header-text-group { flex: 1; min-width: 0; padding-right: 10px; }
+          .header-text-group h2 { font-size: 1.1rem !important; white-space: nowrap !important; overflow: hidden; text-overflow: ellipsis; width: 100%; }
+          .header-avatar { width: 44px; height: 44px; border-radius: 12px; font-size: 1.1rem; }
+        }
         .date-display-text .sep { color: #475569; font-weight: 400; }
 
         .leads-grid-system { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
@@ -375,10 +408,10 @@ export default function AdminLeads() {
         
         .card-hd-top { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
         .user-avatar-hd { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 1.2rem; }
-        .user-meta-hd { flex: 1; }
-        .user-name-hd { color: #fff; font-size: 1rem; font-weight: 700; margin-bottom: 2px; }
+        .user-meta-hd { flex: 1; min-width: 0; }
+        .user-name-hd { color: #fff; font-size: 1rem; font-weight: 700; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .user-id-hd { color: #475569; font-size: 11px; font-weight: 600; }
-        .status-indicator-hd { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.05em; }
+        .status-indicator-hd { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.05em; margin-left: auto; }
 
         .card-hd-body { margin-bottom: 20px; display: flex; flex-direction: column; gap: 10px; }
         .lead-intent-box { display: flex; align-items: center; gap: 8px; color: #f1f5f9; font-weight: 600; font-size: 14px; }
