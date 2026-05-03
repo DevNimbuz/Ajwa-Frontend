@@ -190,6 +190,9 @@ async function apiFetch(endpoint, options = {}) {
 export const authAPI = {
   /** Login with email and password */
   async login(email, password) {
+    // Force clear CSRF token to ensure a fresh one is fetched for the login attempt (Sync Fix)
+    setCSRFToken(null);
+    
     const data = await apiFetch('/auth/login', {
       method: 'POST',
       body: { email, password },
