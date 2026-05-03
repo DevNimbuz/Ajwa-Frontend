@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
 import { leadsAPI, usersAPI, authAPI } from '@/lib/api';
 import {
   Search, Filter, Download, ChevronLeft, ChevronRight, ChevronDown,
   MessageSquare, Phone, Mail, MapPin, Clock, X, Plus, Trash2, Calendar as CalendarIcon, Star,
-  Receipt, Wallet, CreditCard, CheckSquare, XSquare, Loader2, ArrowRight, Eye, Users, Hash
+  Receipt, Wallet, CreditCard, CheckSquare, XSquare, Loader2, ArrowRight, Eye, Users, Hash, Calendar
 } from 'lucide-react';
 
 const statusColors = {
@@ -39,6 +40,7 @@ export default function AdminLeads() {
   });
   const [selectedLead, setSelectedLead] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showDateModal, setShowDateModal] = useState(false);
   const user = authAPI.getUser();
 
   const fetchLeads = async () => {
@@ -117,27 +119,14 @@ export default function AdminLeads() {
           </div>
         </div>
 
-        <div className="date-hub-hd">
+        <div className="date-hub-hd" onClick={() => setShowDateModal(true)}>
            <CalendarIcon size={16} color="#63ab45" />
-           <div className="dp-wrapper">
-             <DatePicker
-               selected={filters.startDate ? new Date(filters.startDate) : null}
-               onChange={(date) => setFilters({...filters, startDate: date ? date.toISOString().split('T')[0] : '', page: 1})}
-               dateFormat="dd MMM"
-               placeholderText="From"
-               className="hd-datepicker"
-             />
-           </div>
-           <span className="dp-sep">to</span>
-           <div className="dp-wrapper">
-             <DatePicker
-               selected={filters.endDate ? new Date(filters.endDate) : null}
-               onChange={(date) => setFilters({...filters, endDate: date ? date.toISOString().split('T')[0] : '', page: 1})}
-               dateFormat="dd MMM"
-               placeholderText="End"
-               className="hd-datepicker"
-             />
-           </div>
+           <span className="date-display-text">
+             {filters.startDate ? new Date(filters.startDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : 'From'} 
+             <span className="sep">—</span> 
+             {filters.endDate ? new Date(filters.endDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : 'End'}
+           </span>
+           <ChevronDown size={14} color="#475569" />
         </div>
       </div>
 
@@ -197,10 +186,56 @@ export default function AdminLeads() {
         )}
       </div>
 
+      {/* 🗓️ PREMIUM DATE MODAL */}
+      {showDateModal && (
+        <div className="modal-viewport">
+          <div className="modal-blur-overlay" onClick={() => setShowDateModal(false)} />
+          <div className="date-modal-container animate-scale-up">
+             <div className="date-modal-header">
+                <div className="header-icon-box"><Calendar size={20} color="#63ab45" /></div>
+                <h3>Select Date Range</h3>
+                <button className="close-date-modal" onClick={() => setShowDateModal(false)}><X size={20} /></button>
+             </div>
+             
+             <div className="date-modal-body">
+                <div className="dual-picker-container">
+                   <div className="picker-block">
+                      <label>Starting From</label>
+                      <DatePicker
+                        selected={filters.startDate ? new Date(filters.startDate) : null}
+                        onChange={(date) => setFilters(f => ({ ...f, startDate: date ? date.toISOString().split('T')[0] : '', page: 1 }))}
+                        inline
+                        maxDate={filters.endDate ? new Date(filters.endDate) : null}
+                      />
+                   </div>
+                   <div className="picker-block">
+                      <label>Ending At</label>
+                      <DatePicker
+                        selected={filters.endDate ? new Date(filters.endDate) : null}
+                        onChange={(date) => setFilters(f => ({ ...f, endDate: date ? date.toISOString().split('T')[0] : '', page: 1 }))}
+                        inline
+                        minDate={filters.startDate ? new Date(filters.startDate) : null}
+                      />
+                   </div>
+                </div>
+             </div>
+
+             <div className="date-modal-footer">
+                <button className="clear-dates-btn" onClick={() => { setFilters(f => ({ ...f, startDate: '', endDate: '', page: 1 })); setShowDateModal(false); }}>
+                   Clear Filters
+                </button>
+                <button className="apply-dates-btn" onClick={() => setShowDateModal(false)}>
+                   Confirm Selection
+                </button>
+             </div>
+          </div>
+        </div>
+      )}
+
       {selectedLead && (
         <div className="modal-viewport">
           <div className="modal-blur-overlay" onClick={() => setSelectedLead(null)} />
-          <div className="hd-modal-container">
+          <div className="hd-modal-container animate-scale-up">
              <div className="hd-modal-header" style={{ background: `linear-gradient(90deg, ${statusColors[selectedLead.status]?.main}20, transparent)` }}>
                 <div className="header-user-info">
                    <div className="header-avatar" style={{ background: statusColors[selectedLead.status]?.main }}>{selectedLead.name?.[0]}</div>
@@ -329,35 +364,15 @@ export default function AdminLeads() {
         .custom-select-hd select { appearance: none; background: transparent; border: none; color: #e2e8f0; font-size: 14px; font-weight: 600; padding-right: 24px; cursor: pointer; outline: none; }
         .custom-select-hd :global(svg) { position: absolute; right: 16px; pointer-events: none; color: #64748b; }
         
-        .date-hub-hd { display: flex; align-items: center; gap: 4px; background: #0f172a; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); padding: 0 12px; height: 48px; }
-        .dp-wrapper { width: 60px; }
-        
-        /* 🔥 Force library styles to match our theme */
-        :global(.react-datepicker-wrapper) { width: auto; }
-        :global(.react-datepicker__input-container input) {
-          background: transparent !important;
-          border: none !important;
-          color: #ffffff !important;
-          font-size: 13px !important;
-          font-weight: 700 !important;
-          outline: none !important;
-          width: 60px !important;
-          padding: 0 !important;
-          cursor: pointer !important;
-        }
-        :global(.react-datepicker__input-container input::placeholder) {
-          color: #475569 !important;
-          opacity: 1 !important;
-        }
-        
-        .dp-sep { color: #1e293b; font-size: 10px; font-weight: 900; }
+        .date-hub-hd { display: flex; align-items: center; gap: 12px; background: #0f172a; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); padding: 0 16px; height: 48px; cursor: pointer; transition: 0.2s; }
+        .date-hub-hd:hover { border-color: #63ab4560; background: #1e293b; }
+        .date-display-text { color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+        .date-display-text .sep { color: #475569; font-weight: 400; }
 
         .leads-grid-system { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
         .lead-vibrant-card { background: rgba(30, 41, 59, 0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 24px; padding: 24px; cursor: pointer; transition: 0.3s; position: relative; overflow: hidden; }
         .lead-vibrant-card:hover { transform: translateY(-5px); border-color: #63ab4560; background: rgba(30, 41, 59, 0.6); }
-        .lead-vibrant-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, #63ab45, transparent); opacity: 0; transition: 0.3s; }
-        .lead-vibrant-card:hover::before { opacity: 1; }
-
+        
         .card-hd-top { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
         .user-avatar-hd { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 1.2rem; }
         .user-meta-hd { flex: 1; }
@@ -376,8 +391,36 @@ export default function AdminLeads() {
 
         .modal-viewport { position: fixed; inset: 0; z-index: 5000; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .modal-blur-overlay { position: absolute; inset: 0; background: rgba(2, 6, 23, 0.8); backdrop-filter: blur(12px); }
-        .hd-modal-container { position: relative; width: 100%; max-width: 1100px; background: #0f172a; border: 1px solid #1e293b; border-radius: 32px; overflow: hidden; box-shadow: 0 50px 100px rgba(0,0,0,0.6); }
-        
+        .hd-modal-container, .date-modal-container { position: relative; width: 100%; background: #0f172a; border: 1px solid #1e293b; border-radius: 32px; overflow: hidden; box-shadow: 0 50px 100px rgba(0,0,0,0.6); }
+        .hd-modal-container { max-width: 1100px; }
+        .date-modal-container { max-width: 700px; }
+
+        .date-modal-header { padding: 24px 32px; display: flex; align-items: center; gap: 16px; border-bottom: 1px solid #1e293b; }
+        .header-icon-box { width: 40px; height: 40px; background: rgba(99, 171, 69, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+        .date-modal-header h3 { color: #fff; font-size: 1.2rem; margin: 0; flex: 1; }
+        .close-date-modal { color: #475569; transition: 0.2s; }
+        .close-date-modal:hover { color: #fff; }
+
+        .date-modal-body { padding: 32px; background: #0f172a; }
+        .dual-picker-container { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        .picker-block label { display: block; color: #64748b; font-size: 11px; font-weight: 800; text-transform: uppercase; margin-bottom: 16px; letter-spacing: 0.1em; }
+
+        .date-modal-footer { padding: 24px 32px; background: #1e293b40; border-top: 1px solid #1e293b; display: flex; justify-content: flex-end; gap: 16px; }
+        .clear-dates-btn { color: #ef4444; font-weight: 700; font-size: 14px; padding: 0 20px; }
+        .apply-dates-btn { background: #63ab45; color: #fff; padding: 12px 32px; border-radius: 12px; font-weight: 800; font-size: 14px; box-shadow: 0 10px 20px rgba(99, 171, 69, 0.2); transition: 0.2s; }
+        .apply-dates-btn:hover { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(99, 171, 69, 0.3); }
+
+        /* 🔥 DatePicker Theming */
+        :global(.react-datepicker) { background: #1e293b !important; border: 1px solid #334155 !important; font-family: inherit !important; border-radius: 16px !important; overflow: hidden; }
+        :global(.react-datepicker__header) { background: #0f172a !important; border-bottom: 1px solid #334155 !important; padding: 16px 0 !important; }
+        :global(.react-datepicker__current-month) { color: #fff !important; font-weight: 800 !important; }
+        :global(.react-datepicker__day-name) { color: #64748b !important; font-weight: 700 !important; }
+        :global(.react-datepicker__day) { color: #e2e8f0 !important; border-radius: 8px !important; }
+        :global(.react-datepicker__day:hover) { background: rgba(99, 171, 69, 0.2) !important; color: #63ab45 !important; }
+        :global(.react-datepicker__day--selected) { background: #63ab45 !important; color: #fff !important; font-weight: 800 !important; }
+        :global(.react-datepicker__day--keyboard-selected) { background: transparent !important; border: 1px solid #63ab45 !important; }
+        :global(.react-datepicker__day--disabled) { color: #334155 !important; }
+
         .hd-modal-header { padding: 32px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1e293b; }
         .header-user-info { display: flex; align-items: center; gap: 20px; }
         .header-avatar { width: 60px; height: 60px; border-radius: 18px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 1.5rem; font-weight: 800; }
@@ -433,6 +476,9 @@ export default function AdminLeads() {
         .hd-loading, .hd-empty { height: 400px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #64748b; gap: 16px; }
         .spin { animation: spin 1s linear infinite; }
 
+        @keyframes scaleUp { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .animate-scale-up { animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+
         @media (max-width: 991px) {
           .admin-page-container { padding: 20px; }
           .modal-content-grid { grid-template-columns: 1fr; }
@@ -445,6 +491,7 @@ export default function AdminLeads() {
           .hd-filters-bar { flex-direction: column; align-items: stretch; }
           .quick-selectors { display: grid; grid-template-columns: 1fr 1fr; }
           .date-hub-hd { justify-content: center; }
+          .dual-picker-container { grid-template-columns: 1fr; gap: 40px; justify-items: center; }
         }
       `}</style>
     </div>
