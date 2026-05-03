@@ -161,7 +161,10 @@ async function apiFetch(endpoint, options = {}) {
 
     if (!response.ok) {
       console.error(`[API] ${method} ${url} Error:`, data);
-      throw new Error(data.message || `API Error: ${response.status}`);
+      const error = new Error(data.message || `API Error: ${response.status}`);
+      error.data = data; // Attach response data for specific error handling
+      error.status = response.status;
+      throw error;
     }
 
     return data;

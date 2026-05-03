@@ -38,10 +38,10 @@ export default function CookieBanner() {
         maxWidth: 360,
       }}
     >
-      <h4 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+      <h4 style={{ color: '#ffffff', fontSize: '1rem', fontWeight: 600, marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
         🍪 Cookie Consent
       </h4>
-      <p style={{ fontSize: '0.875rem', color: '#cbd5e1', lineHeight: 1.5, marginBottom: '16px' }}>
+      <p style={{ fontSize: '0.875rem', color: '#ffffff', lineHeight: 1.5, marginBottom: '16px', opacity: 0.9 }}>
         We use cookies to improve your browsing experience.
       </p>
       <div style={{ display: 'flex', gap: '10px' }}>

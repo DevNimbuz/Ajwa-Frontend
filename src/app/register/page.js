@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { authAPI } from '@/lib/api';
 import { Plane, Eye, EyeOff, AlertCircle, Loader2, CheckCircle, Mail, ArrowLeft, User } from 'lucide-react';
@@ -21,7 +21,24 @@ export default function RegisterPage() {
   const [resendTimer, setResendTimer] = useState(0);
   const [maskedEmail, setMaskedEmail] = useState('');
   const router = useRouter();
+  const searchParams = useSearchParams();
   const otpInputRefs = useRef([]);
+
+  // Check for verification token in URL (from login redirect)
+  useEffect(() => {
+    const token = searchParams.get('verifyToken');
+    const masked = searchParams.get('emailMasked');
+    
+    if (token && masked) {
+      setVerifyToken(token);
+      setMaskedEmail(masked);
+      setStep(2);
+      // If we came from login, the OTP was already resent by the backend
+      if (searchParams.get('resend') === 'true') {
+        setResendTimer(60);
+      }
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     if (resendTimer > 0) {

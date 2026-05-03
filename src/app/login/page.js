@@ -36,6 +36,16 @@ export default function LoginPage() {
         }
       }
     } catch (err) {
+      if (err.data?.type === 'VERIFICATION_REQUIRED') {
+        // Redirect to registration page verification step
+        const params = new URLSearchParams({
+          verifyToken: err.data.verifyToken,
+          emailMasked: err.data.emailMasked,
+          resend: 'true'
+        });
+        router.push(`/register?${params.toString()}`);
+        return;
+      }
       setError(err.message || 'Login failed. Please check your credentials.');
     } finally {
       setLoading(false);
