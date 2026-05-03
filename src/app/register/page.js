@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { authAPI } from '@/lib/api';
-import { Plane, Eye, EyeOff, AlertCircle, Loader2, CheckCircle, Mail, ArrowLeft } from 'lucide-react';
+import { Plane, Eye, EyeOff, AlertCircle, Loader2, CheckCircle, Mail, ArrowLeft, User } from 'lucide-react';
 
 export default function RegisterPage() {
   const [step, setStep] = useState(1);
@@ -140,7 +140,6 @@ export default function RegisterPage() {
       const data = await authAPI.verifyOTP(verifyToken, otpCode);
       
       if (data.success && data.user) {
-        // Auth is cookie-only (H5) — no token to store
         setStep(3);
         setTimeout(() => {
           router.push('/dashboard');
@@ -172,49 +171,100 @@ export default function RegisterPage() {
     setOtp(['', '', '', '', '', '']);
   };
 
+  // Glassmorphic styles
+  const whiteGlass = {
+    background: 'rgba(255, 255, 255, 0.08)',
+    backdropFilter: 'blur(24px)',
+    WebkitBackdropFilter: 'blur(24px)',
+    border: '1px solid rgba(255, 255, 255, 0.15)',
+    boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.3)',
+  };
+
+  const blueGlass = {
+    background: 'rgba(30, 42, 74, 0.4)',
+    backdropFilter: 'blur(12px)',
+    WebkitBackdropFilter: 'blur(12px)',
+    border: '1px solid rgba(255, 255, 255, 0.1)',
+    boxShadow: '0 4px 16px 0 rgba(0, 0, 0, 0.2) inset',
+  };
+
+  const greenGlass = {
+    background: 'rgba(99, 210, 69, 0.45)', // Brighter green
+    backdropFilter: 'blur(12px)',
+    WebkitBackdropFilter: 'blur(12px)',
+    border: '1px solid rgba(99, 210, 69, 0.6)',
+    boxShadow: '0 8px 32px 0 rgba(99, 210, 69, 0.3)',
+  };
+
+  const inputStyle = {
+    width: '100%', padding: '14px 16px',
+    color: '#fff', fontSize: 15,
+    outline: 'none', transition: 'all 0.2s',
+    boxSizing: 'border-box',
+    borderRadius: 'var(--radius-md)',
+    ...blueGlass
+  };
+
+  const onFocusStyle = (e) => { e.target.style.borderColor = 'rgba(99,171,69,0.8)'; e.target.style.boxShadow = '0 0 0 4px rgba(99,171,69,0.2), 0 4px 16px 0 rgba(0, 0, 0, 0.2) inset'; };
+  const onBlurStyle = (e) => { e.target.style.borderColor = 'rgba(255, 255, 255, 0.1)'; e.target.style.boxShadow = '0 4px 16px 0 rgba(0, 0, 0, 0.2) inset'; };
+
   return (
     <div style={{
       minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: 'linear-gradient(135deg, var(--color-bg-deep, #1a1a2e) 0%, #16213e 50%, var(--color-bg-deep, #1a1a2e) 100%)',
-      fontFamily: "'Inter', 'Segoe UI', sans-serif",
+      background: '#0b1320',
+      fontFamily: 'var(--font-body)',
       padding: '20px',
+      position: 'relative',
+      overflow: 'hidden'
     }}>
-      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden', pointerEvents: 'none' }}>
-        <div style={{ position: 'absolute', top: '-10%', right: '-5%', width: 300, height: 300, background: 'radial-gradient(circle, rgba(5,150,105,0.15), transparent)', borderRadius: '50%' }} />
-        <div style={{ position: 'absolute', bottom: '-10%', left: '-5%', width: 400, height: 400, background: 'radial-gradient(circle, rgba(99,171,69,0.1), transparent)', borderRadius: '50%' }} />
+      {/* Background Orbs for Glassmorphism effect */}
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 0 }}>
+        {/* Blue Logo Color Orb */}
+        <div style={{ position: 'absolute', top: '10%', left: '15%', width: 500, height: 500, background: 'rgba(30, 42, 74, 0.8)', borderRadius: '50%', filter: 'blur(100px)', animation: 'float 10s ease-in-out infinite' }} />
+        {/* Green Brand Color Orb */}
+        <div style={{ position: 'absolute', bottom: '10%', right: '15%', width: 450, height: 450, background: 'rgba(99, 210, 69, 0.5)', borderRadius: '50%', filter: 'blur(120px)', animation: 'float 12s ease-in-out infinite reverse' }} />
+        {/* White Accent Orb */}
+        <div style={{ position: 'absolute', top: '40%', left: '40%', width: 300, height: 300, background: 'rgba(255, 255, 255, 0.15)', borderRadius: '50%', filter: 'blur(80px)', animation: 'float 8s ease-in-out infinite' }} />
       </div>
 
       <div style={{
-        width: '100%', maxWidth: 440, padding: 40,
-        background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(20px)',
-        border: '1px solid rgba(255,255,255,0.1)', borderRadius: 20,
-        boxShadow: '0 20px 60px rgba(0,0,0,0.4)', position: 'relative', zIndex: 1,
+        width: '100%', maxWidth: 440, padding: 48,
+        position: 'relative', zIndex: 1,
+        borderRadius: 'var(--radius-xl)',
+        ...whiteGlass
       }}>
+        {step === 1 && (
+          <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: 'rgba(255,255,255,0.7)', textDecoration: 'none', fontSize: 14, marginBottom: 24, fontWeight: 500, transition: 'color 0.2s' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(255,255,255,0.7)'}>
+            <ArrowLeft size={16} /> Back to Home
+          </Link>
+        )}
+
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
           <div style={{
-            width: 64, height: 64, margin: '0 auto 16px',
-            background: 'linear-gradient(135deg, #059669, #047857)',
-            borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 8px 24px rgba(5,150,105,0.3)',
+            width: 72, height: 72, margin: '0 auto 20px',
+            borderRadius: 24, display: 'flex', alignItems: 'center', justifyContent: 'center',
+            ...greenGlass
           }}>
-            <Plane size={32} color="#fff" />
+            {step === 1 ? <User size={36} color="#fff" /> : <Mail size={36} color="#fff" />}
           </div>
-          <h1 style={{ color: '#f1f5f9', fontSize: 24, fontWeight: 700, margin: '0 0 4px' }}>
+          <h1 style={{ color: '#fff', fontSize: 28, fontWeight: 700, margin: '0 0 8px', fontFamily: 'var(--font-heading)', textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>
             {step === 1 ? 'Join Flyajwa' : 'Verify Your Email'}
           </h1>
-          <p style={{ color: '#94a3b8', fontSize: 14, margin: 0 }}>
+          <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 15, margin: 0 }}>
             {step === 1 ? 'Create your traveler account' : 'Enter the code sent to your email'}
           </p>
         </div>
 
         {error && (
           <div style={{
-            display: 'flex', alignItems: 'center', gap: 8,
-            padding: '10px 14px', marginBottom: 20,
-            background: 'rgba(220,38,38,0.15)', border: '1px solid rgba(220,38,38,0.3)',
-            borderRadius: 8, color: '#f87171', fontSize: 13,
+            display: 'flex', alignItems: 'center', gap: 10,
+            padding: '12px 16px', marginBottom: 24,
+            background: 'rgba(220, 38, 38, 0.2)', border: '1px solid rgba(220, 38, 38, 0.4)',
+            backdropFilter: 'blur(8px)',
+            borderRadius: 'var(--radius-md)', color: '#fca5a5', fontSize: 14,
+            fontWeight: 500
           }}>
-            <AlertCircle size={16} />
+            <AlertCircle size={18} />
             <span>{error}</span>
           </div>
         )}
@@ -222,7 +272,7 @@ export default function RegisterPage() {
         {step === 1 && (
           <form onSubmit={handleInitialSubmit}>
             <div style={{ marginBottom: 16 }}>
-              <label style={{ display: 'block', color: '#94a3b8', fontSize: 13, fontWeight: 500, marginBottom: 6 }}>
+              <label style={{ display: 'block', color: 'rgba(255,255,255,0.9)', fontSize: 14, fontWeight: 600, marginBottom: 8, textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
                 Full Name
               </label>
               <input
@@ -231,20 +281,14 @@ export default function RegisterPage() {
                 onChange={(e) => setName(e.target.value)}
                 required
                 placeholder="John Doe"
-                style={{
-                  width: '100%', padding: '12px 16px',
-                  background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)',
-                  borderRadius: 10, color: '#e2e8f0', fontSize: 15,
-                  outline: 'none', transition: 'border 0.2s',
-                  boxSizing: 'border-box',
-                }}
-                onFocus={(e) => e.target.style.borderColor = '#059669'}
-                onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                style={inputStyle}
+                onFocus={onFocusStyle}
+                onBlur={onBlurStyle}
               />
             </div>
 
             <div style={{ marginBottom: 16 }}>
-              <label style={{ display: 'block', color: '#94a3b8', fontSize: 13, fontWeight: 500, marginBottom: 6 }}>
+              <label style={{ display: 'block', color: 'rgba(255,255,255,0.9)', fontSize: 14, fontWeight: 600, marginBottom: 8, textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
                 Phone Number
               </label>
               <input
@@ -253,20 +297,14 @@ export default function RegisterPage() {
                 onChange={(e) => setPhone(e.target.value)}
                 required
                 placeholder="+91 98466 17000"
-                style={{
-                  width: '100%', padding: '12px 16px',
-                  background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)',
-                  borderRadius: 10, color: '#e2e8f0', fontSize: 15,
-                  outline: 'none', transition: 'border 0.2s',
-                  boxSizing: 'border-box',
-                }}
-                onFocus={(e) => e.target.style.borderColor = '#059669'}
-                onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                style={inputStyle}
+                onFocus={onFocusStyle}
+                onBlur={onBlurStyle}
               />
             </div>
 
             <div style={{ marginBottom: 16 }}>
-              <label style={{ display: 'block', color: '#94a3b8', fontSize: 13, fontWeight: 500, marginBottom: 6 }}>
+              <label style={{ display: 'block', color: 'rgba(255,255,255,0.9)', fontSize: 14, fontWeight: 600, marginBottom: 8, textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
                 Email Address
               </label>
               <input
@@ -275,20 +313,14 @@ export default function RegisterPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 placeholder="you@example.com"
-                style={{
-                  width: '100%', padding: '12px 16px',
-                  background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)',
-                  borderRadius: 10, color: '#e2e8f0', fontSize: 15,
-                  outline: 'none', transition: 'border 0.2s',
-                  boxSizing: 'border-box',
-                }}
-                onFocus={(e) => e.target.style.borderColor = '#059669'}
-                onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                style={inputStyle}
+                onFocus={onFocusStyle}
+                onBlur={onBlurStyle}
               />
             </div>
 
             <div style={{ marginBottom: 16 }}>
-              <label style={{ display: 'block', color: '#94a3b8', fontSize: 13, fontWeight: 500, marginBottom: 6 }}>
+              <label style={{ display: 'block', color: 'rgba(255,255,255,0.9)', fontSize: 14, fontWeight: 600, marginBottom: 8, textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
                 Password
               </label>
               <div style={{ position: 'relative' }}>
@@ -298,51 +330,48 @@ export default function RegisterPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   placeholder="Min 8 characters"
-                  style={{
-                    width: '100%', padding: '12px 48px 12px 16px',
-                    background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)',
-                    borderRadius: 10, color: '#e2e8f0', fontSize: 15,
-                    outline: 'none', transition: 'border 0.2s',
-                    boxSizing: 'border-box',
-                  }}
-                  onFocus={(e) => e.target.style.borderColor = '#059669'}
-                  onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                  style={{...inputStyle, paddingRight: '48px'}}
+                  onFocus={onFocusStyle}
+                  onBlur={onBlurStyle}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   style={{
-                    position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)',
-                    background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', padding: 4,
+                    position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)',
+                    background: 'none', border: 'none', color: 'rgba(255,255,255,0.6)', cursor: 'pointer', padding: 4,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'color 0.2s'
                   }}
+                  onMouseOver={e => e.currentTarget.style.color = '#fff'}
+                  onMouseOut={e => e.currentTarget.style.color = 'rgba(255,255,255,0.6)'}
                 >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
-              <div style={{ marginTop: 8, fontSize: 11, color: '#64748b' }}>
-                <p style={{ margin: '0 0 4px' }}>Password must contain:</p>
-                <ul style={{ margin: 0, paddingLeft: 16, listStyle: 'none' }}>
-                  <li style={{ color: password.length >= 8 ? '#22c55e' : '#64748b' }}>
-                    {password.length >= 8 ? '✓' : '○'} At least 8 characters
+              <div style={{ marginTop: 10, fontSize: 12, color: 'rgba(255,255,255,0.7)', ...blueGlass, padding: '12px', borderRadius: 'var(--radius-md)' }}>
+                <p style={{ margin: '0 0 6px', fontWeight: 600, color: 'rgba(255,255,255,0.9)' }}>Password must contain:</p>
+                <ul style={{ margin: 0, paddingLeft: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <li style={{ color: password.length >= 8 ? '#7bc462' : 'rgba(255,255,255,0.6)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ fontSize: 14 }}>{password.length >= 8 ? '✓' : '○'}</span> At least 8 characters
                   </li>
-                  <li style={{ color: /[A-Z]/.test(password) ? '#22c55e' : '#64748b' }}>
-                    {/[A-Z]/.test(password) ? '✓' : '○'} One uppercase letter
+                  <li style={{ color: /[A-Z]/.test(password) ? '#7bc462' : 'rgba(255,255,255,0.6)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ fontSize: 14 }}>{/[A-Z]/.test(password) ? '✓' : '○'}</span> One uppercase letter
                   </li>
-                  <li style={{ color: /[a-z]/.test(password) ? '#22c55e' : '#64748b' }}>
-                    {/[a-z]/.test(password) ? '✓' : '○'} One lowercase letter
+                  <li style={{ color: /[a-z]/.test(password) ? '#7bc462' : 'rgba(255,255,255,0.6)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ fontSize: 14 }}>{/[a-z]/.test(password) ? '✓' : '○'}</span> One lowercase letter
                   </li>
-                  <li style={{ color: /\d/.test(password) ? '#22c55e' : '#64748b' }}>
-                    {/\d/.test(password) ? '✓' : '○'} One number
+                  <li style={{ color: /\d/.test(password) ? '#7bc462' : 'rgba(255,255,255,0.6)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ fontSize: 14 }}>{/\d/.test(password) ? '✓' : '○'}</span> One number
                   </li>
-                  <li style={{ color: /[@$!%*?&]/.test(password) ? '#22c55e' : '#64748b' }}>
-                    {/[@$!%*?&]/.test(password) ? '✓' : '○'} One special character (@$!%*?&)
+                  <li style={{ color: /[@$!%*?&]/.test(password) ? '#7bc462' : 'rgba(255,255,255,0.6)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ fontSize: 14 }}>{/[@$!%*?&]/.test(password) ? '✓' : '○'}</span> One special character (@$!%*?&)
                   </li>
                 </ul>
               </div>
             </div>
 
             <div style={{ marginBottom: 24 }}>
-              <label style={{ display: 'block', color: '#94a3b8', fontSize: 13, fontWeight: 500, marginBottom: 6 }}>
+              <label style={{ display: 'block', color: 'rgba(255,255,255,0.9)', fontSize: 14, fontWeight: 600, marginBottom: 8, textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
                 Confirm Password
               </label>
               <input
@@ -351,15 +380,9 @@ export default function RegisterPage() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
                 placeholder="Re-enter password"
-                style={{
-                  width: '100%', padding: '12px 16px',
-                  background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)',
-                  borderRadius: 10, color: '#e2e8f0', fontSize: 15,
-                  outline: 'none', transition: 'border 0.2s',
-                  boxSizing: 'border-box',
-                }}
-                onFocus={(e) => e.target.style.borderColor = '#059669'}
-                onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                style={inputStyle}
+                onFocus={onFocusStyle}
+                onBlur={onBlurStyle}
               />
             </div>
 
@@ -367,16 +390,21 @@ export default function RegisterPage() {
               type="submit"
               disabled={loading}
               style={{
-                width: '100%', padding: '14px 20px',
-                background: loading ? 'rgba(255,255,255,0.1)' : 'linear-gradient(135deg, #059669, #047857)',
-                color: '#fff', border: 'none', borderRadius: 10,
-                fontSize: 15, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                transition: 'all 0.2s',
-                boxShadow: loading ? 'none' : '0 4px 16px rgba(5,150,105,0.3)',
+                width: '100%', padding: '16px 20px',
+                borderRadius: 'var(--radius-md)',
+                fontSize: 16, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+                opacity: loading ? 0.7 : 1,
+                color: '#fff',
+                border: 'none',
+                transition: 'all 0.3s',
+                ...greenGlass,
+                background: loading ? 'rgba(99, 210, 69, 0.2)' : 'rgba(99, 210, 69, 0.55)',
               }}
+              onMouseOver={e => !loading && (e.currentTarget.style.background = 'rgba(99, 210, 69, 0.75)')}
+              onMouseOut={e => !loading && (e.currentTarget.style.background = 'rgba(99, 210, 69, 0.55)')}
             >
-              {loading ? <><Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} /> Sending Code...</> : 'Continue'}
+              {loading ? <><Loader2 size={20} style={{ animation: 'spin 1s linear infinite' }} /> Sending Code...</> : 'Continue'}
             </button>
           </form>
         )}
@@ -386,36 +414,40 @@ export default function RegisterPage() {
             <button
               onClick={handleGoBack}
               style={{
-                background: 'none', border: 'none', color: '#94a3b8',
-                cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
-                fontSize: 13, marginBottom: 24,
+                background: 'none', border: 'none', color: 'rgba(255,255,255,0.7)',
+                cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
+                fontSize: 14, marginBottom: 24, fontWeight: 500, transition: 'color 0.2s'
               }}
+              onMouseOver={e => e.currentTarget.style.color = '#fff'}
+              onMouseOut={e => e.currentTarget.style.color = 'rgba(255,255,255,0.7)'}
             >
-              <ArrowLeft size={14} /> Go back
+              <ArrowLeft size={16} /> Go back
             </button>
 
             <div style={{
-              display: 'flex', alignItems: 'center', gap: 12,
-              padding: 16, background: 'rgba(0,0,0,0.3)', borderRadius: 10, marginBottom: 24,
+              display: 'flex', alignItems: 'center', gap: 14,
+              padding: 16, borderRadius: 'var(--radius-md)', marginBottom: 24,
+              ...blueGlass
             }}>
               <div style={{
-                width: 40, height: 40, borderRadius: 10,
-                background: 'rgba(99,171,69,0.2)',
+                width: 44, height: 44, borderRadius: 12,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
+                ...greenGlass,
+                border: 'none'
               }}>
-                <Mail size={20} color="#63ab45" />
+                <Mail size={22} color="#fff" />
               </div>
               <div style={{ flex: 1 }}>
-                <p style={{ margin: 0, color: '#94a3b8', fontSize: 12 }}>Verification Code Sent To</p>
-                <p style={{ margin: 0, color: '#e2e8f0', fontSize: 14, fontWeight: 500 }}>{maskedEmail}</p>
+                <p style={{ margin: 0, color: 'rgba(255,255,255,0.7)', fontSize: 13, fontWeight: 500 }}>Verification Code Sent To</p>
+                <p style={{ margin: 0, color: '#fff', fontSize: 15, fontWeight: 600 }}>{maskedEmail}</p>
               </div>
             </div>
 
-            <div style={{ marginBottom: 24 }}>
-              <p style={{ color: '#94a3b8', fontSize: 13, marginBottom: 16, textAlign: 'center' }}>
+            <div style={{ marginBottom: 28 }}>
+              <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: 14, marginBottom: 16, textAlign: 'center', fontWeight: 500 }}>
                 Enter the 6-digit code from your email
               </p>
-              <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
+              <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
                 {[0, 1, 2, 3, 4, 5].map((i) => (
                   <input
                     key={i}
@@ -427,13 +459,14 @@ export default function RegisterPage() {
                     onChange={(e) => handleOtpChange(i, e.target.value)}
                     onKeyDown={(e) => handleOtpKeyDown(i, e)}
                     style={{
-                      width: 48, height: 56, textAlign: 'center',
-                      background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)',
-                      borderRadius: 12, color: '#e2e8f0', fontSize: 22, fontWeight: 600,
-                      outline: 'none',
+                      width: 52, height: 60, textAlign: 'center',
+                      color: '#fff', fontSize: 24, fontWeight: 600,
+                      outline: 'none', transition: 'all 0.2s',
+                      borderRadius: 14,
+                      ...blueGlass
                     }}
-                    onFocus={(e) => e.target.style.borderColor = '#059669'}
-                    onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                    onFocus={(e) => { e.target.style.borderColor = 'rgba(99,171,69,0.8)'; e.target.style.boxShadow = '0 0 0 4px rgba(99,171,69,0.2), 0 4px 16px 0 rgba(0, 0, 0, 0.2) inset'; }}
+                    onBlur={(e) => { e.target.style.borderColor = 'rgba(255, 255, 255, 0.1)'; e.target.style.boxShadow = '0 4px 16px 0 rgba(0, 0, 0, 0.2) inset'; }}
                   />
                 ))}
               </div>
@@ -443,30 +476,34 @@ export default function RegisterPage() {
               onClick={handleVerify}
               disabled={loading || otp.join('').length !== 6}
               style={{
-                width: '100%', padding: '14px 20px',
-                background: loading ? 'rgba(255,255,255,0.1)' : 'linear-gradient(135deg, #059669, #047857)',
-                color: '#fff', border: 'none', borderRadius: 10,
-                fontSize: 15, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                transition: 'all 0.2s',
-                boxShadow: loading ? 'none' : '0 4px 16px rgba(5,150,105,0.3)',
-                opacity: otp.join('').length !== 6 ? 0.6 : 1,
+                width: '100%', padding: '16px 20px',
+                borderRadius: 'var(--radius-md)',
+                fontSize: 16, fontWeight: 600, cursor: loading || otp.join('').length !== 6 ? 'not-allowed' : 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+                opacity: loading || otp.join('').length !== 6 ? 0.6 : 1,
+                color: '#fff',
+                border: 'none',
+                transition: 'all 0.3s',
+                ...greenGlass,
+                background: loading || otp.join('').length !== 6 ? 'rgba(99, 210, 69, 0.2)' : 'rgba(99, 210, 69, 0.55)',
               }}
+              onMouseOver={e => !(loading || otp.join('').length !== 6) && (e.currentTarget.style.background = 'rgba(99, 210, 69, 0.75)')}
+              onMouseOut={e => !(loading || otp.join('').length !== 6) && (e.currentTarget.style.background = 'rgba(99, 210, 69, 0.55)')}
             >
-              {loading ? <><Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} /> Verifying...</> : 'Verify & Create Account'}
+              {loading ? <><Loader2 size={20} style={{ animation: 'spin 1s linear infinite' }} /> Verifying...</> : 'Verify & Create Account'}
             </button>
 
-            <p style={{ textAlign: 'center', color: '#64748b', fontSize: 13, marginTop: 20 }}>
+            <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.7)', fontSize: 14, marginTop: 24, fontWeight: 500 }}>
               Didn't receive the code?{' '}
               {resendTimer > 0 ? (
-                <span style={{ color: '#94a3b8' }}>Resend in {resendTimer}s</span>
+                <span>Resend in {resendTimer}s</span>
               ) : (
                 <button
                   onClick={handleResend}
                   disabled={loading}
                   style={{
-                    background: 'none', border: 'none', color: '#63ab45',
-                    cursor: 'pointer', fontWeight: 600, fontSize: 13,
+                    background: 'none', border: 'none', color: '#7bc462',
+                    cursor: 'pointer', fontWeight: 600, fontSize: 14, padding: 0
                   }}
                 >
                   Resend Code
@@ -479,31 +516,28 @@ export default function RegisterPage() {
         {step === 3 && (
           <div style={{ textAlign: 'center', padding: '20px 0' }}>
             <div style={{
-              width: 80, height: 80, margin: '0 auto 24px',
-              background: '#22c55e', borderRadius: '50%',
+              width: 88, height: 88, margin: '0 auto 24px',
+              borderRadius: '50%',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: '0 0 30px rgba(34,197,94,0.4)',
               animation: 'scaleIn 0.5s ease-out',
+              ...greenGlass,
+              background: 'rgba(99, 171, 69, 0.6)'
             }}>
-              <CheckCircle size={40} color="#fff" />
+              <CheckCircle size={44} color="#fff" />
             </div>
-            <h2 style={{ color: '#f1f5f9', fontSize: 24, fontWeight: 700, marginBottom: 8 }}>Welcome, {name}!</h2>
-            <p style={{ color: '#94a3b8', fontSize: 16, margin: 0 }}>Your account is ready. Redirecting vous to dashboard...</p>
+            <h2 style={{ color: '#fff', fontSize: 26, fontWeight: 700, marginBottom: 10, textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>Welcome, {name}!</h2>
+            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 16, margin: 0 }}>Your account is ready. Redirecting you to dashboard...</p>
           </div>
         )}
 
         {step !== 3 && (
-          <div className="auth-footer-links">
-            <Link href="/" style={{ color: '#64748b', textDecoration: 'none' }}>
-              ← Back to Home
-            </Link>
-            <span className="auth-footer-divider">|</span>
-            <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-              <span>Already have an account?</span>
-              <Link href="/login" style={{ color: '#059669', fontWeight: 600, textDecoration: 'none' }}>
+          <div style={{ marginTop: 32, paddingTop: 24, borderTop: '1px solid rgba(255,255,255,0.1)', textAlign: 'center' }}>
+            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 15, margin: 0 }}>
+              Already have an account?{' '}
+              <Link href="/login" style={{ color: '#7bc462', fontWeight: 600, textDecoration: 'none', textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
                 Sign In
               </Link>
-            </div>
+            </p>
           </div>
         )}
       </div>
@@ -515,6 +549,11 @@ export default function RegisterPage() {
           70% { transform: scale(1.1); }
           100% { transform: scale(1); opacity: 1; } 
         }
+        @keyframes float {
+          0%, 100% { transform: translateY(0) scale(1); }
+          50% { transform: translateY(-30px) scale(1.05); }
+        }
+        input::placeholder { color: rgba(255,255,255,0.4) !important; }
       `}</style>
     </div>
   );

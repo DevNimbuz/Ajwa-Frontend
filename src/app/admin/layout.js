@@ -45,11 +45,12 @@ function ActivityWatchdog() {
 // ── Sidebar Navigation Items ──
 const navItems = [
   { label: 'Dashboard', href: '/admin', icon: LayoutDashboard, roles: ['SUPER_ADMIN', 'ADMIN', 'TEAM'] },
+  { label: 'Travelers', href: '/admin/users', icon: Users, roles: ['SUPER_ADMIN', 'ADMIN', 'TEAM'] },
   { label: 'Packages', href: '/admin/packages', icon: Package, roles: ['SUPER_ADMIN', 'ADMIN', 'TEAM'] },
   { label: 'Leads', href: '/admin/leads', icon: MessageSquare, roles: ['SUPER_ADMIN', 'ADMIN', 'TEAM'] },
   { label: 'Testimonials', href: '/admin/testimonials', icon: Activity, roles: ['SUPER_ADMIN', 'ADMIN', 'TEAM'] },
   { label: 'Gallery', href: '/admin/gallery', icon: LayoutDashboard, roles: ['SUPER_ADMIN', 'ADMIN', 'TEAM'] },
-  { label: 'Team', href: '/admin/team', icon: Users, roles: ['SUPER_ADMIN', 'ADMIN'] },
+  { label: 'Team Members', href: '/admin/team', icon: Shield, roles: ['SUPER_ADMIN', 'ADMIN'] },
   { label: 'Security', href: '/admin/security', icon: Shield, roles: ['SUPER_ADMIN'] },
   { label: 'Settings', href: '/admin/settings', icon: Settings, roles: ['SUPER_ADMIN'] },
 ];

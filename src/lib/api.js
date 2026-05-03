@@ -430,9 +430,14 @@ export const usersAPI = {
   /** Get customer with leads (admin) */
   async getCustomer(id) { return apiFetch(`/users/customers/${id}`); },
 
-  /** Upload document to customer vault (admin) */
+  /** Upload document to customer vault (admin - legacy URL) */
   async uploadDocument(id, data) { 
     return apiFetch(`/users/customers/${id}`, { method: 'PUT', body: data }); 
+  },
+
+  /** Upload document FILE to customer vault (admin) */
+  async uploadDocumentFile(id, formData) {
+    return apiFetch(`/users/customers/${id}/documents`, { method: 'POST', body: formData });
   },
 
   /** Create team member (super admin) */
