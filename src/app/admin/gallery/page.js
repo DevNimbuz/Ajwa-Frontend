@@ -172,7 +172,6 @@ export default function AdminGalleryPage() {
                 <option key={slug} value={slug}>{packagesData[slug].name}</option>
               ))}
             </select>
-            </select>
             <input 
               type="file" 
               accept="image/*" 
