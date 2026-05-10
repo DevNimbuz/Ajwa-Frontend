@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { 
   LogIn, LogOut, Bell, Settings, LayoutDashboard,
@@ -96,11 +97,12 @@ export default function Header() {
       >
         <div className="header-inner">
           <Link href="/" className="header-logo" aria-label="Flyajwa Home">
-            <img
+            <Image
               src={siteConfig.logo}
               alt="Flyajwa"
-              fetchPriority="high"
-              loading="eager"
+              width={240}
+              height={80}
+              priority
             />
           </Link>
 
@@ -122,6 +124,7 @@ export default function Header() {
                 {/* Notification Bell */}
                 <div style={{ position: 'relative' }}>
                   <button 
+                    type="button"
                     onClick={() => {
                       setNotificationsOpen(!notificationsOpen);
                       setProfileDropdownOpen(false);
@@ -177,6 +180,7 @@ export default function Header() {
                 {/* User Dropdown */}
                 <div style={{ position: 'relative' }}>
                   <button
+                    type="button"
                     onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
                     style={{ 
                       padding: '4px 10px 4px 4px',
@@ -219,6 +223,7 @@ export default function Header() {
               </div>
             ) : (
               <button
+                type="button"
                 onClick={() => setAuthModalOpen(true)}
                 className="btn btn-primary btn-sm"
               >
@@ -233,9 +238,10 @@ export default function Header() {
               style={{ padding: '8px 18px', borderRadius: 100, fontWeight: 700 }}
             >
               <Phone size={14} />
-              CALL
+              Call Now
             </a>
             <button
+              type="button"
               className={`mobile-menu-btn ${mobileOpen ? 'active' : ''}`}
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label="Toggle menu"
@@ -254,9 +260,10 @@ export default function Header() {
       <div className={`mobile-drawer ${mobileOpen ? 'open' : ''}`}>
         <div style={{ padding: '0 24px 20px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
           <Link href="/" className="mobile-drawer-logo">
-            <img src={siteConfig.logo} alt="Flyajwa" />
+            <Image src={siteConfig.logo} alt="Flyajwa" width={214} height={72} />
           </Link>
           <button 
+            type="button"
             className="mobile-drawer-close" 
             onClick={() => setMobileOpen(false)}
             aria-label="Close menu"
@@ -364,6 +371,7 @@ export default function Header() {
             {!user ? (
               <>
                 <button
+                  type="button"
                   onClick={() => { router.push('/login'); setMobileOpen(false); }}
                   className="btn btn-primary"
                   style={{ width: '100%' }}
@@ -371,6 +379,7 @@ export default function Header() {
                   Sign In
                 </button>
                 <button
+                  type="button"
                   onClick={() => { router.push('/register'); setMobileOpen(false); }}
                   className="btn btn-outline"
                   style={{ width: '100%', color: '#fff', borderColor: 'rgba(255,255,255,0.3)' }}
@@ -380,6 +389,7 @@ export default function Header() {
               </>
             ) : (
               <button
+                type="button"
                 onClick={handleLogout}
                 className="btn btn-outline"
                 style={{ width: '100%', color: '#ef4444', borderColor: 'rgba(239,68,68,0.3)' }}
@@ -408,6 +418,7 @@ export default function Header() {
             onClick={(e) => e.stopPropagation()}
           >
             <button 
+              type="button"
               onClick={() => setAuthModalOpen(false)}
               style={{ position: 'absolute', top: 20, right: 20, color: '#94a3b8' }}
             >
@@ -432,6 +443,7 @@ export default function Header() {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               <button
+                type="button"
                 onClick={() => { router.push('/login'); setAuthModalOpen(false); }}
                 className="btn btn-primary"
                 style={{ width: '100%', padding: '16px' }}
@@ -440,6 +452,7 @@ export default function Header() {
               </button>
 
               <button
+                type="button"
                 onClick={() => { router.push('/register'); setAuthModalOpen(false); }}
                 className="btn btn-outline"
                 style={{ width: '100%', padding: '16px', color: '#fff', borderColor: 'rgba(255,255,255,0.2)' }}

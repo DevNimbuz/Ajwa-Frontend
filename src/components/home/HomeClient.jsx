@@ -91,6 +91,10 @@ export default function HomeClient({ initialPackages, initialTestimonials, heroS
     }
   }, [initialPackages, initialTestimonials]);
 
+  const ratingScore = siteConfig.rating?.score || 4.7;
+  const ratingTotal = siteConfig.rating?.total || 5.0;
+  const ratingPlatform = siteConfig.rating?.platform || 'Google';
+
   return (
     <>
       {/* ═══════ HERO ═══════ */}
@@ -123,13 +127,16 @@ export default function HomeClient({ initialPackages, initialTestimonials, heroS
                     <p className="hero-desc">{slide.desc}</p>
                     <div className="hero-actions">
                       <Link href="/package" className="btn btn-primary btn-lg">
-                        Book A Trip
+                        Explore Packages
                         <ArrowRight size={16} />
+                      </Link>
+                      <Link href="/contact" className="btn btn-outline btn-lg hero-secondary-cta">
+                        Talk to an Expert
                       </Link>
                       <div className="hero-rating">
                         <Image
-                          src="/assets/img/Ajwa/google.svg"
-                          alt="Google"
+                          src={siteConfig.rating?.icon || '/assets/img/Ajwa/google.svg'}
+                          alt={ratingPlatform}
                           width={20}
                           height={20}
                         />
@@ -139,7 +146,7 @@ export default function HomeClient({ initialPackages, initialTestimonials, heroS
                           ))}
                           <Star size={14} fill="currentColor" style={{ opacity: 0.5 }} />
                         </div>
-                        <span>4.7/5.0</span>
+                        <span>{ratingScore}/{ratingTotal}</span>
                       </div>
                     </div>
                   </div>
@@ -166,14 +173,20 @@ export default function HomeClient({ initialPackages, initialTestimonials, heroS
               <h1 className="hero-title">{heroSlides[0].title}</h1>
               <p className="hero-desc">{heroSlides[0].desc}</p>
               <div className="hero-actions">
-                <div className="btn btn-primary btn-lg">Book A Trip</div>
+                <Link href="/package" className="btn btn-primary btn-lg">
+                  Explore Packages
+                  <ArrowRight size={16} />
+                </Link>
+                <Link href="/contact" className="btn btn-outline btn-lg hero-secondary-cta">
+                  Talk to an Expert
+                </Link>
                 <div className="hero-rating">
-                    <Image src="/assets/img/Ajwa/google.svg" alt="Google" width={20} height={20} />
+                    <Image src={siteConfig.rating?.icon || '/assets/img/Ajwa/google.svg'} alt={ratingPlatform} width={20} height={20} />
                     <div className="hero-rating-stars">
                         {[...Array(4)].map((_, j) => ( <Star key={j} size={14} fill="currentColor" /> ))}
                         <Star size={14} fill="currentColor" style={{ opacity: 0.5 }} />
                     </div>
-                    <span>4.7/5.0</span>
+                    <span>{ratingScore}/{ratingTotal}</span>
                 </div>
               </div>
             </div>
@@ -285,7 +298,7 @@ export default function HomeClient({ initialPackages, initialTestimonials, heroS
                         <span className="dest-card-tagline">{dest.tagline}</span>
                         {dest.startingPrice && (
                           <span className="dest-card-price-badge">
-                            ₹{dest.startingPrice.toLocaleString('en-IN')}
+                            {'\u20B9'}{dest.startingPrice.toLocaleString('en-IN')}
                           </span>
                         )}
                       </div>
@@ -300,7 +313,7 @@ export default function HomeClient({ initialPackages, initialTestimonials, heroS
           <AnimatedSection delay={0.6}>
             <div className="dest-cta">
               <div className="dest-cta-inner">
-                <span className="dest-cta-badge">20+ Destinations</span>
+                <span className="dest-cta-badge">{siteConfig.stats.destinations}+ Destinations</span>
                 <h3>Discover Your Next Adventure</h3>
                 <p>From tropical beaches to snowy mountains, we have the perfect package for you.</p>
                 <Link href="/package" className="btn btn-primary">
@@ -365,7 +378,7 @@ export default function HomeClient({ initialPackages, initialTestimonials, heroS
               <div className="stats-banner-number">
                 {isMounted ? <CountUp end={siteConfig.stats.offices} duration={2} enableScrollSpy scrollSpyOnce /> : siteConfig.stats.offices}
               </div>
-              <div className="stats-banner-label">Office Locations</div>
+              <div className="stats-banner-label">Locations We Serve</div>
             </div>
           </div>
         </div>

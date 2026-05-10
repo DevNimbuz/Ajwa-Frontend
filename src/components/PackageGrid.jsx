@@ -17,7 +17,7 @@ function PackageCard({ pkg, wishlistIds }) {
   const handleToggleWishlist = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     if (!authAPI.isAuthenticated()) {
       window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname);
       return;
@@ -40,36 +40,23 @@ function PackageCard({ pkg, wishlistIds }) {
   };
 
   return (
-    <Link href={`/package/${pkg.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+    <Link href={`/package/${pkg.slug}`} className="package-card-link">
       <div className="package-card">
         <div className="package-card-img" style={{ position: 'relative' }}>
-          <Image 
-            src={pkg.heroImg || '/assets/img/Ajwa/trek.webp'} 
+          <Image
+            src={pkg.heroImg || '/assets/img/Ajwa/trek.webp'}
             alt={pkg.name}
             fill
             className="img-cover"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
           <button
+            type="button"
             onClick={handleToggleWishlist}
             disabled={loading}
-            style={{
-              position: 'absolute',
-              top: 12,
-              right: 12,
-              width: 36,
-              height: 36,
-              borderRadius: '50%',
-              background: 'rgba(255,255,255,0.9)',
-              border: 'none',
-              cursor: loading ? 'wait' : 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-              transition: 'all 0.2s',
-              zIndex: 10,
-            }}
+            className="package-wishlist-btn"
+            aria-pressed={isInWishlist}
+            aria-label={isInWishlist ? `Remove ${pkg.name} from wishlist` : `Save ${pkg.name} to wishlist`}
           >
             <Heart
               size={18}
@@ -91,8 +78,8 @@ function PackageCard({ pkg, wishlistIds }) {
           </div>
           <div className="package-card-footer">
             <div className="package-card-price">
-              ₹{(pkg.startingPrice || 0).toLocaleString('en-IN')}
-              <span> / person</span>
+              {pkg.startingPrice ? `\u20B9${pkg.startingPrice.toLocaleString('en-IN')}` : 'Custom Quote'}
+              <span>{pkg.startingPrice ? ' / person' : ' available'}</span>
             </div>
             <span className="btn btn-primary btn-sm">
               View Details
