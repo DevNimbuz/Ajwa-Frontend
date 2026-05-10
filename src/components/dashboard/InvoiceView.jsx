@@ -38,20 +38,15 @@ export default function InvoiceView({ trip, trips, onUpdate }) {
     try {
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('upload_preset', 'flyajwa_leads'); // Placeholder preset
-
-      // Use the existing system upload if possible or a dedicated one
-      const res = await fetch(`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`, {
-        method: 'POST',
-        body: formData
-      });
-      const data = await res.json();
       
-      await leadsAPI.submitPayment(trip._id, data.secure_url);
+      await leadsAPI.uploadPayment(trip._id, formData);
       onUpdate();
       alert('Payment proof uploaded! Our team will verify it shortly.');
-    } catch (err) { alert('Upload failed. Please try again.'); }
-    finally { setUploading(false); }
+    } catch (err) { 
+      alert(err.message || 'Upload failed. Please try again.'); 
+    } finally { 
+      setUploading(false); 
+    }
   };
 
   if (!invoice) return null;

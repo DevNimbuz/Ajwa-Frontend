@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import CountUp from 'react-countup';
 import AnimatedSection from '@/components/AnimatedSection';
+import siteConfig from '@/data/siteConfig';
 
 // Note: Header, Footer, and JsonLd are handled by the Server Page or Layout
 
@@ -149,24 +150,14 @@ export default function HomeClient({ initialPackages, initialTestimonials, heroS
         ) : (
           /* ── Static Fallback for SSR/Hydration (LCP Optimization) ── */
           <div className="hero-slide">
-            <div
-              className="hero-slide-bg"
-              style={{ 
-                backgroundImage: `url(${heroSlides[0].bg})`,
-                opacity: 1 // Ensure visible during hydration
-              }}
+            <Image 
+                src={heroSlides[0].bg} 
+                alt={heroSlides[0].title} 
+                fill 
+                priority={true}
+                fetchPriority="high"
+                style={{ objectFit: 'cover' }}
             />
-            {/* We add a invisible Image component here to trigger early fetch by browser */}
-            <div style={{ position: 'absolute', width: 1, height: 1, opacity: 0, overflow: 'hidden' }}>
-                <Image 
-                    src={heroSlides[0].bg} 
-                    alt="Hero Preload" 
-                    width={1920} 
-                    height={1080} 
-                    priority={true}
-                    fetchPriority="high"
-                />
-            </div>
             <div className="container hero-content">
               <div className="hero-tag">
                 <MapPin size={14} />
@@ -246,7 +237,7 @@ export default function HomeClient({ initialPackages, initialTestimonials, heroS
                   </Link>
                   <div className="about-stat">
                     <span className="stat-number stat-number-lg">
-                      {isMounted ? <CountUp end={100} duration={2.5} enableScrollSpy scrollSpyOnce /> : "100"}+
+                      {isMounted ? <CountUp end={siteConfig.stats.customers} duration={2.5} enableScrollSpy scrollSpyOnce /> : siteConfig.stats.customers}+
                     </span>
                     <span className="about-stat-label">Happy<br />Customers</span>
                   </div>
@@ -354,25 +345,25 @@ export default function HomeClient({ initialPackages, initialTestimonials, heroS
           <div className="stats-banner-grid">
             <div className="stats-banner-item">
               <div className="stats-banner-number">
-                {isMounted ? <CountUp end={100} duration={2.5} enableScrollSpy scrollSpyOnce /> : "100"}+
+                {isMounted ? <CountUp end={siteConfig.stats.customers} duration={2.5} enableScrollSpy scrollSpyOnce /> : siteConfig.stats.customers}+
               </div>
               <div className="stats-banner-label">Happy Customers</div>
             </div>
             <div className="stats-banner-item">
               <div className="stats-banner-number">
-                {isMounted ? <CountUp end={20} duration={2} enableScrollSpy scrollSpyOnce /> : "20"}+
+                {isMounted ? <CountUp end={siteConfig.stats.destinations} duration={2} enableScrollSpy scrollSpyOnce /> : siteConfig.stats.destinations}+
               </div>
               <div className="stats-banner-label">Destinations</div>
             </div>
             <div className="stats-banner-item">
               <div className="stats-banner-number">
-                {isMounted ? <CountUp end={50} duration={2} enableScrollSpy scrollSpyOnce /> : "50"}+
+                {isMounted ? <CountUp end={siteConfig.stats.tours} duration={2} enableScrollSpy scrollSpyOnce /> : siteConfig.stats.tours}+
               </div>
               <div className="stats-banner-label">Tour Packages</div>
             </div>
             <div className="stats-banner-item">
               <div className="stats-banner-number">
-                {isMounted ? <CountUp end={9} duration={2} enableScrollSpy scrollSpyOnce /> : "9"}
+                {isMounted ? <CountUp end={siteConfig.stats.offices} duration={2} enableScrollSpy scrollSpyOnce /> : siteConfig.stats.offices}
               </div>
               <div className="stats-banner-label">Office Locations</div>
             </div>

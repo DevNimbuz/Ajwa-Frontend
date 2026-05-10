@@ -120,19 +120,19 @@ export default function AboutPage() {
                 <div className="about-stats-row">
                   <div className="about-stat">
                     <div className="stat-number stat-number-lg">
-                      <CountUp end={100} duration={2.5} enableScrollSpy scrollSpyOnce />+
+                      <CountUp end={siteConfig.stats.customers} duration={2.5} enableScrollSpy scrollSpyOnce />+
                     </div>
                     <span className="about-stat-label">Happy<br/>Customers</span>
                   </div>
                   <div className="about-stat">
                     <div className="stat-number stat-number-lg">
-                      <CountUp end={9} duration={2} enableScrollSpy scrollSpyOnce />
+                      <CountUp end={siteConfig.stats.offices} duration={2} enableScrollSpy scrollSpyOnce />
                     </div>
                     <span className="about-stat-label">Office<br/>Locations</span>
                   </div>
                   <div className="about-stat">
                     <div className="stat-number stat-number-lg">
-                      <CountUp end={20} duration={2} enableScrollSpy scrollSpyOnce />+
+                      <CountUp end={siteConfig.stats.destinations} duration={2} enableScrollSpy scrollSpyOnce />+
                     </div>
                     <span className="about-stat-label">Destinations<br/>Worldwide</span>
                   </div>

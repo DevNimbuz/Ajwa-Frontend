@@ -42,8 +42,7 @@ export function NotificationProvider({ children }) {
     if (!user || !['SUPER_ADMIN', 'TEAM'].includes(user.role)) return;
 
     const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-    const token = authAPI.getToken();
-    const eventSource = new EventSource(`${API_BASE}/notifications/stream?token=${token}`, {
+    const eventSource = new EventSource(`${API_BASE}/notifications/stream`, {
       withCredentials: true,
     });
 

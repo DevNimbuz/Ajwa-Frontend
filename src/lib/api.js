@@ -21,14 +21,11 @@ function clearLegacyAuthStorage() {
   localStorage.removeItem('flyajwa_token');
 }
 
-/** Store user info and token for the active browser session */
-function setUser(user, token) {
+/** Store user info for the active browser session */
+function setUser(user) {
   if (typeof window === 'undefined') return;
   clearLegacyAuthStorage();
   sessionStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
-  if (token) {
-    sessionStorage.setItem(TOKEN_STORAGE_KEY, token);
-  }
 }
 
 function setCSRFToken(token) {
@@ -41,8 +38,7 @@ function setCSRFToken(token) {
 }
 
 function getToken() {
-  if (typeof window === 'undefined') return null;
-  return sessionStorage.getItem(TOKEN_STORAGE_KEY);
+  return null; // Tokens are now HttpOnly cookies
 }
 
 function getCSRFToken() {
@@ -108,7 +104,6 @@ async function apiFetch(endpoint, options = {}) {
     headers: {
       ...(!isFormData && { 'Content-Type': 'application/json' }),
       ...(isStateChanging && csrfToken ? { 'X-CSRF-Token': csrfToken } : {}),
-      ...(getToken() ? { 'Authorization': `Bearer ${getToken()}` } : {}),
       ...options.headers,
     },
     ...options,
@@ -198,7 +193,7 @@ export const authAPI = {
       body: { email, password },
     });
     if (data.success) {
-      setUser(data.user, data.token);
+      setUser(data.user);
     }
     return data;
   },
@@ -221,7 +216,7 @@ export const authAPI = {
       body: { verifyToken, emailOTP },
     });
     if (data.success && data.user) {
-      setUser(data.user, data.token);
+      setUser(data.user);
     }
     return data;
   },
@@ -398,6 +393,11 @@ export const leadsAPI = {
 
   /** Upload payment proof (customer) */
   async submitPayment(id, screenshot) { return apiFetch(`/leads/${id}/pay`, { method: 'POST', body: { screenshot } }); },
+
+  /** Securely upload payment screenshot file (customer) */
+  async uploadPayment(id, formData) { 
+    return apiFetch(`/leads/${id}/upload-payment`, { method: 'POST', body: formData }); 
+  },
 
   /** Verify/Reject payment (staff) */
   async verifyPayment(id, data) { return apiFetch(`/leads/${id}/verify-payment`, { method: 'POST', body: data }); },

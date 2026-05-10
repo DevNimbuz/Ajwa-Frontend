@@ -22,8 +22,7 @@ const services = [
     title: 'Visa Services',
     img: '/assets/img/Ajwa/services/visa.webp',
     desc: 'Fast and reliable visa processing for countries including UAE, Saudi Arabia, Malaysia, and more.',
-    authRequired: true,
-    href: '/booking/visa',
+    action: 'modal',
     cta: 'Book Visa',
   },
   {
@@ -44,8 +43,7 @@ const services = [
     title: 'Ticketing Services',
     img: '/assets/img/Ajwa/services/tickets.webp',
     desc: 'Domestic and international flight booking at the best prices with flexible options.',
-    authRequired: true,
-    href: '/booking/ticket',
+    action: 'modal',
     cta: 'Book Tickets',
   },
   {
@@ -59,8 +57,7 @@ const services = [
     title: 'Document Attestation',
     img: '/assets/img/Ajwa/services/docs.webp',
     desc: 'Professional document attestation services for immigration, education, and employment.',
-    authRequired: true,
-    href: '/booking/document',
+    action: 'modal',
     cta: 'Request Service',
   },
 ];
@@ -211,6 +208,20 @@ export default function ServicesClient() {
              <>
                <div className="form-group"><label>Type of Document</label><input type="text" placeholder="e.g. Degree, Birth Certificate" name="Document Type" onChange={handleChange} className="form-control" required /></div>
                <div className="form-group"><label>Target Country</label><input type="text" name="Target Country" onChange={handleChange} className="form-control" required /></div>
+             </>
+          )
+      case 'Ticketing Services':
+          return (
+             <>
+               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                 <div className="form-group"><label>From City</label><input type="text" name="Flight: From City" onChange={handleChange} className="form-control" required /></div>
+                 <div className="form-group"><label>To City</label><input type="text" name="Flight: To City" onChange={handleChange} className="form-control" required /></div>
+               </div>
+               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                 <div className="form-group"><label>Departure</label><input type="date" name="Departure Date" onChange={handleChange} className="form-control" required /></div>
+                 <div className="form-group"><label>Return (Optional)</label><input type="date" name="Return Date" onChange={handleChange} className="form-control" /></div>
+               </div>
+               <div className="form-group"><label>Number of Passengers</label><input type="number" min="1" name="Number of Passengers" onChange={handleChange} className="form-control" required /></div>
              </>
           )
       default:

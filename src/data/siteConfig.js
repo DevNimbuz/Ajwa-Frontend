@@ -51,6 +51,7 @@ const siteConfig = {
     destinations: 20,
     tours: 50,
     years: 5,
+    offices: 9,
   },
 
   nav: [

@@ -419,26 +419,7 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
-@media (max-width: 1024px) {
-  :root {
-    --admin-main-margin: 0px;
-    --sidebar-width: 0px;
-    --space-xl: 1.25rem;
-    --space-2xl: 1.75rem;
-    --space-3xl: 2.25rem;
-    --space-4xl: 3rem;
-    --space-section: clamp(2.5rem, 5vw, 4rem);
-    --header-height: 64px;
-  }
-}
 
-@media (max-width: 640px) {
-  :root {
-    --space-xl: 1rem;
-    --space-2xl: 1.5rem;
-    --space-section: 3rem;
-  }
-}
 
 
 /* ── Status Badges ── */
@@ -501,26 +482,7 @@ h1, h2, h3, h4, h5, h6 {
 .grid-3 { grid-template-columns: repeat(3, 1fr); }
 .grid-4 { grid-template-columns: repeat(4, 1fr); }
 
-@media (max-width: 1024px) {
-  :root {
-    --admin-main-margin: 0px;
-    --sidebar-width: 0px;
-    --space-xl: 1.25rem;
-    --space-2xl: 1.75rem;
-    --space-3xl: 2.25rem;
-    --space-4xl: 3rem;
-    --space-section: clamp(2.5rem, 5vw, 4rem);
-    --header-height: 64px;
-  }
-}
 
-@media (max-width: 640px) {
-  :root {
-    --space-xl: 1rem;
-    --space-2xl: 1.5rem;
-    --space-section: 3rem;
-  }
-}
 
 
 @media (max-width: 640px) {
