@@ -71,6 +71,7 @@ function removeSession() {
   sessionStorage.removeItem(TOKEN_STORAGE_KEY);
   sessionStorage.removeItem(CSRF_STORAGE_KEY);
   localStorage.removeItem(TOKEN_STORAGE_KEY);
+  document.cookie = 'ajwa_local_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax';
   clearLegacyAuthStorage();
 }
 
