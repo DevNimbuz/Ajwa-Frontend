@@ -90,10 +90,16 @@ async function apiFetch(endpoint, options = {}) {
   // If this is a state-changing request and we don't have a CSRF token, fetch one first
   const isStateChanging = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method);
   if (isStateChanging && !csrfToken && endpoint !== '/auth/csrf') {
-    // Retry CSRF pre-fetch up to 2 times (handles backend cold-start delays)
+    // Retry CSRF pre-fetch up to 2 times with a 5s timeout (handles Render cold-start)
     for (let attempt = 0; attempt < 2; attempt++) {
       try {
-        const csrfResponse = await fetch(`${API_BASE}/auth/csrf`, { credentials: 'include' });
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s max
+        const csrfResponse = await fetch(`${API_BASE}/auth/csrf`, {
+          credentials: 'include',
+          signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
         csrfToken = csrfResponse.headers.get('X-CSRF-Token') || csrfResponse.headers.get('x-csrf-token');
         if (csrfToken) {
           setCSRFToken(csrfToken);

@@ -1,114 +1,221 @@
-"use client"
-import React, { useState } from 'react'
-import Link from 'next/link'
-import { authAPI } from '@/lib/api'
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+import { authAPI } from '@/lib/api';
+import { KeyRound, ArrowLeft, AlertCircle, Loader2, Mail, CheckCircle, Send } from 'lucide-react';
 
 export default function ForgotPasswordPage() {
-  const [email, setEmail] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [message, setMessage] = useState(null)
-  const [error, setError] = useState(null)
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState(null);
+  const [error, setError] = useState(null);
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setError(null)
-    setMessage(null)
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    setMessage(null);
 
     try {
-      const res = await authAPI.forgotPassword(email)
+      const res = await authAPI.forgotPassword(email);
       if (res.success) {
-        setMessage(res.message)
+        setMessage(res.message);
       } else {
-        setError(res.message)
+        setError(res.message);
       }
     } catch (err) {
-      setError(err.message || 'Something went wrong. Please try again.')
+      setError(err.message || 'Something went wrong. Please try again.');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
+
+  // Glassmorphic styles — consistent with login/register pages
+  const whiteGlass = {
+    background: 'rgba(255, 255, 255, 0.08)',
+    backdropFilter: 'blur(24px)',
+    WebkitBackdropFilter: 'blur(24px)',
+    border: '1px solid rgba(255, 255, 255, 0.15)',
+    boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.3)',
+  };
+
+  const blueGlass = {
+    background: 'rgba(30, 42, 74, 0.4)',
+    backdropFilter: 'blur(12px)',
+    WebkitBackdropFilter: 'blur(12px)',
+    border: '1px solid rgba(255, 255, 255, 0.1)',
+    boxShadow: '0 4px 16px 0 rgba(0, 0, 0, 0.2) inset',
+  };
+
+  const greenGlass = {
+    background: 'rgba(99, 210, 69, 0.45)',
+    backdropFilter: 'blur(12px)',
+    WebkitBackdropFilter: 'blur(12px)',
+    border: '1px solid rgba(99, 210, 69, 0.6)',
+    boxShadow: '0 8px 32px 0 rgba(99, 210, 69, 0.3)',
+  };
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center p-4">
-      {/* Background blobs for aesthetics */}
-      <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-10">
-        <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#63ab45]/10 rounded-full blur-[100px]"></div>
-        <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#1e2a4a]/5 rounded-full blur-[100px]"></div>
+    <div style={{
+      minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
+      background: '#0b1320',
+      fontFamily: 'var(--font-body)',
+      padding: '20px',
+      position: 'relative',
+      overflow: 'hidden'
+    }}>
+      {/* Background Orbs */}
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 0 }}>
+        <div style={{ position: 'absolute', top: '15%', right: '10%', width: 450, height: 450, background: 'rgba(30, 42, 74, 0.8)', borderRadius: '50%', filter: 'blur(100px)', animation: 'float 10s ease-in-out infinite' }} />
+        <div style={{ position: 'absolute', bottom: '15%', left: '10%', width: 400, height: 400, background: 'rgba(99, 210, 69, 0.5)', borderRadius: '50%', filter: 'blur(120px)', animation: 'float 12s ease-in-out infinite reverse' }} />
+        <div style={{ position: 'absolute', top: '50%', left: '50%', width: 250, height: 250, background: 'rgba(255, 255, 255, 0.12)', borderRadius: '50%', filter: 'blur(80px)', animation: 'float 8s ease-in-out infinite' }} />
       </div>
 
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl shadow-slate-200/50 p-8 border border-slate-100">
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-block mb-6">
-            <h1 className="text-2xl font-bold tracking-tight text-[#1e2a4a]">
-              Fly<span className="text-[#63ab45]">Ajwa</span>
-            </h1>
-          </Link>
-          <h2 className="text-2xl font-bold text-[#1e2a4a] mb-2">Forgot Password?</h2>
-          <p className="text-slate-500 text-sm">
-            Enter your email address and we'll send you a link to reset your password.
+      <div style={{
+        width: '100%', maxWidth: 440, padding: 'clamp(24px, 8vw, 48px)',
+        position: 'relative', zIndex: 1,
+        borderRadius: 'var(--radius-xl)',
+        ...whiteGlass
+      }}>
+        <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: 'rgba(255,255,255,0.7)', textDecoration: 'none', fontSize: 13, marginBottom: 20, fontWeight: 500, transition: 'color 0.2s' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(255,255,255,0.7)'}>
+          <ArrowLeft size={14} /> Back to Login
+        </Link>
+
+        <div style={{ textAlign: 'center', marginBottom: 32 }}>
+          <div style={{
+            width: 60, height: 60, margin: '0 auto 16px',
+            borderRadius: 20, display: 'flex', alignItems: 'center', justifyContent: 'center',
+            ...greenGlass
+          }}>
+            {message ? <CheckCircle size={30} color="#fff" /> : <KeyRound size={30} color="#fff" />}
+          </div>
+          <h1 style={{ color: '#fff', fontSize: '1.75rem', fontWeight: 700, margin: '0 0 4px', fontFamily: 'var(--font-heading)', textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>
+            {message ? 'Check Your Email' : 'Forgot Password?'}
+          </h1>
+          <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14, margin: 0 }}>
+            {message ? 'A reset link has been sent' : "Enter your email to receive a reset link"}
           </p>
         </div>
 
+        {error && (
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 8,
+            padding: '10px 14px', marginBottom: 20,
+            background: 'rgba(220, 38, 38, 0.2)', border: '1px solid rgba(220, 38, 38, 0.4)',
+            backdropFilter: 'blur(8px)',
+            borderRadius: 'var(--radius-md)', color: '#fca5a5', fontSize: 13,
+            fontWeight: 500
+          }}>
+            <AlertCircle size={16} />
+            <span>{error}</span>
+          </div>
+        )}
+
         {message ? (
-          <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-6 text-center">
-            <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl">
-              ✓
+          <div>
+            {/* Success State */}
+            <div style={{
+              padding: '24px', borderRadius: 'var(--radius-md)', marginBottom: 24,
+              textAlign: 'center',
+              ...blueGlass
+            }}>
+              <div style={{
+                width: 56, height: 56, borderRadius: '50%', margin: '0 auto 16px',
+                background: 'rgba(99, 210, 69, 0.15)', border: '1px solid rgba(99, 210, 69, 0.3)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <Mail size={24} color="#7bc462" />
+              </div>
+              <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: 14, lineHeight: 1.6, margin: '0 0 8px', fontWeight: 500 }}>
+                {message}
+              </p>
+              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, margin: 0 }}>
+                Check your spam folder if you don't see it
+              </p>
             </div>
-            <p className="text-emerald-800 font-medium mb-4">{message}</p>
-            <Link 
-              href="/login"
-              className="text-emerald-600 hover:text-emerald-700 font-semibold text-sm transition-colors"
-            >
-              Back to Login
+
+            <Link href="/login" style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+              width: '100%', padding: '14px 20px',
+              borderRadius: 'var(--radius-md)',
+              fontSize: 15, fontWeight: 600,
+              color: '#fff', textDecoration: 'none',
+              transition: 'all 0.3s',
+              ...greenGlass,
+              background: 'rgba(99, 210, 69, 0.55)',
+            }} onMouseOver={e => e.currentTarget.style.background = 'rgba(99, 210, 69, 0.75)'} onMouseOut={e => e.currentTarget.style.background = 'rgba(99, 210, 69, 0.55)'}>
+              <ArrowLeft size={16} /> Return to Login
             </Link>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label htmlFor="email" className="block text-sm font-semibold text-slate-700 mb-2">
+          <form onSubmit={handleSubmit}>
+            <div style={{ marginBottom: 24 }}>
+              <label style={{ display: 'block', color: 'rgba(255,255,255,0.9)', fontSize: 13, fontWeight: 600, marginBottom: 6, textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
                 Email Address
               </label>
               <input
-                id="email"
                 type="email"
-                required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                required
                 placeholder="you@example.com"
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-[#63ab45] focus:ring-4 focus:ring-[#63ab45]/10 outline-none transition-all text-slate-700"
+                id="forgot-email"
+                style={{
+                  width: '100%', padding: '12px 14px',
+                  color: '#fff', fontSize: 14,
+                  outline: 'none', transition: 'all 0.2s',
+                  boxSizing: 'border-box',
+                  borderRadius: 'var(--radius-md)',
+                  ...blueGlass
+                }}
+                onFocus={(e) => { e.target.style.borderColor = 'rgba(99,171,69,0.8)'; e.target.style.boxShadow = '0 0 0 4px rgba(99,171,69,0.2), 0 4px 16px 0 rgba(0, 0, 0, 0.2) inset'; }}
+                onBlur={(e) => { e.target.style.borderColor = 'rgba(255, 255, 255, 0.1)'; e.target.style.boxShadow = '0 4px 16px 0 rgba(0, 0, 0, 0.2) inset'; }}
               />
             </div>
-
-            {error && (
-              <div className="bg-red-50 border border-red-100 text-red-600 text-xs py-2 px-3 rounded-lg">
-                {error}
-              </div>
-            )}
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#1e2a4a] hover:bg-[#2a3f5f] text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-slate-200 disabled:opacity-70 flex items-center justify-center"
+              id="forgot-submit"
+              style={{
+                width: '100%', padding: '14px 20px',
+                borderRadius: 'var(--radius-md)',
+                fontSize: 15, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+                opacity: loading ? 0.7 : 1,
+                color: '#fff',
+                border: 'none',
+                transition: 'all 0.3s',
+                ...greenGlass,
+                background: loading ? 'rgba(99, 210, 69, 0.2)' : 'rgba(99, 210, 69, 0.55)',
+              }}
+              onMouseOver={e => !loading && (e.currentTarget.style.background = 'rgba(99, 210, 69, 0.75)')}
+              onMouseOut={e => !loading && (e.currentTarget.style.background = 'rgba(99, 210, 69, 0.55)')}
             >
-              {loading ? (
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-              ) : (
-                'Send Reset Link'
-              )}
+              {loading ? <><Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} /> Sending...</> : <><Send size={16} /> Send Reset Link</>}
             </button>
-
-            <div className="text-center">
-              <Link 
-                href="/login"
-                className="text-slate-500 hover:text-[#1e2a4a] text-sm font-medium transition-colors"
-              >
-                ← Back to Login
-              </Link>
-            </div>
           </form>
         )}
+
+        <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid rgba(255,255,255,0.1)', textAlign: 'center' }}>
+          <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14, margin: 0 }}>
+            Remember your password?{' '}
+            <Link href="/login" style={{ color: '#7bc462', fontWeight: 600, textDecoration: 'none' }}>
+              Sign In
+            </Link>
+          </p>
+        </div>
       </div>
+
+      <style jsx global>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes float {
+          0%, 100% { transform: translateY(0) scale(1); }
+          50% { transform: translateY(-20px) scale(1.02); }
+        }
+        input::placeholder { color: rgba(255,255,255,0.3) !important; }
+      `}</style>
     </div>
-  )
+  );
 }
