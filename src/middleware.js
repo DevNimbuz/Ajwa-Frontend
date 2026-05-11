@@ -7,8 +7,8 @@ import { NextResponse } from 'next/server';
 export function middleware(request) {
   const { pathname } = request.nextUrl;
   
-  // 1. Get token from cookies
-  const token = request.cookies.get('token')?.value;
+  // 1. Get token from cookies (checking both the backend cookie and our local fallback cookie)
+  const token = request.cookies.get('token')?.value || request.cookies.get('ajwa_local_token')?.value;
   
   // 2. Protected Admin Routes
   if (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) {

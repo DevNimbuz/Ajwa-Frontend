@@ -46,9 +46,12 @@ function setToken(token) {
   if (typeof window === 'undefined') return;
   if (!token) {
     localStorage.removeItem(TOKEN_STORAGE_KEY);
+    document.cookie = 'ajwa_local_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax';
     return;
   }
   localStorage.setItem(TOKEN_STORAGE_KEY, token);
+  // Also store in a first-party cookie so Next.js middleware (which runs on Vercel) can read it
+  document.cookie = `ajwa_local_token=${token}; path=/; max-age=86400; SameSite=Lax`;
 }
 
 function getCSRFToken() {
@@ -236,6 +239,7 @@ export const authAPI = {
    * can lose cookie context in cross-domain deployments.
    */
   navigateAfterLogin(user, redirectPath) {
+    console.log('navigateAfterLogin called with user role:', user.role, 'redirectPath:', redirectPath);
     if (redirectPath) {
       window.location.href = redirectPath;
       return;
