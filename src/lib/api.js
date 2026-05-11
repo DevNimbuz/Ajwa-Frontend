@@ -18,7 +18,7 @@ function clearLegacyAuthStorage() {
   if (typeof window === 'undefined') return;
   sessionStorage.removeItem(USER_STORAGE_KEY);
   localStorage.removeItem(USER_STORAGE_KEY);
-  localStorage.removeItem('flyajwa_token');
+  // Do NOT remove flyajwa_token here, we are using it for Bearer auth fallback
 }
 
 /** Store user info for the active browser session */
