@@ -38,7 +38,17 @@ function setCSRFToken(token) {
 }
 
 function getToken() {
-  return null; // Tokens are now HttpOnly cookies
+  if (typeof window === 'undefined') return null;
+  return localStorage.getItem(TOKEN_STORAGE_KEY) || null;
+}
+
+function setToken(token) {
+  if (typeof window === 'undefined') return;
+  if (!token) {
+    localStorage.removeItem(TOKEN_STORAGE_KEY);
+    return;
+  }
+  localStorage.setItem(TOKEN_STORAGE_KEY, token);
 }
 
 function getCSRFToken() {
@@ -57,6 +67,7 @@ function removeSession() {
   sessionStorage.removeItem(USER_STORAGE_KEY);
   sessionStorage.removeItem(TOKEN_STORAGE_KEY);
   sessionStorage.removeItem(CSRF_STORAGE_KEY);
+  localStorage.removeItem(TOKEN_STORAGE_KEY);
   clearLegacyAuthStorage();
 }
 
@@ -117,10 +128,13 @@ async function apiFetch(endpoint, options = {}) {
     }
   }
 
+  const authToken = getToken();
+
   const config = {
     credentials: 'include',
     headers: {
       ...(!isFormData && { 'Content-Type': 'application/json' }),
+      ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {}),
       ...(isStateChanging && csrfToken ? { 'X-CSRF-Token': csrfToken } : {}),
       ...options.headers,
     },
@@ -209,6 +223,7 @@ export const authAPI = {
       body: { email, password },
     });
     if (data.success) {
+      if (data.token) setToken(data.token); // Store JWT for Bearer auth (cross-origin fallback)
       setUser(data.user);
     }
     return data;
@@ -250,6 +265,7 @@ export const authAPI = {
       body: { verifyToken, emailOTP },
     });
     if (data.success && data.user) {
+      if (data.token) setToken(data.token);
       setUser(data.user);
     }
     return data;
