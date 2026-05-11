@@ -89,12 +89,17 @@ async function apiFetch(endpoint, options = {}) {
 
   // If this is a state-changing request and we don't have a CSRF token, fetch one first
   const isStateChanging = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method);
-  if (isStateChanging && !csrfToken && endpoint !== '/auth/csrf') {
-    // Retry CSRF pre-fetch up to 2 times with a 5s timeout (handles Render cold-start)
+
+  // Auth routes are CSRF-exempt on the backend — skip pre-fetch to avoid cold-start delays
+  const csrfExemptRoutes = ['/auth/login', '/auth/send-otp', '/auth/verify-otp', '/auth/forgot-password', '/auth/reset-password'];
+  const isCsrfExempt = csrfExemptRoutes.some(route => endpoint.startsWith(route));
+
+  if (isStateChanging && !csrfToken && !isCsrfExempt && endpoint !== '/auth/csrf') {
+    // Retry CSRF pre-fetch up to 2 times with 15s timeout
     for (let attempt = 0; attempt < 2; attempt++) {
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s max
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
         const csrfResponse = await fetch(`${API_BASE}/auth/csrf`, {
           credentials: 'include',
           signal: controller.signal,
@@ -107,7 +112,7 @@ async function apiFetch(endpoint, options = {}) {
         }
       } catch (e) {
         console.warn(`[CSRF] Pre-fetch attempt ${attempt + 1} failed:`, e.message);
-        if (attempt < 1) await new Promise(r => setTimeout(r, 500));
+        if (attempt < 1) await new Promise(r => setTimeout(r, 1000));
       }
     }
   }
@@ -198,9 +203,7 @@ async function apiFetch(endpoint, options = {}) {
 export const authAPI = {
   /** Login with email and password */
   async login(email, password) {
-    // Force clear CSRF token to ensure a fresh one is fetched for the login attempt (Sync Fix)
-    setCSRFToken(null);
-    
+    // Login is CSRF-exempt on the backend — no need to clear/pre-fetch CSRF token
     const data = await apiFetch('/auth/login', {
       method: 'POST',
       body: { email, password },
