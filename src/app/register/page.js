@@ -159,7 +159,8 @@ export default function RegisterPage() {
       if (data.success && data.user) {
         setStep(3);
         setTimeout(() => {
-          router.push('/dashboard');
+          // Use full page reload for cross-origin cookie propagation
+          window.location.href = '/dashboard';
         }, 2000);
       }
     } catch (err) {

@@ -24,16 +24,10 @@ export default function LoginPage() {
     try {
       const data = await authAPI.login(email, password);
       if (data.success) {
-        if (redirectPath) {
-          router.push(redirectPath);
-          return;
-        }
-
-        if (data.user.role === 'CUSTOMER') {
-          router.push('/dashboard');
-        } else {
-          router.push('/admin');
-        }
+        // Use full page reload navigation to ensure HttpOnly cookies propagate correctly
+        // (fixes cross-origin Vercel → Render cookie issue with Next.js soft navigation)
+        authAPI.navigateAfterLogin(data.user, redirectPath);
+        return;
       }
     } catch (err) {
       if (err.data?.type === 'VERIFICATION_REQUIRED') {

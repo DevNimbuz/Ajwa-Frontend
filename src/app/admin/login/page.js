@@ -28,7 +28,9 @@ export default function AdminLoginPage() {
     try {
       const data = await authAPI.login(email, password);
       if (data.success) {
-        router.push('/admin');
+        // Use full page reload to ensure HttpOnly cookies propagate correctly
+        authAPI.navigateAfterLogin(data.user);
+        return;
       }
     } catch (err) {
       setError(err.message || 'Login failed. Please check your credentials.');

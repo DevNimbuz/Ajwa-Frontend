@@ -90,12 +90,19 @@ async function apiFetch(endpoint, options = {}) {
   // If this is a state-changing request and we don't have a CSRF token, fetch one first
   const isStateChanging = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method);
   if (isStateChanging && !csrfToken && endpoint !== '/auth/csrf') {
-    try {
-      const csrfResponse = await fetch(`${API_BASE}/auth/csrf`, { credentials: 'include' });
-      csrfToken = csrfResponse.headers.get('X-CSRF-Token') || csrfResponse.headers.get('x-csrf-token');
-      if (csrfToken) setCSRFToken(csrfToken);
-    } catch (e) {
-      console.warn('Failed to pre-fetch CSRF token:', e);
+    // Retry CSRF pre-fetch up to 2 times (handles backend cold-start delays)
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        const csrfResponse = await fetch(`${API_BASE}/auth/csrf`, { credentials: 'include' });
+        csrfToken = csrfResponse.headers.get('X-CSRF-Token') || csrfResponse.headers.get('x-csrf-token');
+        if (csrfToken) {
+          setCSRFToken(csrfToken);
+          break;
+        }
+      } catch (e) {
+        console.warn(`[CSRF] Pre-fetch attempt ${attempt + 1} failed:`, e.message);
+        if (attempt < 1) await new Promise(r => setTimeout(r, 500));
+      }
     }
   }
 
@@ -172,7 +179,7 @@ async function apiFetch(endpoint, options = {}) {
   } catch (error) {
     console.error(`[API] ${method} ${url} Exception:`, error);
     if (error.name === 'TypeError' && error.message.includes('fetch')) {
-      throw new Error('Cannot connect to server. Please check if the backend is running.');
+      throw new Error(`Cannot connect to server at ${API_BASE}. Please check if the backend is running.`);
     }
     throw error;
   }
@@ -196,6 +203,24 @@ export const authAPI = {
       setUser(data.user);
     }
     return data;
+  },
+
+  /**
+   * Navigate after login using full page reload.
+   * This ensures HttpOnly cookies are properly sent on cross-origin setups
+   * (Vercel frontend → Render backend). Next.js soft navigation (router.push)
+   * can lose cookie context in cross-domain deployments.
+   */
+  navigateAfterLogin(user, redirectPath) {
+    if (redirectPath) {
+      window.location.href = redirectPath;
+      return;
+    }
+    if (user.role === 'CUSTOMER') {
+      window.location.href = '/dashboard';
+    } else {
+      window.location.href = '/admin';
+    }
   },
 
   // Registration is handled via sendOTP → verifyOTP flow exclusively
