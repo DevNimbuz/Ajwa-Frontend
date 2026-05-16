@@ -195,32 +195,15 @@ Please share the details.`;
         <button
           onClick={handleBookOnlineClick}
           className="calc-btn-premium book-online"
-          style={{ 
-            background: '#0f172a',
-            border: '1px solid #1e293b',
-            boxShadow: '0 8px 20px -4px rgba(15, 23, 42, 0.3)',
-            color: '#ffffff',
-            transition: 'all 0.3s ease'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = '#1e293b';
-            e.currentTarget.style.transform = 'translateY(-2px)';
-            e.currentTarget.style.boxShadow = '0 12px 25px -4px rgba(15, 23, 42, 0.4)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = '#0f172a';
-            e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.boxShadow = '0 8px 20px -4px rgba(15, 23, 42, 0.3)';
-          }}
         >
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Send size={20} style={{ color: '#ffffff' }} /> 
-              <span style={{ fontWeight: 800, letterSpacing: '0.02em', textTransform: 'uppercase', fontSize: '14px' }}>BOOK THROUGH WEBSITE</span>
+              <span className="calc-book-text">BOOK THROUGH WEBSITE</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
               <Star size={10} fill="#fbbf24" color="#fbbf24" />
-              <span style={{ fontSize: '10px', opacity: 1, fontWeight: 700, color: '#fbbf24' }}>EARN AJWA POINTS FOR EACH BOOKING</span>
+              <span className="calc-points-text">EARN AJWA POINTS FOR EACH BOOKING</span>
             </div>
           </div>
         </button>

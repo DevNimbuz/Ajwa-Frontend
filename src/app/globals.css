@@ -3207,8 +3207,7 @@ h1, h2, h3, h4, h5, h6 {
 .react-datepicker__day--selected, 
 .react-datepicker__day--keyboard-selected,
 .react-datepicker__day--selected:hover,
-.react-datepicker__day--selected:active,
-.react-datepicker__day--today.react-datepicker__day--selected {
+.react-datepicker__day--selected:active {
   background: #63ab45 !important;
   color: #ffffff !important;
   box-shadow: 0 4px 10px rgba(99, 171, 69, 0.3) !important;
@@ -3220,8 +3219,16 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .react-datepicker__day--today {
-  border: 1px solid #63ab45 !important;
+  background: transparent !important;
+  border: 1.5px solid #63ab45 !important;
   color: #63ab45 !important;
+  font-weight: 700 !important;
+}
+
+.react-datepicker__day--today.react-datepicker__day--selected,
+.react-datepicker__day--today.react-datepicker__day--keyboard-selected {
+  background: #63ab45 !important;
+  color: #ffffff !important;
 }
 
 .react-datepicker__navigation {
@@ -3298,6 +3305,7 @@ h1, h2, h3, h4, h5, h6 {
     --space-2xl: 1.5rem;
     --space-section: 3rem;
   }
+  
 }
 
 
@@ -3316,9 +3324,21 @@ h1, h2, h3, h4, h5, h6 {
     gap: 1.5rem;
   }
 
+  .trust-banner-grid {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+
   .trust-features-grid {
     grid-template-columns: 1fr;
     gap: 1.5rem;
+  }
+
+  .trust-image-wrapper {
+    height: 300px;
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
   }
 
   /* Make Main Hero Image scalable on mobile */
@@ -3996,6 +4016,32 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: 0 12px 24px rgba(27, 25, 30, 0.15);
 }
 
+.calc-btn-premium.book-online {
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  box-shadow: 0 8px 20px -4px rgba(15, 23, 42, 0.3);
+  color: #ffffff;
+}
+
+.calc-btn-premium.book-online:hover {
+  background: #1e293b !important;
+  transform: translateY(-4px);
+  box-shadow: 0 12px 25px -4px rgba(15, 23, 42, 0.4);
+}
+
+.calc-book-text {
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  font-size: 14px;
+}
+
+.calc-points-text {
+  font-size: 10px;
+  font-weight: 700;
+  color: #fbbf24;
+}
+
 .calc-btn-premium:hover {
   transform: translateY(-4px);
   filter: brightness(1.1);
@@ -4025,7 +4071,16 @@ h1, h2, h3, h4, h5, h6 {
 
 @media (max-width: 768px) {
   .calc-container {
-    padding: 1.75rem;
+    padding: 1.5rem;
+  }
+  .calc-header {
+    margin-bottom: 1.75rem;
+    gap: 10px;
+  }
+  .calc-grid-compact {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
   }
   .calc-price-actions-compact {
     flex-direction: column;
@@ -4034,6 +4089,12 @@ h1, h2, h3, h4, h5, h6 {
     width: 100%;
     padding: 16px;
     font-size: 0.9rem;
+  }
+  .calc-book-text {
+    font-size: 13px;
+  }
+  .calc-points-text {
+    font-size: 9px;
   }
 }
 
