@@ -64,6 +64,13 @@ export default function AboutPage() {
       {/* About Detail */}
       <section className="section" id="about-detail">
         <div className="container">
+          <AnimatedSection>
+            <div className="section-header premium-section-header">
+              <h2 className="premium-section-title">Who We Are</h2>
+              <p className="premium-section-subtitle">Crafting remarkable journeys, one destination at a time.</p>
+            </div>
+          </AnimatedSection>
+
           <div className="about-content">
             <AnimatedSection>
               <div className="about-img-wrap about-image-wrapper">
@@ -79,11 +86,6 @@ export default function AboutPage() {
 
             <AnimatedSection delay={0.2}>
               <div>
-                <span className="subtitle">Who We Are</span>
-                <h2 className="heading-2 about-heading">
-                  Crafting remarkable journeys, One destination at a time.
-                </h2>
-
                 <div className="about-tabs" role="tablist">
                   <button
                     className={`about-tab ${aboutTab === 'mission' ? 'active' : ''}`}
@@ -151,10 +153,9 @@ export default function AboutPage() {
       <section className="section section-alt" id="our-story">
         <div className="container">
           <AnimatedSection>
-            <div className="section-header">
-              <span className="subtitle">Our Journey</span>
-              <h2 className="heading-2">From Humble Beginnings to Global Horizons</h2>
-              <p>What started as a small dream in Kerala has grown into a network of 9 offices serving travelers across the globe.</p>
+            <div className="section-header premium-section-header">
+              <h2 className="premium-section-title">Our Journey</h2>
+              <p className="premium-section-subtitle">What started as a small dream in Kerala has grown into a network of 9 offices serving travelers across the globe.</p>
             </div>
           </AnimatedSection>
 
@@ -181,10 +182,9 @@ export default function AboutPage() {
       <section className="section" id="core-values">
         <div className="container">
           <AnimatedSection>
-            <div className="section-header">
-              <span className="subtitle">Our Values</span>
-              <h2 className="heading-2">What Drives Us Every Day</h2>
-              <p>Our core principles shape every decision we make and every journey we plan.</p>
+            <div className="section-header premium-section-header">
+              <h2 className="premium-section-title">Our Values</h2>
+              <p className="premium-section-subtitle">Our core principles shape every decision we make and every journey we plan.</p>
             </div>
           </AnimatedSection>
 
@@ -208,10 +208,9 @@ export default function AboutPage() {
       <section className="section section-alt" id="why-choose">
         <div className="container">
           <AnimatedSection>
-            <div className="section-header">
-              <span className="subtitle">Why Flyajwa</span>
-              <h2 className="heading-2">Why Travelers Choose Us</h2>
-              <p>We go the extra mile to make every trip extraordinary — here&apos;s what sets us apart.</p>
+            <div className="section-header premium-section-header">
+              <h2 className="premium-section-title">Why Flyajwa</h2>
+              <p className="premium-section-subtitle">We go the extra mile to make every trip extraordinary — here&apos;s what sets us apart.</p>
             </div>
           </AnimatedSection>
 
@@ -232,13 +231,16 @@ export default function AboutPage() {
       {/* Our Team Commitment */}
       <section className="section" id="team">
         <div className="container">
+          <AnimatedSection>
+            <div className="section-header premium-section-header">
+              <h2 className="premium-section-title">Our Team</h2>
+              <p className="premium-section-subtitle">Passionate People Behind Your Perfect Trips</p>
+            </div>
+          </AnimatedSection>
+
           <div className="about-content">
             <AnimatedSection delay={0.1}>
               <div>
-                <span className="subtitle">Our Team</span>
-                <h2 className="heading-2 about-heading">
-                  Passionate People Behind Your Perfect Trips
-                </h2>
                 <p className="about-description">
                   Behind every seamless trip is a team of dedicated travel experts who live and breathe travel. From our seasoned consultants who handpick the best hotels to our operations team ensuring smooth transfers — every member of the Flyajwa family is committed to making your journey unforgettable.
                 </p>

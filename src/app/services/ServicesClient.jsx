@@ -438,10 +438,9 @@ export default function ServicesClient() {
 
       <section className="section">
         <div className="container">
-          <div className="section-header">
-            <span className="subtitle">What We Offer</span>
-            <h2 className="heading-2">Our Premium Services</h2>
-            <p>From holiday packages to visa processing, we provide end-to-end travel solutions with quick support and low-friction enquiries.</p>
+          <div className="section-header premium-section-header">
+            <h2 className="premium-section-title">Our Premium Services</h2>
+            <p className="premium-section-subtitle">From holiday packages to visa processing, we provide end-to-end travel solutions with quick support and low-friction enquiries.</p>
           </div>
 
           <div className="service-trust-grid">

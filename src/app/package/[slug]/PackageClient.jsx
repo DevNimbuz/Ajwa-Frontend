@@ -300,7 +300,7 @@ export default function PackageClient({ pkg, clientSnapshots, siteConfig }) {
                 {activeTab === 'itinerary' && (
                   <div role="tabpanel">
                     <div className="itinerary-header">
-                      <h2 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 'clamp(1.5rem, 4vw, 2rem)', fontWeight: 800, color: 'var(--color-bg-deep)', margin: 0 }}>Professional Timeline</h2>
+                      <h2 className="premium-section-title" style={{ fontSize: '1.75rem', margin: 0 }}>Professional Timeline</h2>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: 'rgba(99, 171, 69, 0.1)', borderRadius: '12px', color: 'var(--color-gold)', fontSize: '0.875rem', fontWeight: 600 }}>
                         <Clock size={16} /> {pkg.duration}
                       </div>
@@ -427,7 +427,7 @@ export default function PackageClient({ pkg, clientSnapshots, siteConfig }) {
                   <div role="tabpanel">
                     <div className="gallery-header-row">
                       <Camera className="text-gold" />
-                      <h2 className="heading-4" style={{ margin: 0 }}>Client Captures</h2>
+                      <h2 className="premium-section-title" style={{ fontSize: '1.75rem', margin: 0 }}>Client Captures</h2>
                     </div>
                     
                     {dynamicGallery.length > 0 ? (
@@ -512,11 +512,17 @@ export default function PackageClient({ pkg, clientSnapshots, siteConfig }) {
       {/* Trust Banner */}
       <section className="section section-alt">
         <div className="container">
+          <AnimatedSection>
+            <div className="section-header premium-section-header">
+              <h2 className="premium-section-title">Trusted By 10,000+ Travelers</h2>
+              <p className="premium-section-subtitle">Experience the Joy of Worry-Free Exploration with Flyajwa.</p>
+            </div>
+          </AnimatedSection>
+
           <div className="trust-banner-grid">
             <AnimatedSection>
               <div>
-                <span className="subtitle">Trusted By 10,000+ Travelers</span>
-                <h2 className="heading-3 trust-heading">Experience the Joy of Worry-Free Exploration</h2>
+
                 <div className="trust-features-grid">
                   <div>
                     <div className="trust-feature-icon">

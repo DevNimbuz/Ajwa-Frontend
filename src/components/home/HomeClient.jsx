@@ -2,19 +2,16 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import dynamic from 'next/dynamic';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, EffectFade, Pagination, Navigation } from 'swiper/modules';
 import {
-  MapPin, Star, ArrowRight, ChevronRight,
-  Shield, Clock, Users, HeartHandshake, Plane, Globe,
-  Compass, Camera, StarIcon, ChevronDown
+  MapPin, Star, ArrowRight,
+  Shield, Clock, Users, Plane, Globe,
+  Compass
 } from 'lucide-react';
 import CountUp from 'react-countup';
 import AnimatedSection from '@/components/AnimatedSection';
 import siteConfig from '@/data/siteConfig';
-
-// Note: Header, Footer, and JsonLd are handled by the Server Page or Layout
 
 /* ── Testimonial Card Component ── */
 function TestimonialCard({ t }) {
@@ -198,14 +195,16 @@ export default function HomeClient({ initialPackages, initialTestimonials, heroS
       {/* ═══════ ABOUT ═══════ */}
       <section className="section" id="about">
         <div className="container">
+          <AnimatedSection>
+            <div className="section-header premium-section-header">
+              <h2 className="premium-section-title">About Us</h2>
+              <p className="premium-section-subtitle">Crafting remarkable journeys, one destination at a time.</p>
+            </div>
+          </AnimatedSection>
+
           <div className="about-content">
             <AnimatedSection>
               <div>
-                <span className="subtitle">About Us</span>
-                <h2 className="heading-2 home-section-heading">
-                  Crafting remarkable journeys, One destination at a time.
-                </h2>
-
                 <div className="about-tabs" role="tablist">
                   <button
                     className={`about-tab ${aboutTab === 'mission' ? 'active' : ''}`}
@@ -275,10 +274,9 @@ export default function HomeClient({ initialPackages, initialTestimonials, heroS
       <section className="section section-alt" id="destinations">
         <div className="container">
           <AnimatedSection>
-            <div className="section-header">
-              <span className="subtitle">Journey to the</span>
-              <h2 className="heading-2">Desired Vacation Spots</h2>
-              <p>Explore our handpicked destinations that promise unforgettable experiences and breathtaking beauty.</p>
+            <div className="section-header premium-section-header">
+              <h2 className="premium-section-title">Dream Destinations</h2>
+              <p className="premium-section-subtitle">Explore our handpicked destinations that promise unforgettable experiences and breathtaking beauty.</p>
             </div>
           </AnimatedSection>
 
@@ -326,10 +324,9 @@ export default function HomeClient({ initialPackages, initialTestimonials, heroS
       <section className="section" id="facilities">
         <div className="container">
           <AnimatedSection>
-            <div className="section-header">
-              <span className="subtitle">What We Offer</span>
-              <h2 className="heading-2">Travel With Confidence</h2>
-              <p>We make sure every aspect of your journey is taken care of so you can focus on making memories.</p>
+            <div className="section-header premium-section-header">
+              <h2 className="premium-section-title">Travel With Confidence</h2>
+              <p className="premium-section-subtitle">We make sure every aspect of your journey is taken care of so you can focus on making memories.</p>
             </div>
           </AnimatedSection>
 
@@ -384,10 +381,9 @@ export default function HomeClient({ initialPackages, initialTestimonials, heroS
       <section className="section section-alt" id="activities">
         <div className="container">
           <AnimatedSection>
-            <div className="section-header">
-              <span className="subtitle">Adventure Awaits</span>
-              <h2 className="heading-2">Thrilling Activities</h2>
-              <p>From sky-high adventures to ocean depths, experience the thrill of a lifetime.</p>
+            <div className="section-header premium-section-header">
+              <h2 className="premium-section-title">Adventure Awaits</h2>
+              <p className="premium-section-subtitle">From sky-high adventures to ocean depths, experience the thrill of a lifetime.</p>
             </div>
           </AnimatedSection>
 
@@ -411,9 +407,9 @@ export default function HomeClient({ initialPackages, initialTestimonials, heroS
       <section className="section" id="testimonials">
         <div className="container">
           <AnimatedSection>
-            <div className="section-header">
-              <span className="subtitle">Testimonials</span>
-              <h2 className="heading-2">What Our Travelers Say</h2>
+            <div className="section-header premium-section-header">
+              <h2 className="premium-section-title">Testimonials</h2>
+              <p className="premium-section-subtitle">What Our Travelers Say About Their Flyajwa Experience</p>
             </div>
           </AnimatedSection>
 
@@ -459,10 +455,9 @@ export default function HomeClient({ initialPackages, initialTestimonials, heroS
       <section className="section section-alt" id="visa">
         <div className="container">
           <AnimatedSection>
-            <div className="section-header">
-              <span className="subtitle">Visa Services</span>
-              <h2 className="heading-2">Visa Processing</h2>
-              <p>Hassle-free visa processing for your international travel needs.</p>
+            <div className="section-header premium-section-header">
+              <h2 className="premium-section-title">Visa Services</h2>
+              <p className="premium-section-subtitle">Hassle-free visa processing for your international travel needs.</p>
             </div>
           </AnimatedSection>
 

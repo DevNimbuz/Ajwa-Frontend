@@ -53,17 +53,17 @@
   --font-heading: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 
-  /* Font Sizes — Reduced for cleaner aesthetic */
-  --text-xs: 0.75rem;
-  --text-sm: 0.875rem;
-  --text-base: 1rem;
-  --text-lg: 1.125rem;
-  --text-xl: 1.25rem;
-  --text-2xl: 1.5rem;
-  --text-3xl: 2.125rem;
-  --text-4xl: 2.75rem;
-  --text-5xl: 3.5rem;
-  --text-6xl: 4rem;
+  /* Font Sizes — Precision Laptop Scale (18.5px base) */
+  --text-xs: 0.85rem;
+  --text-sm: 1rem;
+  --text-base: 1.156rem;
+  --text-lg: 1.3rem;
+  --text-xl: 1.445rem;
+  --text-2xl: 1.734rem;
+  --text-3xl: 2.456rem;
+  --text-4xl: 3.179rem;
+  --text-5xl: 4.046rem;
+  --text-6xl: 4.625rem;
   --text-hero: clamp(2.5rem, 5vw, 4.5rem);
 
   /* Spacing */
@@ -114,6 +114,13 @@
 
 @media (max-width: 1024px) {
   :root {
+    --text-xs: 0.75rem;
+    --text-sm: 0.875rem;
+    --text-base: 1rem;
+    --text-lg: 1.125rem;
+    --text-xl: 1.25rem;
+    --text-2xl: 1.5rem;
+    --text-3xl: 2rem;
     --admin-main-margin: 0px;
     --sidebar-width: 0px;
     --space-xl: 1.25rem;
@@ -490,8 +497,8 @@ h1, h2, h3, h4, h5, h6 {
 
 
 
-@media (max-width: 640px) {
-  .grid-4, .grid-3 { grid-template-columns: 1fr; }
+@media (max-width: 768px) {
+  .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
   .gap-xl { gap: var(--space-lg); }
 }
 
@@ -6304,6 +6311,76 @@ h1, h2, h3, h4, h5, h6 {
     align-items: center;
     gap: 12px;
     width: 100%;
+  }
+}
+
+
+/* -------------------------------------------
+   ABOUT PAGE REFINEMENTS
+   ------------------------------------------- */
+
+.premium-section-header {
+  text-align: center;
+  margin-bottom: 4rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.premium-section-title {
+  font-family: var(--font-heading);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 800;
+  color: var(--color-bg-deep);
+  margin-bottom: 1.5rem;
+  position: relative;
+  display: inline-block;
+  letter-spacing: -0.02em;
+}
+
+.premium-section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: var(--gradient-gold);
+  border-radius: 2px;
+}
+
+.premium-section-subtitle {
+  font-size: clamp(1rem, 2vw, 1.15rem);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin-top: 2rem;
+}
+
+.premium-section-header.left {
+  text-align: left;
+  margin-left: 0;
+}
+
+.premium-section-header.left .premium-section-title::after {
+  left: 0;
+  transform: none;
+}
+
+@media (max-width: 768px) {
+  .premium-section-header {
+    margin-bottom: 3rem;
+  }
+  .premium-section-header.left {
+    text-align: left;
+  }
+  .premium-section-title {
+    font-size: 2rem;
+  }
+  .premium-section-title::after {
+    width: 60px;
+    height: 3px;
+    bottom: -8px;
   }
 }
 
