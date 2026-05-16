@@ -22,6 +22,8 @@ export default function PackageClient({ pkg, clientSnapshots, siteConfig }) {
   const [lightbox, setLightbox] = useState({ open: false, index: 0 });
   const [isInWishlist, setIsInWishlist] = useState(false);
   const [wishlistLoading, setWishlistLoading] = useState(false);
+  const [expandedDays, setExpandedDays] = useState([0]); // First day expanded by default
+  const [isStickyTabs, setIsStickyTabs] = useState(false);
 
   useEffect(() => {
     checkWishlist();
@@ -90,6 +92,17 @@ export default function PackageClient({ pkg, clientSnapshots, siteConfig }) {
       }
     };
     fetchPackageGallery();
+
+    // Sticky Tabs Scroll Listener
+    const handleScroll = () => {
+      const tabsElement = document.getElementById('package-content-tabs');
+      if (tabsElement) {
+        const rect = tabsElement.getBoundingClientRect();
+        setIsStickyTabs(rect.top <= 64); // 64 is header height
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, [pkg.slug]);
 
   const getImageUrl = (url) => url.startsWith('/') ? `${process.env.NEXT_PUBLIC_API_URL ? process.env.NEXT_PUBLIC_API_URL.replace('/api', '') : 'http://localhost:5000'}${url}` : url;
@@ -260,25 +273,27 @@ export default function PackageClient({ pkg, clientSnapshots, siteConfig }) {
           <div className="package-details-grid-with-sidebar">
             {/* Details Content */}
             <div className="package-details-main">
-              <div className="package-tabs" role="tablist">
-                <button 
-                  className={`package-tab ${activeTab === 'itinerary' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('itinerary')}
-                >
-                  Plan Details
-                </button>
-                <button 
-                  className={`package-tab ${activeTab === 'inclusions' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('inclusions')}
-                >
-                  Inclusions
-                </button>
-                <button 
-                  className={`package-tab ${activeTab === 'gallery' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('gallery')}
-                >
-                  Memories
-                </button>
+              <div id="package-content-tabs" className={`sticky-tabs-container ${isStickyTabs ? 'active' : ''}`}>
+                <div className="package-tabs" role="tablist">
+                  <button 
+                    className={`package-tab ${activeTab === 'itinerary' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('itinerary')}
+                  >
+                    Plan Details
+                  </button>
+                  <button 
+                    className={`package-tab ${activeTab === 'inclusions' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('inclusions')}
+                  >
+                    Inclusions
+                  </button>
+                  <button 
+                    className={`package-tab ${activeTab === 'gallery' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('gallery')}
+                  >
+                    Memories
+                  </button>
+                </div>
               </div>
 
               <div className="package-tab-content">
@@ -295,19 +310,32 @@ export default function PackageClient({ pkg, clientSnapshots, siteConfig }) {
                       <div className="itinerary-timeline-line" />
                       
                       {displayItinerary.map((item, i) => (
-                        <div key={i} className="itinerary-timeline-item">
+                        <div 
+                          key={i} 
+                          className="itinerary-timeline-item"
+                          onClick={() => {
+                            if (expandedDays.includes(i)) {
+                              setExpandedDays(expandedDays.filter(d => d !== i));
+                            } else {
+                              setExpandedDays([...expandedDays, i]);
+                            }
+                          }}
+                        >
                           <div className="itinerary-timeline-marker">
                             {item.day?.match(/\d+/)?.[0] || (i + 1)}
                           </div>
                           
-                          <div className="itinerary-timeline-card hover-lift">
+                          <div className={`itinerary-timeline-card hover-lift ${!expandedDays.includes(i) ? 'collapsed' : ''}`}>
                             <div className="itinerary-timeline-header">
-                              <h4 className="itinerary-timeline-title">
-                                {item.title}
-                              </h4>
-                              <span className="itinerary-timeline-day-label">
-                                Day {item.day?.match(/\d+/)?.[0] || (i + 1)}
-                              </span>
+                              <div style={{ flex: 1 }}>
+                                <h4 className="itinerary-timeline-title">
+                                  {item.title}
+                                </h4>
+                                <span className="itinerary-timeline-day-label">
+                                  Day {item.day?.match(/\d+/)?.[0] || (i + 1)}
+                                </span>
+                              </div>
+                              <ChevronDown className="itinerary-toggle-icon" size={20} />
                             </div>
 
                             <p className="itinerary-timeline-desc">
@@ -527,6 +555,36 @@ export default function PackageClient({ pkg, clientSnapshots, siteConfig }) {
 
       <Footer />
       <WhatsAppFloat />
+
+      {/* Mobile Sticky Bottom Bar */}
+      <div className="mobile-sticky-bar hide-desktop">
+        <div className="sticky-bar-price">
+          <span className="label">Starting From</span>
+          <span className="amount">₹{(pkg.startingPrice || 0).toLocaleString('en-IN')}</span>
+        </div>
+        <div className="sticky-bar-actions">
+          <a 
+            href={`https://wa.me/${siteConfig.contact.whatsapp}?text=Hi, I am interested in the ${pkg.name} package.`}
+            className="sticky-btn sticky-btn-whatsapp"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Chat on WhatsApp"
+          >
+            <Phone size={20} />
+          </a>
+          <button 
+            className="sticky-btn sticky-btn-primary"
+            onClick={() => {
+              const calcSection = document.getElementById('pricing-calculator');
+              if (calcSection) {
+                calcSection.scrollIntoView({ behavior: 'smooth' });
+              }
+            }}
+          >
+            Book Now
+          </button>
+        </div>
+      </div>
 
       {/* Fullscreen Image Lightbox */}
       {lightbox.open && pkg.gallery?.length > 0 && (

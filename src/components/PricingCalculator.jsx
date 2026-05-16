@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { leadsAPI, authAPI } from '@/lib/api';
 import { Plane, Building2, Users, Calendar, Calculator, MessageCircle, Send, CheckCircle, Star } from 'lucide-react';
@@ -25,6 +25,54 @@ export default function PricingCalculator({ packageSlug, packageName, basePrice 
   const [withFlight, setWithFlight] = useState(false);
   const [hotelStar, setHotelStar] = useState(3);
   const [groupSize, setGroupSize] = useState(1);
+  
+  // Refs for sliding indicators
+  const durationContainerRef = useRef(null);
+  const flightContainerRef = useRef(null);
+  const hotelContainerRef = useRef(null);
+  
+  const [durationStyle, setDurationStyle] = useState({});
+  const [flightStyle, setFlightStyle] = useState({});
+  const [hotelStyle, setHotelStyle] = useState({});
+
+  useEffect(() => {
+    const updatePills = () => {
+      // Duration Pill
+      const activeDuration = durationContainerRef.current?.querySelector('.active');
+      if (activeDuration) {
+        setDurationStyle({
+          width: activeDuration.offsetWidth,
+          left: activeDuration.offsetLeft,
+          opacity: 1
+        });
+      }
+      
+      // Flight Pill
+      const activeFlight = flightContainerRef.current?.querySelector('.active');
+      if (activeFlight) {
+        setFlightStyle({
+          width: activeFlight.offsetWidth,
+          left: activeFlight.offsetLeft,
+          opacity: 1
+        });
+      }
+      
+      // Hotel Pill
+      const activeHotel = hotelContainerRef.current?.querySelector('.active');
+      if (activeHotel) {
+        setHotelStyle({
+          width: activeHotel.offsetWidth,
+          left: activeHotel.offsetLeft,
+          opacity: 1
+        });
+      }
+    };
+
+    updatePills();
+    // Also update on window resize
+    window.addEventListener('resize', updatePills);
+    return () => window.removeEventListener('resize', updatePills);
+  }, [days, withFlight, hotelStar]);
 
   // Lead form
   const [showForm, setShowForm] = useState(false);
@@ -95,7 +143,7 @@ Please share the details.`;
   };
 
   return (
-    <div className="calc-container">
+    <div className="calc-container" id="pricing-calculator">
       <div className="calc-header">
         <div className="calc-header-icon">
           <Calculator size={18} />
@@ -109,12 +157,17 @@ Please share the details.`;
           <label className="calc-label-inline">
             <Calendar size={13} /> DURATION
           </label>
-          <div className="calc-btn-group">
+          <div className="calc-btn-group relative" ref={durationContainerRef}>
+            <div 
+              className="calc-btn-indicator" 
+              style={durationStyle}
+            />
+
             {durationOptions.map(opt => (
               <button
                 key={opt.value}
                 onClick={() => setDays(opt.value)}
-                className={`calc-btn ${days === opt.value ? 'active' : ''}`}
+                className={`calc-btn relative z-10 ${days === opt.value ? 'active' : ''}`}
               >
                 {opt.label}
               </button>
@@ -149,12 +202,17 @@ Please share the details.`;
           <label className="calc-label-inline">
             <Plane size={13} /> FLIGHTS
           </label>
-          <div className="calc-btn-toggle-group">
+          <div className="calc-btn-toggle-group relative" ref={flightContainerRef}>
+            <div 
+              className="calc-btn-indicator" 
+              style={flightStyle}
+            />
+
             {[false, true].map(val => (
               <button
                 key={String(val)}
                 onClick={() => setWithFlight(val)}
-                className={`calc-btn ${withFlight === val ? 'active' : ''}`}
+                className={`calc-btn relative z-10 ${withFlight === val ? 'active' : ''}`}
               >
                 {val ? 'Include' : 'Exclude'}
               </button>
@@ -167,12 +225,17 @@ Please share the details.`;
           <label className="calc-label-inline">
             <Building2 size={13} /> HOTEL
           </label>
-          <div className="calc-btn-group">
+          <div className="calc-btn-group relative" ref={hotelContainerRef}>
+            <div 
+              className="calc-btn-indicator" 
+              style={hotelStyle}
+            />
+
             {accommodationOptions.map(star => (
               <button
                 key={star}
                 onClick={() => setHotelStar(star)}
-                className={`calc-btn ${hotelStar === star ? 'active' : ''}`}
+                className={`calc-btn relative z-10 ${hotelStar === star ? 'active' : ''}`}
               >
                 {star}★
               </button>
