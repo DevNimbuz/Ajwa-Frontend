@@ -487,7 +487,7 @@ export default function PackageClient({ pkg, clientSnapshots, siteConfig }) {
           <div className="trust-banner-grid">
             <AnimatedSection>
               <div>
-                <span className="subtitle">Trusted By 1000+ Travelers</span>
+                <span className="subtitle">Trusted By 10,000+ Travelers</span>
                 <h2 className="heading-3 trust-heading">Experience the Joy of Worry-Free Exploration</h2>
                 <div className="trust-features-grid">
                   <div>

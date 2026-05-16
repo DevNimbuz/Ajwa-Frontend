@@ -36,7 +36,7 @@ const milestones = [
   { year: '2019', title: 'Founded', desc: 'Flyajwa Travels & Holidays was born in Edappal, Kerala with a dream to make travel accessible.' },
   { year: '2021', title: 'Expanded Operations', desc: 'Expanded to 5 office locations across Kerala and began international tour operations.' },
   { year: '2023', title: 'Going Global', desc: 'Launched offices in UAE, Maldives, and KSA — taking our services international.' },
-  { year: '2025', title: '9 Locations', desc: 'Now serving from 9 locations with 100+ happy customers and 20+ destinations worldwide.' },
+  { year: '2025', title: '9 Locations', desc: 'Now serving from 9 locations with 5000+ happy customers and 20+ destinations worldwide.' },
 ];
 
 export default function AboutPage() {

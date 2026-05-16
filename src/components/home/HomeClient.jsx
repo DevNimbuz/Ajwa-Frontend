@@ -130,9 +130,7 @@ export default function HomeClient({ initialPackages, initialTestimonials, heroS
                         Explore Packages
                         <ArrowRight size={16} />
                       </Link>
-                      <Link href="/contact" className="btn btn-outline btn-lg hero-secondary-cta">
-                        Talk to an Expert
-                      </Link>
+
                       <div className="hero-rating">
                         <Image
                           src={siteConfig.rating?.icon || '/assets/img/Ajwa/google.svg'}
@@ -177,9 +175,7 @@ export default function HomeClient({ initialPackages, initialTestimonials, heroS
                   Explore Packages
                   <ArrowRight size={16} />
                 </Link>
-                <Link href="/contact" className="btn btn-outline btn-lg hero-secondary-cta">
-                  Talk to an Expert
-                </Link>
+
                 <div className="hero-rating">
                     <Image src={siteConfig.rating?.icon || '/assets/img/Ajwa/google.svg'} alt={ratingPlatform} width={20} height={20} />
                     <div className="hero-rating-stars">

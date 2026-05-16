@@ -47,7 +47,7 @@ const siteConfig = {
   },
 
   stats: {
-    customers: 100,
+    customers: 5000,
     destinations: 20,
     tours: 50,
     years: 5,

@@ -46,7 +46,7 @@ export const metadata = {
   },
   openGraph: {
     title: 'Flyajwa | Best Travel Agency in Kerala — Tours, Visa & Holidays',
-    description: 'Book affordable tour packages to Maldives, Thailand, Dubai, Azerbaijan & more. Trusted by 100+ happy travelers. Visa services, Umrah, study abroad & recruitment.',
+    description: 'Book affordable tour packages to Maldives, Thailand, Dubai, Azerbaijan & more. Trusted by 5000+ happy travelers. Visa services, Umrah, study abroad & recruitment.',
     url: 'https://www.flyajwa.com',
     siteName: 'Flyajwa — Ajwa Travels & Holidays',
     images: [
