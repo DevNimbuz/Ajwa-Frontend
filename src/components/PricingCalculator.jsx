@@ -249,7 +249,7 @@ Please share the details.`;
         <a
           href={whatsappUrl}
           target="_blank"
-          rel="noopener"
+          rel="noopener noreferrer"
           className="calc-btn-premium whatsapp"
           onClick={handleWhatsAppClick}
         >

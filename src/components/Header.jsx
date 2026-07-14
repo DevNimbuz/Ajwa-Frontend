@@ -34,6 +34,12 @@ export default function Header() {
   const loadNotifications = async () => {
     try {
       const tripsData = await authAPI.getCustomerTrips().catch(() => ({ success: true, data: { all: [] } }));
+      
+      let readIds = [];
+      try {
+        readIds = JSON.parse(localStorage.getItem('flyajwa_read_notifications') || '[]');
+      } catch (e) {}
+
       const mockNotifications = (tripsData.data?.all || [])
         .filter(l => l.status !== 'NEW')
         .slice(0, 5)
@@ -41,7 +47,7 @@ export default function Header() {
           id: l._id,
           text: `Update: Trip to ${l.destination || 'Destination'} is now ${l.status}.`,
           date: l.updatedAt || l.createdAt,
-          read: false
+          read: readIds.includes(l._id)
         }));
       setNotifications(mockNotifications);
     } catch (err) {
@@ -126,8 +132,20 @@ export default function Header() {
                   <button 
                     type="button"
                     onClick={() => {
-                      setNotificationsOpen(!notificationsOpen);
+                      const nextOpen = !notificationsOpen;
+                      setNotificationsOpen(nextOpen);
                       setProfileDropdownOpen(false);
+
+                      if (nextOpen && notifications.length > 0) {
+                        const readIds = notifications.map(n => n.id);
+                        try {
+                          const existingRead = JSON.parse(localStorage.getItem('flyajwa_read_notifications') || '[]');
+                          const updatedRead = Array.from(new Set([...existingRead, ...readIds]));
+                          localStorage.setItem('flyajwa_read_notifications', JSON.stringify(updatedRead));
+                        } catch (e) {}
+                        
+                        setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+                      }
                     }}
                     className="flex-center" 
                     style={{ 
@@ -141,7 +159,7 @@ export default function Header() {
                     aria-label="Toggle Notifications"
                   >
                     <Bell size={16} />
-                    {notifications.length > 0 && (
+                    {notifications.some(n => !n.read) && (
                       <span style={{ 
                         position: 'absolute', top: 8, right: 8, width: 6, height: 6, 
                         background: '#ef4444', borderRadius: '50%', border: '1.5px solid #fff' 
@@ -156,7 +174,9 @@ export default function Header() {
                     }}>
                       <div className="flex-between" style={{ marginBottom: 12 }}>
                         <h3 style={{ fontSize: 13, fontWeight: 700, color: '#1e293b' }}>Updates</h3>
-                        <span style={{ fontSize: 10, color: '#94a3b8' }}>{notifications.length} New</span>
+                        <span style={{ fontSize: 10, color: '#94a3b8' }}>
+                          {notifications.filter(n => !n.read).length} New
+                        </span>
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 250, overflowY: 'auto' }}>
                         {notifications.length === 0 ? (
@@ -164,7 +184,14 @@ export default function Header() {
                         ) : (
                           notifications.map((note) => (
                             <div key={note.id} style={{ display: 'flex', gap: 10, padding: 8, borderRadius: 8, background: '#f8fafc' }}>
-                              <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#63ab45', marginTop: 5, flexShrink: 0 }} />
+                              <div style={{ 
+                                width: 6, 
+                                height: 6, 
+                                borderRadius: '50%', 
+                                background: note.read ? '#cbd5e1' : '#63ab45', 
+                                marginTop: 5, 
+                                flexShrink: 0 
+                              }} />
                               <div>
                                 <p style={{ margin: 0, fontSize: 12, color: '#475569', lineHeight: 1.4 }}>{note.text}</p>
                                 <span style={{ fontSize: 10, color: '#cbd5e1' }}>{new Date(note.date).toLocaleDateString()}</span>

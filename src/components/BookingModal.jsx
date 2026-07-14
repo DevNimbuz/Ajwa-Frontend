@@ -273,7 +273,7 @@ export default function BookingModal({ isOpen, onClose, packageData }) {
                 <h3>Booking Request Received!</h3>
                 <p>Your request for {packageData.packageName} has been prioritized. Our team will contact you shortly to finalize your reservation.</p>
                 <div className="success-actions">
-                  <button className="btn-primary" onClick={onClose}>Done</button>
+                  <button className="btn btn-primary" onClick={onClose}>Done</button>
                 </div>
               </motion.div>
             )}

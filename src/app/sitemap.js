@@ -1,14 +1,15 @@
 import { MetadataRoute } from 'next';
 
 const BASE_URL = 'https://www.flyajwa.com';
+const STABLE_LASTMOD = '2026-06-13T00:00:00.000Z';
 
 const staticPages = [
-  { url: BASE_URL, lastmod: new Date().toISOString(), priority: '1.0', changefreq: 'daily' },
-  { url: `${BASE_URL}/about`, lastmod: new Date().toISOString(), priority: '0.8', changefreq: 'monthly' },
-  { url: `${BASE_URL}/package`, lastmod: new Date().toISOString(), priority: '0.9', changefreq: 'weekly' },
-  { url: `${BASE_URL}/services`, lastmod: new Date().toISOString(), priority: '0.8', changefreq: 'monthly' },
-  { url: `${BASE_URL}/contact`, lastmod: new Date().toISOString(), priority: '0.7', changefreq: 'yearly' },
-  { url: `${BASE_URL}/reviews`, lastmod: new Date().toISOString(), priority: '0.6', changefreq: 'weekly' },
+  { url: BASE_URL, lastmod: STABLE_LASTMOD, priority: '1.0', changefreq: 'daily' },
+  { url: `${BASE_URL}/about`, lastmod: STABLE_LASTMOD, priority: '0.8', changefreq: 'monthly' },
+  { url: `${BASE_URL}/package`, lastmod: STABLE_LASTMOD, priority: '0.9', changefreq: 'weekly' },
+  { url: `${BASE_URL}/services`, lastmod: STABLE_LASTMOD, priority: '0.8', changefreq: 'monthly' },
+  { url: `${BASE_URL}/contact`, lastmod: STABLE_LASTMOD, priority: '0.7', changefreq: 'yearly' },
+  { url: `${BASE_URL}/reviews`, lastmod: STABLE_LASTMOD, priority: '0.6', changefreq: 'weekly' },
 ];
 
 const packageSlugs = [
@@ -27,10 +28,19 @@ async function fetchPackagesFromAPI() {
     });
     if (res.ok) {
       const data = await res.json();
-      return data.data?.map(pkg => pkg.slug) || [];
+      const slugs = data.data?.map(pkg => pkg.slug) || [];
+      if (slugs.length === 0 && process.env.NODE_ENV === 'production') {
+        throw new Error('Fetched packages list is empty in production sitemap generation');
+      }
+      return slugs;
+    } else {
+      throw new Error(`API returned status code ${res.status}`);
     }
   } catch (error) {
     console.error('Sitemap: Failed to fetch packages', error.message);
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error(`Sitemap package fetch failed: ${error.message}`);
+    }
   }
   return [];
 }
@@ -41,7 +51,7 @@ export default async function sitemap() {
 
   const packagePages = allPackages.map(slug => ({
     url: `${BASE_URL}/package/${slug}`,
-    lastmod: new Date().toISOString(),
+    lastmod: STABLE_LASTMOD,
     priority: '0.8',
     changefreq: 'weekly',
   }));
@@ -51,3 +61,4 @@ export default async function sitemap() {
     ...packagePages,
   ];
 }
+

@@ -4,6 +4,14 @@ Allow: /
 Disallow: /api/
 Disallow: /_next/
 Disallow: /static/
+Disallow: /admin
+Disallow: /login
+Disallow: /register
+Disallow: /profile
+Disallow: /dashboard
+Disallow: /booking
+Disallow: /forgot-password
+Disallow: /reset-password
 
 # Host
 Host: https://flyajwa.com

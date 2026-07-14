@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
  * Next.js Middleware — Platform Security
  * Enforces server-side authentication checks for protected routes
  */
-export function middleware(request) {
+export function proxy(request) {
   const { pathname } = request.nextUrl;
   
   // 1. Get token from cookies (checking both the backend cookie and our local fallback cookie)

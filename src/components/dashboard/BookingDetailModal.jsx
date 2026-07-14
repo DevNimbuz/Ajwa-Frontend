@@ -133,6 +133,7 @@ export default function BookingDetailModal({ trip, trips, onUpdate, onClose }) {
             <a 
               href="https://wa.me/919605287019" 
               target="_blank" 
+              rel="noopener noreferrer"
               className="btn btn-outline" 
               style={{ flex: 1, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, borderColor: '#25D366', color: '#25D366' }}
             >
